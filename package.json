@@ -1,0 +1,36 @@
+{
+  "name": "NextcloudPasswords",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": "node node_modules/react-native/local-cli/cli.js start",
+    "test": "jest",
+    "build-android": "cd android && ./gradlew assembleRelease",
+    "flow": "flow"
+  },
+  "dependencies": {
+    "axios": "^0.18.0",
+    "native-base": "^2.8.1",
+    "react": "16.6.0-alpha.8af6728",
+    "react-native": "^0.57.4",
+    "react-native-fs": "^2.12.1",
+    "react-native-sensitive-info": "git://github.com/mcodex/react-native-sensitive-info.git#keystore",
+    "react-native-sqlcipher-2": "^1.0.2",
+    "react-native-svg": "^8.0.8",
+    "react-redux": "^5.1.0",
+    "react-router-native": "^4.3.0",
+    "redux": "^4.0.1",
+    "redux-persist": "^5.10.0",
+    "redux-persist-sensitive-storage": "^1.0.0"
+  },
+  "devDependencies": {
+    "babel-jest": "23.6.0",
+    "flow-bin": "^0.78.0",
+    "jest": "23.6.0",
+    "metro-react-native-babel-preset": "0.48.2",
+    "react-test-renderer": "16.6.0-alpha.8af6728"
+  },
+  "jest": {
+    "preset": "react-native"
+  }
+}
