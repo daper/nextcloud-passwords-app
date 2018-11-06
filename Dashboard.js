@@ -45,6 +45,7 @@ class Dashboard extends Component<Props> {
     super(props)
 
     this.toClipboard = this.toClipboard.bind(this)
+    this.passwordToClipboard = this.passwordToClipboard.bind(this)
     this.search = this.search.bind(this)
     this.refresh = this.refresh.bind(this)
     this.renderRow = this.renderRow.bind(this)
@@ -129,16 +130,19 @@ class Dashboard extends Component<Props> {
     })
   }
 
-  async toClipboard(id) {
-    let pass = await API.getPassword(id)
-
-    Clipboard.setString(pass)
+  async toClipboard(string) {
+    Clipboard.setString(string)
 
     Toast.show({
       text: "Copied!",
       buttonText: "Okay",
       duration: 2000
     })
+  }
+
+  async passwordToClipboard(id) {
+    let pass = await API.getPassword(id)
+    this.toClipboard(pass)
   }
 
   renderRow(item) {
@@ -152,7 +156,10 @@ class Dashboard extends Component<Props> {
           </TouchableOpacity>
         </Body>
         <Right>
-          <Button transparent onPress={() => {this.toClipboard(item.id)}} style={{right: -20}}>
+          <Button transparent onPress={() => {this.toClipboard(item.username)}} style={{right: -20}}>
+            <Icon type="FontAwesome" name="user" color='grey' style={{color: 'grey'}} />
+          </Button>
+          <Button transparent onPress={() => {this.passwordToClipboard(item.id)}} style={{right: -20}}>
             <Icon type="FontAwesome" name="clipboard" color='grey' style={{color: 'grey'}} />
           </Button>
         </Right>
