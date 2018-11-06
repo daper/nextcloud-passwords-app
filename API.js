@@ -233,7 +233,7 @@ export class API {
 		return await new Promise((res, rej) => {
 			this.db.transaction((txn) => {
 				txn.executeSql(`select password from passwords where id=?`, [id], 
-					(txn, data) => {res(data.rows._array[0].pass)},
+					(txn, data) => {res(data.rows._array[0].password)},
 					(txn, err) => {rej(err)})
 			})
 		})

@@ -67,7 +67,7 @@ class Dashboard extends Component<Props> {
 
   async fetchData(fresh = false) {
     let list = []
-    let fields = ['id', 'label', 'url']
+    let fields = ['id', 'label', 'url', 'username']
     if (!fresh) {
       this.props.setLoading(true, 'Loading sites...')
       list = await API.getList(fields)
@@ -122,7 +122,7 @@ class Dashboard extends Component<Props> {
     this.props.setPasswordFilter(filter)
 
     this.setState({filtering: true})
-    let rows = await API.search(filter, ['label', 'uri'], ['id', 'label', 'uri'])
+    let rows = await API.search(filter, ['label', 'uri'], ['id', 'label', 'uri', 'username'])
 
     this.setState({
       passwordList: rows,
