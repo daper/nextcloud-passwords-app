@@ -81,20 +81,23 @@ class Dashboard extends Component<Props> {
 
       if (status === 200) {
         list = await API.getList(fields)
+        this.setState({
+          passwordList: list
+        })
       } else if(status === 401) {
         await API.dropDB()
-        return this.returnToLogin()
+        this.returnToLogin()
       } else {
         // Implement some kind of retry?
         // catch more errors
       }
 
       this.props.setLoading(false, 'Loading...')
-    }
-
-    this.setState({
-      passwordList: list
-    })
+    } else {
+      this.setState({
+        passwordList: list
+      })
+    }    
   }
 
   async componentDidMount() {

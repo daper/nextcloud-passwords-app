@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import {AsyncStorage, View} from 'react-native'
+import {View} from 'react-native'
 import {Root} from 'native-base'
 import { NativeRouter, Route, Link, Redirect, Switch } from "react-router-native"
 import {connect} from 'react-redux'
@@ -21,8 +21,7 @@ export class App extends Component<Props> {
   }
 
   async isLoggedIn() {
-    let user = await AsyncStorage.getItem('nc:user')
-    return user !== null ? true : false
+    return this.props.lastLogin !== 0
   }
 
   renderDefault({history}) {
@@ -60,6 +59,7 @@ const mapStateToProps = (state, ownProps) => {
   return {
       lastRoute: state.app.lastRoute,
       settings: state.app.settings,
+      lastLogin: state.app.lastLogin,
   }
 }
  
