@@ -1,83 +1,82 @@
 import { compose, applyMiddleware, createStore } from "redux"
+import { Dimensions } from 'react-native'
 import { persistStore, persistCombineReducers } from "redux-persist"
 import createSensitiveStorage from "redux-persist-sensitive-storage"
 import API from './API'
 
+export const ActionTypes = {
+	LOADING: 'LOADING',
+	SETTINGS: 'SETTINGS',
+	LOGIN_CONTAINER_SIZE: 'LOGIN_CONTAINER_SIZE',
+	PUSH_PASSWORD: 'PUSH_PASSWORD',
+	AUTH_FLOW: 'AUTH_FLOW',
+	TOUCH_LAST_LOGIN: 'TOUCH_LAST_LOGIN',
+	SET_LAST_LOGIN: 'SET_LAST_LOGIN',
+	PUSH_ROUTE: 'PUSH_ROUTE',
+	SET_PASSWORD_FILTER: 'SET_PASSWORD_FILTER',
+}
+
 // Actions
 export function setLoading(status = null, text = 'Loading...') {
 	return {
-		type: 'loading',
+		type: ActionTypes.LOADING,
 		status, text
 	}
 }
 
 export function setSettings(settings) {
 	return {
-		type: 'settings',
+		type: ActionTypes.SETTINGS,
 		settings
 	}
 }
 
-export function pushPassword(item) {
+export function setLoginContainerSize(size) {
 	return {
-		type: 'push-password',
-		item
-	}
-}
-
-export function setOrigPasswordList(list) {
-	return {
-		type: 'orig-passwords',
-		list
-	}
-}
-
-export function setPasswordList(list) {
-	return {
-		type: 'password-list',
-		list
+		type: ActionTypes.LOGIN_CONTAINER_SIZE,
+		size
 	}
 }
 
 export function setAuthFlow(status) {
 	return {
-		type: 'auth-flow',
+		type: ActionTypes.AUTH_FLOW,
 		status
 	}
 }
 
 export function touchLastLogin() {
 	return {
-		type: 'touch-last-login',
+		type: ActionTypes.TOUCH_LAST_LOGIN,
 		timestamp: new Date().getTime()
 	}
 }
 
 export function setLastLogin(ts) {
 	return {
-		type: 'set-last-login',
+		type: ActionTypes.SET_LAST_LOGIN,
 		timestamp: ts
 	}
 }
 
 export function pushRoute(route) {
 	return {
-		type: 'push-route',
+		type: ActionTypes.PUSH_ROUTE,
 		route
 	}
 }
 
 export function setPasswordFilter(filter) {
 	return {
-		type: 'set-password-filter',
+		type: ActionTypes.SET_PASSWORD_FILTER,
 		filter
 	}
 }
 
-// Reducers
-var defaultState = {
+let defaultState = {
 	loading: false,
 	statusText: 'Contacting Server...',
+	loginContainerSize: Dimensions.get('screen').height -25,
 	authFlow: false,
 	lastLogin: 0,
 	lastRoute: '',
@@ -86,16 +85,13 @@ var defaultState = {
 		user: '',
 		password: '',
 	},
-	dashboard: {
-		origPasswordList: [],
-		passwordList: []
-	},
 	filter: '',
 }
 
+// Reducers
 export function appReducer (state = defaultState, action) {
 	switch (action.type) {
-		case 'loading':
+		case ActionTypes.LOADING:
 			let status = action.status
 			if (action.status === null) {
 				status = state.loading ? false : true
@@ -103,37 +99,27 @@ export function appReducer (state = defaultState, action) {
 
 			return {...state, loading: status, statusText: action.text}
 
-		case 'settings':
+		case ActionTypes.SETTINGS:
 			let settings = {...state.settings, ...action.settings}
 			API.init(settings)
 			return {...state, settings}
 
-		case 'login-container-size':
-			return {...state, login: {...state.login, containerSize: action.size}}
+		case ActionTypes.LOGIN_CONTAINER_SIZE:
+			return {...state, loginContainerSize: action.size}
 
-		case 'orig-passwords':
-			return {...state, dashboard: {...state.dashboard, origPasswordList: action.list}}
-
-		case 'password-list':
-			return {...state, dashboard: {...state.dashboard, passwordList: action.list}}
-
-		case 'auth-flow':
+		case ActionTypes.AUTH_FLOW:
 			return {...state, authFlow: action.status}
 
-		case 'touch-last-login':
+		case ActionTypes.TOUCH_LAST_LOGIN:
 			return {...state, lastLogin: action.timestamp}
 
-		case 'set-last-login':
+		case ActionTypes.SET_LAST_LOGIN:
 			return {...state, lastLogin: action.timestamp}
 
-		case 'push-password':
-			let origPasswordList = state.dashboard.origPasswordList.push(action.item)
-			return {...state, dashboard: {...state.dashboard, origPasswordList: origPasswordList}}
-
-		case 'push-route':
+		case ActionTypes.PUSH_ROUTE:
 			return {...state, lastRoute: action.route}
 
-		case 'set-password-filter':
+		case ActionTypes.SET_PASSWORD_FILTER:
 			return {...state, filter: action.filter}
 
 		default:
@@ -146,8 +132,14 @@ const storage = createSensitiveStorage({})
 export const reducers = persistCombineReducers({ key: "root", storage}, { app: appReducer })
 
 export default function configureStore () {
-  let store = createStore(reducers,
-  	window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__())
+	let store = null
+	if (__DEV__) {
+	  store = createStore(reducers,
+	  	window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__())
+	} else {
+		store = createStore(reducers)
+	}
+
   let persistor = persistStore(store)
 
   return { persistor, store }

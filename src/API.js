@@ -2,7 +2,7 @@ import axios from 'axios'
 import { Platform } from "react-native"
 import SQLite, { encodeName } from 'react-native-sqlcipher-2'
 import fs from 'react-native-fs'
-import {store} from './index'
+import { store } from '../index'
 
 export const Colors = {
   bgColor: '#0082c9',

@@ -1,13 +1,9 @@
 import React, {Component} from 'react'
 import {
-  AsyncStorage,
   Clipboard,
   StyleSheet,
   Dimensions,
-  ToastAndroid,
-  Platform,
   TouchableOpacity,
-  ActivityIndicator,
 } from 'react-native'
 import {Link, Redirect, withRouter} from "react-router-native"
 import {connect} from 'react-redux'
@@ -27,7 +23,6 @@ import {
   View,
   Spinner,
   Button,
-  DynamicList,
 } from 'native-base'
 import {
   setLoading,
