@@ -17,6 +17,7 @@
     "react-native-sensitive-info": "git://github.com/mcodex/react-native-sensitive-info.git#keystore",
     "react-native-sqlcipher-2": "^1.0.2",
     "react-native-svg": "^8.0.8",
+    "react-native-webview": "^2.8.0",
     "react-redux": "^5.1.0",
     "react-router-native": "^4.3.0",
     "redux": "^4.0.1",

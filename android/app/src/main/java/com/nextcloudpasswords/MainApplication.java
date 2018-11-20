@@ -3,6 +3,7 @@ package com.nextcloudpasswords;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import com.reactnativecommunity.webview.RNCWebViewPackage;
 import com.rnfs.RNFSPackage;
 import dog.craftz.sqlite_2.RNSqlite2Package;
 import br.com.classapp.RNSensitiveInfo.RNSensitiveInfoPackage;
@@ -27,6 +28,7 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new RNCWebViewPackage(),
             new RNFSPackage(),
             new RNSqlite2Package(),
             new RNSensitiveInfoPackage(),

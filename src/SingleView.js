@@ -44,6 +44,7 @@ export class SingleView extends Component<Props> {
       item: {},
       showPassword: false,
       editing: false,
+      notes: ''
     }
 
     let {match} = props
@@ -181,19 +182,23 @@ export class SingleView extends Component<Props> {
                   <Label>Password</Label>
                   <Input
                     disabled={!this.state.editing}
-                    secureTextEntry={!showPassword}
+                    secureTextEntry={!showPassword && !this.state.editing}
                     defaultValue={String(item.password)}
                     style={{width: '75%'}}
                     onChangeText={(filter) => this.updateHandler('password', filter)} />
-                  <Button transparent style={styles.copyPassButton}
+                  {!this.state.editing && <Button transparent style={styles.copyPassButton}
                     onPress={() => {this.toClipboard(item.id)}}>
                     <Icon type="FontAwesome" name="clipboard" style={styles.showPassIcon} />
-                  </Button>
-                  <Button transparent style={styles.showPassButton}>
+                  </Button>}
+                  {!this.state.editing && <Button transparent style={styles.showPassButton}>
                     <Icon active style={styles.showPassIcon}
                       type="FontAwesome" name={showPassword ? 'eye' : 'eye-slash'}
                       onPress={() => this.setState({showPassword: showPassword ? false : true})} />
-                  </Button>
+                  </Button>}
+                  {this.state.editing && <Button transparent style={styles.showPassButton}
+                    onPress={() => API.generateDefaultPassword()}>
+                    <Icon active style={styles.showPassIcon} type="MaterialIcons" name="update" />
+                  </Button>}
                 </Item>
                 <Item stackedLabel disabled={!this.state.editing} last>
                   <Label>Address</Label>
@@ -208,7 +213,7 @@ export class SingleView extends Component<Props> {
                     disabled={!this.state.editing}
                     rowSpan={5}
                     style={{width: '100%'}}
-                    defaultValue={item.notes} 
+                    defaultValue={item.notes}
                     onChangeText={(filter) => this.updateHandler('notes', filter)} />
                 </Item>
               </Form>

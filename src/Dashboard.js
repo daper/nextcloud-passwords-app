@@ -66,7 +66,7 @@ class Dashboard extends Component<Props> {
     if (!fresh) {
       this.props.setLoading(true, 'Loading sites...')
       list = await API.getList(fields)
-      if (__DEV__) console.log(list[0])
+      if (__DEV__) console.log('First list item', list[0])
       this.props.setLoading(false)
     }
 
@@ -190,11 +190,14 @@ class Dashboard extends Component<Props> {
             <Text style={{color: Colors.bgColor, marginTop: 20, ...styles.spinnerContent}}>{this.props.statusText}</Text>
           </View>  
           :
-          <List
+          <List style={{paddingBottom: 80}}
             dataArray={this.state.passwordList}
             renderRow={this.renderRow} />
         }
         </Content>
+        <Button rounded primary large style={styles.actionButton}>
+          <Icon type="FontAwesome" name="plus" style={{fontSize: 30}} />
+        </Button>
       </Container>
     )
   }
@@ -236,5 +239,14 @@ const styles = StyleSheet.create({
     flexGrow: 0,
     flexShrink: 1,
     minHeight: 25
-  }
+  },
+  actionButton: {
+    width: 60,
+    height: 60,
+    position: 'absolute',
+    bottom: 20,
+    right: 20,
+    backgroundColor: Colors.bgColor,
+    paddingLeft: 1,
+  },
 })

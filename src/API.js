@@ -157,8 +157,8 @@ export class API {
 	async fetchList() {
 		if (__DEV__) console.log('called API.fetchList')
 		try {
-			let {data, status} = await this.instance.get('/index.php/apps/passwords/api/1.0/password/list', 
-				{params: {detailLevel: 'model+folder'}})
+			let {data, status} = await this.instance.post('/index.php/apps/passwords/api/1.0/password/list', 
+				{data: {detailLevel: 'model+folder+tags+shares+revisions+share'}})
 			if (__DEV__) console.log(`passwords server answer status: ${status}`)
 			data = Object.keys(data).map((key) => data[key])
 			if (__DEV__) console.log(data[0])
@@ -368,6 +368,11 @@ export class API {
 			object.created,
 			object.updated,
 		]
+	}
+
+	async generateDefaultPassword() {
+		let {status, data} = this.instance.get('/index.php/apps/passwords/api/1.0/service/password')
+		console.log(status, data)
 	}
 }
 
