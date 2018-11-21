@@ -35,6 +35,7 @@ export class GeneratePasswordModal extends Component<Props> {
 		this.requestNewPassword = this.requestNewPassword.bind(this)
 		this.closeModal = this.closeModal.bind(this)
 		this.usePassword = this.usePassword.bind(this)
+		this.updatePassword = this.updatePassword.bind(this)
 
 		this.state = {
 			requestingNewPassword: false,
@@ -74,6 +75,10 @@ export class GeneratePasswordModal extends Component<Props> {
 		}
 	}
 
+	updatePassword(value) {
+		this.props.setPasswordModalValue(value)
+	}
+
 	render() {
 		return <Modal
 			animationType="none"
@@ -95,7 +100,8 @@ export class GeneratePasswordModal extends Component<Props> {
 					<Content padder style={styles.modalContentContent}>
 						<Item>
 							<Input placeholder='password'
-								value={this.props.passwordModalValue}/>
+								value={this.props.passwordModalValue}
+								onChangeText={this.updatePassword} />
 							{!this.state.requestingNewPassword ?
 								<Button transparent onPress={this.requestNewPassword}>
 									<Icon type="MaterialIcons" active name='sync' style={{fontSize: 40, color: 'grey'}} />

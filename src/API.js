@@ -385,7 +385,7 @@ export class API {
 	}
 
 	async setFavorite(id, enable = null) {
-		let passwordData = await this.getItem(id)
+		let passwordData = await this.fetchItem(id)
 		if (enable === null) {
 			passwordData.favorite = passwordData.favorite ? false : true
 		} else {
@@ -393,25 +393,11 @@ export class API {
 		}
 
 		try {
-			let {status, data} = await this.instance.patch('/index.php/apps/passwords/api/1.0/password/update', {
-				id: passwordData.id,
-				password: passwordData.password,
-				label: passwordData.label,
-				favorite: passwordData.favorite
-			})
+			let {status, data} = await this.instance.patch('/index.php/apps/passwords/api/1.0/password/update', passwordData)
 
 			if (status === 200) {
-				return new Promise((res, rej) => {
-					this.db.transaction((txn) => {
-						txn.executeSql('update passwords set favorite=? where id=?', [Number(passwordData.favorite), passwordData.id],
-							(txn, data) => {res(passwordData.favorite)},
-							(txn, err) => {
-								if (__DEV__) console.log(err)
-								rej(err)
-							})
-					})
-				})
-				
+				await this.updateItem(passwordData)
+				return passwordData
 			} else {
 				return new Error('Invalid API response')
 			}
@@ -436,7 +422,7 @@ export class API {
         let questions = values.map(() => '?').join(',')
         cols = cols.join(',')
 
-				return new Promise((res, rej) => {
+				return await new Promise((res, rej) => {
 					this.db.transaction((txn) => {
 						txn.executeSql(`insert into passwords(${cols}) values(${questions})`, values,
 							(txn, _) => {res(data)},
@@ -452,6 +438,20 @@ export class API {
 		} catch(err) {
 			if (__DEV__) console.log(err)
 		}
+	}
+
+	async fetchItem(id) {
+		try {
+			let {status, data} = await this.instance.post('/index.php/apps/passwords/api/1.0/password/show', {id})
+			if (status === 200) {
+				return data
+			} else {
+				return new Error('Invalid API response while retrieving password')
+			}
+		} catch(err) {
+			if (__DEV__) console.log(err)
+			return new Error('Invalid API response while retrieving password')
+		} 
 	}
 }
 

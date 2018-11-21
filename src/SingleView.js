@@ -180,8 +180,11 @@ export class SingleView extends Component<Props> {
 
   async setFavorite() {
     this.setState({favoriteUpdating: true})
-    let favorite = await API.setFavorite(this.state.item.id)
-    this.setState({item: {...this.state.item, favorite}, favoriteUpdating: false})
+    let item = await API.setFavorite(this.state.item.id)
+    if (!(item instanceof Error)) {
+      this.setState({item})
+    }
+    this.setState({favoriteUpdating: false})
   }
 
   render() {
