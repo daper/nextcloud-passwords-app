@@ -155,10 +155,10 @@ class Dashboard extends Component<Props> {
         </Body>
         <Right>
           <Button transparent onPress={() => {this.toClipboard(item.username)}} style={{right: -20}}>
-            <Icon type="FontAwesome" name="user" color='grey' style={{color: 'grey'}} />
+            <Icon type="MaterialIcons" name="person" color='grey' style={{color: 'grey'}} />
           </Button>
           <Button transparent onPress={() => {this.passwordToClipboard(item.id)}} style={{right: -20}}>
-            <Icon type="FontAwesome" name="clipboard" color='grey' style={{color: 'grey'}} />
+            <Icon type="MaterialIcons" name="content-copy" color='grey' style={{color: 'grey'}} />
           </Button>
         </Right>
       </ListItem>
@@ -173,13 +173,13 @@ class Dashboard extends Component<Props> {
             {this.state.filtering ?
               <Spinner color="black" size="small" style={{padding: 10}}/>
               :
-              <Icon type="FontAwesome" name="search" />
+              <Icon type="MaterialIcons" name="search" />
             }
             <Input placeholder="Search" defaultValue={this.props.filter} onChangeText={this.search} />
           </Item>
           <View style={{alignSelf: 'center', marginLeft: 10}}>
           <Button transparent onPress={this.refresh}>
-            <Icon name="sync" style={{color: 'white', fontSize: 32}} />
+            <Icon type="MaterialIcons" name="sync" style={{color: 'white', fontSize: 32}} />
           </Button>
           </View>
         </Header>
@@ -198,7 +198,7 @@ class Dashboard extends Component<Props> {
         {!this.props.loading && <Button rounded primary large 
             style={styles.actionButton}
             onPress={() => this.props.history.push('/create')}>
-            <Icon type="FontAwesome" name="plus" style={{fontSize: 30}} />
+            <Icon type="MaterialIcons" name="add" style={{fontSize: 40, marginLeft: 8}} />
           </Button>}
       </Container>
     )

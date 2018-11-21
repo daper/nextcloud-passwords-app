@@ -88,7 +88,7 @@ export class GeneratePasswordModal extends Component<Props> {
 						</Body>
 						<Right>
 							<Button block transparent onPress={this.closeModal}>
-								<Icon type="FontAwesome" name="times" />
+								<Icon type="MaterialIcons" name="close" />
 							</Button>
 						</Right>
 					</Header>
@@ -98,7 +98,7 @@ export class GeneratePasswordModal extends Component<Props> {
 								value={this.props.passwordModalValue}/>
 							{!this.state.requestingNewPassword ?
 								<Button transparent onPress={this.requestNewPassword}>
-									<Icon active name='sync' style={{fontSize: 40, color: 'grey'}} />
+									<Icon type="MaterialIcons" active name='sync' style={{fontSize: 40, color: 'grey'}} />
 								</Button>
 								:
 								<Spinner style={{height: 10}} color={Colors.bgColor} />

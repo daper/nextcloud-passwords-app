@@ -190,7 +190,7 @@ export class SingleView extends Component<Props> {
         <Header style={{backgroundColor: Colors.bgColor}}>
           <Left>
             <Button transparent onPress={this.goBack.bind(this)}>
-              <Icon type="FontAwesome" name="chevron-left" />
+              <Icon type="MaterialIcons" name="arrow-back" />
             </Button>
           </Left>
           <Body>
@@ -227,11 +227,11 @@ export class SingleView extends Component<Props> {
                     onChangeText={(filter) => this.updateHandler('password', filter)} />
                   {!this.state.editing && <Button transparent style={styles.copyPassButton}
                     onPress={() => {this.toClipboard(this.state.item.id)}}>
-                    <Icon type="FontAwesome" name="clipboard" style={styles.showPassIcon} />
+                    <Icon type="MaterialIcons" name="content-copy" style={styles.showPassIcon} />
                   </Button>}
                   {!this.state.editing && <Button transparent style={styles.showPassButton}>
                     <Icon active style={styles.showPassIcon}
-                      type="FontAwesome" name={this.state.showPassword ? 'eye' : 'eye-slash'}
+                      type="MaterialIcons" name={this.state.showPassword ? 'visibility' : 'visibility-off'}
                       onPress={() => this.setState({showPassword: this.state.showPassword ? false : true})} />
                   </Button>}
                   {this.state.editing && <Button transparent style={styles.showPassButton}
@@ -262,7 +262,7 @@ export class SingleView extends Component<Props> {
                 <View style={{flexDirection: 'row', marginTop: 20}}>
                   <Button block danger
                     onPress={this.delete.bind(this)}>
-                    <Icon type="FontAwesome" name="trash" style={{color: 'white'}} />
+                    <Icon type="MaterialIcons" name="delete" style={{color: 'white'}} />
                   </Button>
                   <Button block success 
                     style={{flex: 1, marginLeft: 20, marginRight: 20}}
@@ -270,7 +270,7 @@ export class SingleView extends Component<Props> {
                     <Text>Save</Text>
                   </Button>
                   <Button block dark onPress={this.stopEditing}>
-                    <Icon type="FontAwesome" name="times" />
+                    <Icon type="MaterialIcons" name="close" />
                   </Button>
                 </View>
                 :

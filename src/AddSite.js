@@ -109,7 +109,7 @@ export class AddSite extends Component<Props> {
 				{!this.props.loading && <Header style={{backgroundColor: Colors.bgColor}}>
 					<Left>
 						<Button transparent onPress={this.goBack}>
-							<Icon type="FontAwesome" name="chevron-left" />
+							<Icon type="MaterialIcons" name="arrow-back" />
 						</Button>
 					</Left>
 					<Body>
@@ -138,7 +138,7 @@ export class AddSite extends Component<Props> {
 									onChangeText={(filter) => this.updateHandler('password', filter)} />
 								<Button transparent style={styles.copyPassButton}>
 									<Icon active style={styles.showPassIcon}
-										type="FontAwesome" name={this.state.showPassword ? 'eye' : 'eye-slash'}
+										type="MaterialIcons" name={this.state.showPassword ? 'visibility' : 'visibility-off'}
 										onPress={() => this.setState({showPassword: this.state.showPassword ? false : true})} />
 								</Button>
 								<Button transparent style={styles.showPassButton}
