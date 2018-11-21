@@ -27,10 +27,13 @@ import {
   Right,
   Toast,
   ActionSheet,
+  Footer,
+  FooterTab,
 } from 'native-base'
 import {connect} from 'react-redux'
 import API, {Colors} from './API'
-import {pushRoute, setLoading} from './redux'
+import {pushRoute, setLoading, togglePasswordModal} from './redux'
+import GeneratePasswordModal from './GeneratePasswordModal'
 
 type Props = {}
 export class SingleView extends Component<Props> {
@@ -38,13 +41,18 @@ export class SingleView extends Component<Props> {
     super(props)
 
     this.updateHandler = this.updateHandler.bind(this)
+    this.stopEditing = this.stopEditing.bind(this)
+    this.startEditing = this.startEditing.bind(this)
+    this.setFavorite = this.setFavorite.bind(this)
 
     this.state = {
       untouchedItem: {},
       item: {},
       showPassword: false,
       editing: false,
-      notes: ''
+      notes: '',
+      showPasswordModal: false,
+      favoriteUpdating: false,
     }
 
     let {match} = props
@@ -67,7 +75,7 @@ export class SingleView extends Component<Props> {
     
     let item = await API.getItem(id)
     if (__DEV__) console.log(item)
-    this.setState({item, untouchedItem: item})
+    this.setState({item, untouchedItem: {...item}})
     
     this.props.setLoading(false)
   }
@@ -137,17 +145,46 @@ export class SingleView extends Component<Props> {
       else if (item.status === 1) color = 'orange'
       else if (item.status === 2) color = 'red'
 
-      return (
-        <Right>
-          <Icon type="FontAwesome" name="shield" style={{color, marginRight: 30}} />
-          <Icon name="star" style={{color: 'white', fontSize: 30}} active={Boolean(item.favorite)} />
+      return <Right>
+          <Button transparent>
+            <Icon type="FontAwesome" name="shield" style={{color}} />
+          </Button>
+          {this.state.favoriteUpdating ?
+            <Button transparent>
+              <Spinner color="white" />
+            </Button>
+            :
+            <Button transparent onPress={this.setFavorite}>
+              <Icon
+                type="MaterialIcons"
+                name={item.favorite ? 'star' : 'star-border'}
+                style={{color: item.favorite ? 'yellow' : 'white', fontSize: 30}}
+                active={Boolean(item.favorite)}
+              />
+            </Button>
+          }
         </Right>
-      )
     }
   }
 
+  stopEditing() {
+    this.setState({
+      editing: false,
+      item: {...this.state.untouchedItem},
+    })
+  }
+
+  startEditing() {
+    this.setState({editing: true})
+  }
+
+  async setFavorite() {
+    this.setState({favoriteUpdating: true})
+    let favorite = await API.setFavorite(this.state.item.id)
+    this.setState({item: {...this.state.item, favorite}, favoriteUpdating: false})
+  }
+
   render() {
-    let {item, showPassword} = this.state
     return (
       <Container>
         <Header style={{backgroundColor: Colors.bgColor}}>
@@ -158,7 +195,7 @@ export class SingleView extends Component<Props> {
           </Left>
           <Body>
             <Title>Site View</Title>
-            <Subtitle numberOfLines={1}>{item.label}</Subtitle>
+            <Subtitle numberOfLines={1}>{this.state.item.label}</Subtitle>
           </Body>
           {this.renderIcons()}
         </Header>
@@ -175,28 +212,30 @@ export class SingleView extends Component<Props> {
                   <Label>Username</Label>
                   <Input 
                     disabled={!this.state.editing}
-                    defaultValue={String(item.username)}
+                    defaultValue={String(this.state.item.username)}
+                    value={this.state.item.username}
                     onChangeText={(filter) => this.updateHandler('username', filter)} />
                 </Item>
                 <Item stackedLabel disabled={!this.state.editing} last>
                   <Label>Password</Label>
                   <Input
                     disabled={!this.state.editing}
-                    secureTextEntry={!showPassword && !this.state.editing}
-                    defaultValue={String(item.password)}
+                    secureTextEntry={!this.state.showPassword && !this.state.editing}
+                    defaultValue={String(this.state.item.password)}
+                    value={this.state.item.password}
                     style={{width: '75%'}}
                     onChangeText={(filter) => this.updateHandler('password', filter)} />
                   {!this.state.editing && <Button transparent style={styles.copyPassButton}
-                    onPress={() => {this.toClipboard(item.id)}}>
+                    onPress={() => {this.toClipboard(this.state.item.id)}}>
                     <Icon type="FontAwesome" name="clipboard" style={styles.showPassIcon} />
                   </Button>}
                   {!this.state.editing && <Button transparent style={styles.showPassButton}>
                     <Icon active style={styles.showPassIcon}
-                      type="FontAwesome" name={showPassword ? 'eye' : 'eye-slash'}
-                      onPress={() => this.setState({showPassword: showPassword ? false : true})} />
+                      type="FontAwesome" name={this.state.showPassword ? 'eye' : 'eye-slash'}
+                      onPress={() => this.setState({showPassword: this.state.showPassword ? false : true})} />
                   </Button>}
                   {this.state.editing && <Button transparent style={styles.showPassButton}
-                    onPress={() => API.generateDefaultPassword()}>
+                    onPress={() => this.props.togglePasswordModal(true)}>
                     <Icon active style={styles.showPassIcon} type="MaterialIcons" name="update" />
                   </Button>}
                 </Item>
@@ -204,7 +243,8 @@ export class SingleView extends Component<Props> {
                   <Label>Address</Label>
                   <Input 
                     disabled={!this.state.editing}
-                    defaultValue={item.url}
+                    defaultValue={this.state.item.url}
+                    value={this.state.item.url}
                     onChangeText={(filter) => this.updateHandler('url', filter)} />
                 </Item>
                 <Item stackedLabel disabled={!this.state.editing} last>
@@ -213,36 +253,38 @@ export class SingleView extends Component<Props> {
                     disabled={!this.state.editing}
                     rowSpan={5}
                     style={{width: '100%'}}
-                    defaultValue={item.notes}
+                    defaultValue={this.state.item.notes}
+                    value={this.state.item.notes}
                     onChangeText={(filter) => this.updateHandler('notes', filter)} />
                 </Item>
               </Form>
-                {this.state.editing ?
-                  <View style={{flexDirection: 'row', marginTop: 20}}>
-                    <Button block danger
-                      onPress={this.delete.bind(this)}>
-                      <Icon type="FontAwesome" name="trash" style={{color: 'white'}} />
-                    </Button>
-                    <Button block success 
-                      style={{flex: 1, marginLeft: 20, marginRight: 20}}
-                      onPress={this.save.bind(this)}>
-                      <Text>Save</Text>
-                    </Button>
-                    <Button block dark onPress={() => this.setState({editing: false})}>
-                      <Icon type="FontAwesome" name="times" />
-                    </Button>
-                  </View>
-                  :
-                  <View style={{flexDirection: 'row', marginTop: 20}}>
-                    <Button bordered
-                      style={{flex: 1, borderColor: Colors.bgColor, justifyContent: 'center'}}
-                      onPress={() => this.setState({editing: true})}>
-                      <Text style={{color: Colors.bgColor}}>Edit</Text>
-                    </Button>
-                  </View>
-                }
+              {this.state.editing ?
+                <View style={{flexDirection: 'row', marginTop: 20}}>
+                  <Button block danger
+                    onPress={this.delete.bind(this)}>
+                    <Icon type="FontAwesome" name="trash" style={{color: 'white'}} />
+                  </Button>
+                  <Button block success 
+                    style={{flex: 1, marginLeft: 20, marginRight: 20}}
+                    onPress={this.save.bind(this)}>
+                    <Text>Save</Text>
+                  </Button>
+                  <Button block dark onPress={this.stopEditing}>
+                    <Icon type="FontAwesome" name="times" />
+                  </Button>
+                </View>
+                :
+                <View style={{flexDirection: 'row', marginTop: 20}}>
+                  <Button bordered
+                    style={{flex: 1, borderColor: Colors.bgColor, justifyContent: 'center'}}
+                    onPress={this.startEditing}>
+                    <Text style={{color: Colors.bgColor}}>Edit</Text>
+                  </Button>
+                </View>
+              }
             </View>
           }
+          <GeneratePasswordModal onSelectPassword={(value) => {this.updateHandler('password', value)}}/>
         </Content>
       </Container>
     )
@@ -253,6 +295,7 @@ const mapStateToProps = (state, ownProps) => {
   return {
     loading: state.app.loading,
     statusText: state.app.statusText,
+    passwordModalValue: state.app.passwordModalValue,
   }
 }
  
@@ -260,11 +303,11 @@ const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     pushRoute: (...args) => { dispatch(pushRoute.apply(ownProps, args)) },
     setLoading: (...args) => { dispatch(setLoading.apply(ownProps, args)) },
+    togglePasswordModal: (...args) => { dispatch(togglePasswordModal.apply(ownProps, args)) },
   }
 }
  
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(SingleView))
-
 
 const styles = StyleSheet.create({
   showPassButton: {

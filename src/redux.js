@@ -14,6 +14,8 @@ export const ActionTypes = {
 	SET_LAST_LOGIN: 'SET_LAST_LOGIN',
 	PUSH_ROUTE: 'PUSH_ROUTE',
 	SET_PASSWORD_FILTER: 'SET_PASSWORD_FILTER',
+	TOGGLE_PASSWORD_MODAL: 'TOGGLE_PASSWORD_MODAL',
+	SET_PASSWORD_MODAL_VALUE: 'SET_PASSWORD_MODAL_VALUE',
 }
 
 // Actions
@@ -73,6 +75,20 @@ export function setPasswordFilter(filter) {
 	}
 }
 
+export function togglePasswordModal(state) {
+	return {
+		type: ActionTypes.TOGGLE_PASSWORD_MODAL,
+		state
+	}
+}
+
+export function setPasswordModalValue(value) {
+	return {
+		type: ActionTypes.SET_PASSWORD_MODAL_VALUE,
+		value
+	}
+}
+
 let defaultState = {
 	loading: false,
 	statusText: 'Contacting Server...',
@@ -86,6 +102,8 @@ let defaultState = {
 		password: '',
 	},
 	filter: '',
+	passwordModalVisible: false,
+	passwordModalValue: '',
 }
 
 // Reducers
@@ -121,6 +139,17 @@ export function appReducer (state = defaultState, action) {
 
 		case ActionTypes.SET_PASSWORD_FILTER:
 			return {...state, filter: action.filter}
+
+		case ActionTypes.TOGGLE_PASSWORD_MODAL:
+			value = String(state.passwordModalValue)
+			if (action.state === true) {
+				value = ''
+			}
+
+			return {...state, passwordModalVisible: action.state, passwordModalValue: value}
+
+		case ActionTypes.SET_PASSWORD_MODAL_VALUE:
+			return {...state, passwordModalValue: action.value}
 
 		default:
 			return state;

@@ -195,9 +195,11 @@ class Dashboard extends Component<Props> {
             renderRow={this.renderRow} />
         }
         </Content>
-        <Button rounded primary large style={styles.actionButton}>
-          <Icon type="FontAwesome" name="plus" style={{fontSize: 30}} />
-        </Button>
+        {!this.props.loading && <Button rounded primary large 
+            style={styles.actionButton}
+            onPress={() => this.props.history.push('/create')}>
+            <Icon type="FontAwesome" name="plus" style={{fontSize: 30}} />
+          </Button>}
       </Container>
     )
   }

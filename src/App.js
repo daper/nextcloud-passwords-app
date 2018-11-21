@@ -6,6 +6,7 @@ import {connect} from 'react-redux'
 import Login from './Login'
 import Dashboard from './Dashboard'
 import SingleView from './SingleView'
+import AddSite from './AddSite'
 import API, {Colors} from './API'
 
 type Props = {}
@@ -48,6 +49,7 @@ export class App extends Component<Props> {
             <Route exact path="/login" component={Login} />
             <Route exact path="/dashboard" component={Dashboard} />
             <Route exact path="/view/:id" component={SingleView} />
+            <Route exact path="/create" component={AddSite} />
           </Switch>
         </NativeRouter>
       </Root>

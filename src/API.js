@@ -370,9 +370,88 @@ export class API {
 		]
 	}
 
-	async generateDefaultPassword() {
-		let {status, data} = this.instance.get('/index.php/apps/passwords/api/1.0/service/password')
-		console.log(status, data)
+	async generateDefaultPassword(settings = null) {
+		try {
+			if (settings === null) {
+				let {status, data} = await this.instance.get('/index.php/apps/passwords/api/1.0/service/password')
+				return data	
+			} else {
+				let {status, data} = await this.instance.post('/index.php/apps/passwords/api/1.0/service/password', {...settings})
+				return data
+			}
+		} catch(err) {
+			return new Error('Error while asking for new password')
+		} 
+	}
+
+	async setFavorite(id, enable = null) {
+		let passwordData = await this.getItem(id)
+		if (enable === null) {
+			passwordData.favorite = passwordData.favorite ? false : true
+		} else {
+			passwordData.favorite = enable
+		}
+
+		try {
+			let {status, data} = await this.instance.patch('/index.php/apps/passwords/api/1.0/password/update', {
+				id: passwordData.id,
+				password: passwordData.password,
+				label: passwordData.label,
+				favorite: passwordData.favorite
+			})
+
+			if (status === 200) {
+				return new Promise((res, rej) => {
+					this.db.transaction((txn) => {
+						txn.executeSql('update passwords set favorite=? where id=?', [Number(passwordData.favorite), passwordData.id],
+							(txn, data) => {res(passwordData.favorite)},
+							(txn, err) => {
+								if (__DEV__) console.log(err)
+								rej(err)
+							})
+					})
+				})
+				
+			} else {
+				return new Error('Invalid API response')
+			}
+		} catch(err) {
+			if (__DEV__) console.log(err)
+			return err
+		}
+	}
+
+	async createSite(item) {
+		if (!item.password || !item.label) {
+			return new Error('Invalid item to create')
+		}
+
+		try {
+			let {status, data} = await this.instance.post('/index.php/apps/passwords/api/1.0/password/create', item)
+
+			if (status === 201) {
+        item.id = data.id
+				let cols = Object.keys(item).filter((col) => [...PASSWORD_FIELDS, 'password'].indexOf(col) !== -1)
+				let values = cols.map((key) => item[key])
+        let questions = values.map(() => '?').join(',')
+        cols = cols.join(',')
+
+				return new Promise((res, rej) => {
+					this.db.transaction((txn) => {
+						txn.executeSql(`insert into passwords(${cols}) values(${questions})`, values,
+							(txn, _) => {res(data)},
+							(txn, err) => {
+								if (__DEV__) console.log(err)
+								rej(err)
+							})
+					})
+				})
+			} else {
+        return new Error('Invalid API response')
+      }
+		} catch(err) {
+			if (__DEV__) console.log(err)
+		}
 	}
 }
 
