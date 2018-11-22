@@ -10,4 +10,6 @@ Nextcloud Passwords React-based app for Android and IOS.
   <img src="https://github.com/daper/nextcloud-passwords-app/raw/master/assets/login-view.jpg" alt="Login View" width="250" />
   <img src="https://github.com/daper/nextcloud-passwords-app/raw/master/assets/list-view.jpg" alt="List View" width="250" />
   <img src="https://github.com/daper/nextcloud-passwords-app/raw/master/assets/site-view.jpg" alt="Site View" width="250" />
+  <img src="https://github.com/daper/nextcloud-passwords-app/raw/master/assets/add-view.jpg" alt="Add View" width="250" />
+  <img src="https://github.com/daper/nextcloud-passwords-app/raw/master/assets/generate-view.jpg" alt="Generate View" width="250" />
 </div>
