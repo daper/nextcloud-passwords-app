@@ -4,6 +4,7 @@ import {
   StyleSheet,
   Dimensions,
   TouchableOpacity,
+  BackHandler,
 } from 'react-native'
 import {Link, Redirect, withRouter} from "react-router-native"
 import {connect} from 'react-redux'
@@ -23,6 +24,7 @@ import {
   View,
   Spinner,
   Button,
+  Left,
 } from 'native-base'
 import {
   setLoading,
@@ -31,8 +33,15 @@ import {
   setLastLogin,
   pushRoute,
   setPasswordFilter,
+  setCurrentFolder,
+  touchLastLogin,
 } from './redux'
-import API, {Colors} from './API'
+import API, {
+  Colors,
+  Passwords,
+  Folders,
+  ROOT_FOLDER
+} from './API'
 
 type Props = {}
 class Dashboard extends Component<Props> {
@@ -44,10 +53,12 @@ class Dashboard extends Component<Props> {
     this.search = this.search.bind(this)
     this.refresh = this.refresh.bind(this)
     this.renderRow = this.renderRow.bind(this)
+    this.changeFolder = this.changeFolder.bind(this)
 
     this.state = {
       passwordList: [],
       filtering: false,
+      folder: {}
     }
 
     let {user, password} = this.props.settings
@@ -59,52 +70,112 @@ class Dashboard extends Component<Props> {
   componentWillMount() {
     this.props.pushRoute(this.props.location.pathname)
   }
-
-  async fetchData(fresh = false) {
-    let list = []
-    let fields = ['id', 'label', 'url', 'username']
-    if (!fresh) {
-      this.props.setLoading(true, 'Loading sites...')
-      list = await API.getList(fields)
-      if (__DEV__) console.log('First list item', list[0])
-      this.props.setLoading(false)
-    }
-
-    if (fresh || list.length === 0) {
-      this.props.setLoading(true, 'Pulling sites...')
-      let {status, data, error} = await API.fetchList()
-
-      if (status === 200) {
-        list = await API.getList(fields)
-        this.setState({
-          passwordList: list
-        })
-      } else if(status === 401) {
-        await API.dropDB()
-        this.returnToLogin()
-      } else {
-        // Implement some kind of retry?
-        // catch more errors
+  
+  async componentDidMount() {
+    this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
+      if (this.props.currentFolder !== ROOT_FOLDER) {
+        this.changeFolder(this.state.folder.parent)
       }
 
-      this.props.setLoading(false, 'Loading...')
-    } else {
-      this.setState({
-        passwordList: list
-      })
-    }    
+      return true
+    })
+
+    await this.changeFolder(this.props.currentFolder)
   }
 
-  async componentDidMount() {
-    if (this.props.filter.length) {
-      await this.search(this.props.filter)
-    } else if (this.state.passwordList.length === 0) {
-      await this.fetchData()
+  componentWillUnmount() {
+    this.backHandler.remove()
+  }
+
+  async fetchPasswords() {
+    this.props.setLoading(true, 'Pulling sites...')
+    let {status, data, error} = await Passwords.fetchAll()
+
+    if(status === 401) {
+      await API.dropDB()
+      this.returnToLogin()
+    } else if (status !== 200) {
+      return false
     }
+    
+    this.props.setLoading(false, 'Loading...')
+    return true
   }
 
-  refresh() {
-    this.fetchData(true)
+  async fetchFolders() {
+    this.props.setLoading(true, 'Pulling folders...')
+    let {status, data, error} = await Folders.fetchAll()
+
+    if(status === 401) {
+      await API.dropDB()
+      this.returnToLogin()
+    } else if (status !== 200) {
+      return false
+    }
+    
+    this.props.setLoading(false, 'Loading...')
+    return true
+  }
+
+  async fetchData() {
+    await this.fetchPasswords()
+    await this.fetchFolders()
+    this.props.touchLastLogin()
+  }
+
+  async getPasswords() {
+    this.props.setLoading(true, 'Loading sites...')
+    let passwords = await Passwords.getFromFolder(this.props.currentFolder, 
+                                          ['id', 'label', 'url', 'username'])
+    return passwords.map((item) => {
+      item.type = 'site'
+      return item
+    })
+  }
+
+  async searchPasswords() {
+    this.setState({filtering: true})
+    let rows = await Passwords.search(this.props.filter, ['label', 'uri'], ['id', 'label', 'uri', 'username'])
+    rows = rows.map((item) => {
+      item.type = 'site'
+      return item
+    })
+
+    await this.setState({
+      passwordList: rows,
+      filtering: false,
+    })
+
+    return rows
+  }
+
+  async getFolders() {
+    this.props.setLoading(true, 'Loading folders...')
+    let folders = await Folders.getChildren(this.props.currentFolder,
+                                            ['id', 'label', 'parent'])
+    return folders.map((item) => {
+      item.type = 'folder'
+      return item
+    })    
+  }
+
+  async getData() {
+    let passwords = []
+    let folders = []
+    if (this.props.filter.length > 0) {
+      passwords = await this.searchPasswords()
+    } else {
+      passwords = await this.getPasswords()
+      folders = await this.getFolders()
+    }
+
+    await this.setState({passwordList: [...folders, ...passwords]})
+    this.props.setLoading(false)
+  }
+
+  async refresh() {
+    await this.fetchData()
+    await this.getData()
   }
 
   returnToLogin() {
@@ -117,15 +188,8 @@ class Dashboard extends Component<Props> {
   }
 
   async search(filter) {
-    this.props.setPasswordFilter(filter)
-
-    this.setState({filtering: true})
-    let rows = await API.search(filter, ['label', 'uri'], ['id', 'label', 'uri', 'username'])
-
-    this.setState({
-      passwordList: rows,
-      filtering: false,
-    })
+    await this.props.setPasswordFilter(filter)
+    await this.getData()
   }
 
   async toClipboard(string) {
@@ -139,30 +203,72 @@ class Dashboard extends Component<Props> {
   }
 
   async passwordToClipboard(id) {
-    let pass = await API.getPassword(id)
+    let pass = await Passwords.getPassword(id)
     this.toClipboard(pass)
   }
 
   renderRow(item) {
-    return (
-      <ListItem noIndent icon last>
-        <Body>
-          <TouchableOpacity onPress={() => {this.props.history.push(`/view/${item.id}`)}}>
-            <Text numberOfLines={1}>
-              {item.label}
-            </Text>
-          </TouchableOpacity>
-        </Body>
-        <Right>
-          <Button transparent onPress={() => {this.toClipboard(item.username)}} style={{right: -20}}>
-            <Icon type="MaterialIcons" name="person" color='grey' style={{color: 'grey'}} />
-          </Button>
-          <Button transparent onPress={() => {this.passwordToClipboard(item.id)}} style={{right: -20}}>
-            <Icon type="MaterialIcons" name="content-copy" color='grey' style={{color: 'grey'}} />
-          </Button>
-        </Right>
-      </ListItem>
-    )
+    if (item.type === 'site') {
+      return (
+        <ListItem noIndent icon last>
+          <Body>
+            <TouchableOpacity onPress={() => {this.props.history.push(`/view/${item.id}`)}}>
+              <Text numberOfLines={1}>
+                {item.label}
+              </Text>
+            </TouchableOpacity>
+          </Body>
+          <Right>
+            <Button transparent onPress={() => {this.toClipboard(item.username)}} style={{right: -20}}>
+              <Icon type="MaterialIcons" name="person" color='grey' style={{color: 'grey'}} />
+            </Button>
+            <Button transparent onPress={() => {this.passwordToClipboard(item.id)}} style={{right: -20}}>
+              <Icon type="MaterialIcons" name="content-copy" color='grey' style={{color: 'grey'}} />
+            </Button>
+          </Right>
+        </ListItem>
+      )
+    } else if (item.type === 'folder') {
+      return (
+        <ListItem noIndent icon last>
+          <Left>
+            <Button transparent onPress={() => {this.changeFolder(item.id)}}>
+              <Icon type="MaterialIcons" name="folder" style={{color: "grey", fontSize: 26}} />
+            </Button>
+          </Left>
+          <Body>
+            <TouchableOpacity onPress={() => {this.changeFolder(item.id)}}>
+              <Text numberOfLines={1}>{item.label}</Text>
+            </TouchableOpacity>
+          </Body>
+        </ListItem>
+      )
+    } else {
+      if (__DEV__) console.log('Unrendered list item', item)
+      return null
+    }
+  }
+
+  async changeFolder(id) {
+    this.props.setCurrentFolder(id)
+    if (__DEV__) console.log('changeFolder', id)
+
+    if (id === ROOT_FOLDER) {
+      await this.setState({folder: {
+        id,
+        label: '/',
+        parent: ROOT_FOLDER,
+      }})
+    } else {
+      let folder = await Folders.getItem(id)
+      await this.setState({folder})
+    }
+
+    if (this.props.lastLogin === 0) {
+      await this.fetchData()
+    }
+    
+    this.getData()
   }
 
   render() {
@@ -184,6 +290,17 @@ class Dashboard extends Component<Props> {
           </View>
         </Header>
         <Content padder>
+          {this.props.currentFolder !== ROOT_FOLDER && 
+            <View style={{borderBottomWidth: 1, flexDirection: 'row'}}>
+              <Button transparent
+                styles={{flex: 1}}
+                onPress={() => this.changeFolder(this.state.folder.parent)}>
+                <Icon type="MaterialIcons" name="arrow-back" />
+              </Button>
+              <Button disabled transparent styles={{flex: 1}}>
+                <Text>{this.state.folder.label}</Text>
+              </Button>
+            </View>}
         {this.props.loading ? 
           <View style={styles.spinnerView}>
             <Spinner style={styles.spinnerContent} color={Colors.bgColor} />
@@ -211,6 +328,8 @@ const mapStateToProps = (state, ownProps) => {
       statusText: state.app.statusText,
       settings: state.app.settings,
       filter: state.app.filter,
+      currentFolder: state.app.currentFolder,
+      lastLogin: state.app.lastLogin,
   }
 }
  
@@ -222,6 +341,8 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     setLastLogin: (...args) => { dispatch(setLastLogin.apply(ownProps, args)) },
     pushRoute: (...args) => { dispatch(pushRoute.apply(ownProps, args)) },
     setPasswordFilter: (...args) => { dispatch(setPasswordFilter.apply(ownProps, args)) },
+    setCurrentFolder: (...args) => { dispatch(setCurrentFolder.apply(ownProps, args)) },
+    touchLastLogin: (...args) => { dispatch(touchLastLogin.apply(ownProps, args)) },
   }
 }
  

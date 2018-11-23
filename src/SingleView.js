@@ -31,7 +31,7 @@ import {
   FooterTab,
 } from 'native-base'
 import {connect} from 'react-redux'
-import API, {Colors} from './API'
+import API, {Colors, Passwords} from './API'
 import {pushRoute, setLoading, togglePasswordModal} from './redux'
 import GeneratePasswordModal from './GeneratePasswordModal'
 
@@ -73,7 +73,7 @@ export class SingleView extends Component<Props> {
 
     this.props.setLoading(true, 'Loading site...')
     
-    let item = await API.getItem(id)
+    let item = await Passwords.getItem(id)
     if (__DEV__) console.log(item)
     this.setState({item, untouchedItem: {...item}})
     
@@ -88,7 +88,7 @@ export class SingleView extends Component<Props> {
     try {
       this.props.setLoading(true, 'Saving...')
       let {id, label, username, password, url, notes} = this.state.item
-      await API.updateItem({id, label, username, password, url, notes})
+      await Passwords.updateItem({id, label, username, password, url, notes})
     } catch (err) {
       if (__DEV__) console.log('save', err)
     }
@@ -104,7 +104,7 @@ export class SingleView extends Component<Props> {
     },
     (buttonIndex) => {
       if (buttonIndex === 0) {
-        API.deleteItem(this.state.item.id)
+        Passwords.deleteItem(this.state.item.id)
           .then(() => this.goBack())
           .catch((err) => {
             if (__DEV__) console.log('err', err)
@@ -124,7 +124,7 @@ export class SingleView extends Component<Props> {
   }
 
   async toClipboard(id) {
-    let pass = await API.getPassword(id)
+    let pass = await Passwords.getPassword(id)
 
     Clipboard.setString(pass)
 
@@ -180,7 +180,7 @@ export class SingleView extends Component<Props> {
 
   async setFavorite() {
     this.setState({favoriteUpdating: true})
-    let item = await API.setFavorite(this.state.item.id)
+    let item = await Passwords.setFavorite(this.state.item.id)
     if (!(item instanceof Error)) {
       this.setState({item})
     }

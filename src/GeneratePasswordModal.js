@@ -24,7 +24,7 @@ import {
 	CheckBox,
 } from 'native-base'
 import {connect} from 'react-redux'
-import API, {Colors} from './API'
+import API, {Colors, Passwords} from './API'
 import {togglePasswordModal, setPasswordModalValue} from './redux'
 
 type Props = {}
@@ -48,7 +48,7 @@ export class GeneratePasswordModal extends Component<Props> {
 	async requestNewPassword() {
 		this.setState({requestingNewPassword: true})
 
-		let data = await API.generateDefaultPassword({
+		let data = await Passwords.generateDefaultPassword({
 			numbers: this.state.enableNumbers,
 			special: this.state.enableSpecial,
 			strength: this.state.strength,

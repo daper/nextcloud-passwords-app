@@ -127,7 +127,7 @@ class Login extends Component<Props> {
 
         API.init(settings)
         API.openDB()
-          .then(() => this.props.touchLastLogin())
+          .then(() => this.props.history.push('/dashboard'))
       }
       
       return false

@@ -16,6 +16,7 @@ export const ActionTypes = {
 	SET_PASSWORD_FILTER: 'SET_PASSWORD_FILTER',
 	TOGGLE_PASSWORD_MODAL: 'TOGGLE_PASSWORD_MODAL',
 	SET_PASSWORD_MODAL_VALUE: 'SET_PASSWORD_MODAL_VALUE',
+	SET_CURRENT_FOLDER: 'SET_CURRENT_FOLDER',
 }
 
 // Actions
@@ -89,6 +90,13 @@ export function setPasswordModalValue(value) {
 	}
 }
 
+export function setCurrentFolder(value) {
+	return {
+		type: ActionTypes.SET_CURRENT_FOLDER,
+		value
+	}
+}
+
 let defaultState = {
 	loading: false,
 	statusText: 'Contacting Server...',
@@ -104,6 +112,7 @@ let defaultState = {
 	filter: '',
 	passwordModalVisible: false,
 	passwordModalValue: '',
+	currentFolder: '00000000-0000-0000-0000-000000000000',
 }
 
 // Reducers
@@ -150,6 +159,9 @@ export function appReducer (state = defaultState, action) {
 
 		case ActionTypes.SET_PASSWORD_MODAL_VALUE:
 			return {...state, passwordModalValue: action.value}
+
+		case ActionTypes.SET_CURRENT_FOLDER:
+			return {...state, currentFolder: action.value}
 
 		default:
 			return state;
