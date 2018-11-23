@@ -53,7 +53,7 @@ export class Folders {
         hidden integer,
         trashed integer,
         favorite integer
-    	)`)
+      )`)
   }
 
   saveList(list) {
