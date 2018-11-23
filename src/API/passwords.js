@@ -255,7 +255,8 @@ export class Passwords {
   }
 
   async getPassword(id) {
-    return await this._executeSql(`select password from passwords where id=?`, [id])
+    let {rows} = await this._executeSql(`select password from passwords where id=?`, [id])
+    return rows._array[0].password
   }
 
   async generateDefaultPassword(settings = null) {
