@@ -5,6 +5,7 @@ import {
   Dimensions,
   TouchableOpacity,
   BackHandler,
+  FlatList,
 } from 'react-native'
 import {Link, Redirect, withRouter} from "react-router-native"
 import {connect} from 'react-redux'
@@ -54,7 +55,9 @@ class Dashboard extends Component<Props> {
     this.refresh = this.refresh.bind(this)
     this.renderRow = this.renderRow.bind(this)
     this.changeFolder = this.changeFolder.bind(this)
+    this.getData = this.getData.bind(this)
 
+    this.searchTimeout = null
     this.state = {
       passwordList: [],
       filtering: false,
@@ -205,7 +208,7 @@ class Dashboard extends Component<Props> {
     this.toClipboard(pass)
   }
 
-  renderRow(item) {
+  renderRow({item}) {
     if (item.type === 'site') {
       return (
         <ListItem noIndent icon last>
@@ -305,9 +308,10 @@ class Dashboard extends Component<Props> {
             <Text style={{color: Colors.bgColor, marginTop: 20, ...styles.spinnerContent}}>{this.props.statusText}</Text>
           </View>  
           :
-          <List style={{paddingBottom: 80}}
-            dataArray={this.state.passwordList}
-            renderRow={this.renderRow} />
+          <FlatList style={{paddingBottom: 80}}
+            data={this.state.passwordList}
+            keyExtractor={(item) => item.id}
+            renderItem={this.renderRow} />
         }
         </Content>
         {!this.props.loading && <Button rounded primary large 
