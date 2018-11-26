@@ -75,6 +75,12 @@ export class SingleView extends Component<Props> {
     
     let item = await Passwords.getItem(id)
     if (__DEV__) console.log(item)
+
+    item.notes = String(item.notes)
+    item.url = String(item.url)
+    item.password = String(item.password)
+    item.username = String(item.username)
+
     this.setState({item, untouchedItem: {...item}})
     
     this.props.setLoading(false)
@@ -215,7 +221,7 @@ export class SingleView extends Component<Props> {
                   <Label>Username</Label>
                   <Input 
                     disabled={!this.state.editing}
-                    defaultValue={String(this.state.item.username)}
+                    defaultValue={this.state.item.username}
                     value={this.state.item.username}
                     onChangeText={(filter) => this.updateHandler('username', filter)} />
                 </Item>
@@ -224,7 +230,7 @@ export class SingleView extends Component<Props> {
                   <Input
                     disabled={!this.state.editing}
                     secureTextEntry={!this.state.showPassword && !this.state.editing}
-                    defaultValue={String(this.state.item.password)}
+                    defaultValue={this.state.item.password}
                     value={this.state.item.password}
                     style={{width: '75%'}}
                     onChangeText={(filter) => this.updateHandler('password', filter)} />

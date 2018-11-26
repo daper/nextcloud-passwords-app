@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import {View} from 'react-native'
 import {Root} from 'native-base'
-import { NativeRouter, Route, Link, Redirect, Switch } from "react-router-native"
+import {NativeRouter, Route, Link, Redirect, Switch} from "react-router-native"
 import {connect} from 'react-redux'
 import Login from './Login'
 import Dashboard from './Dashboard'

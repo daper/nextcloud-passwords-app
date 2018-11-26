@@ -208,6 +208,8 @@ export class Passwords {
 
   async updateItem(item) {
     try {
+      let currentItem = await this.fetchItem(item.id)
+      item = {...currentItem, ...item}
       await this.http.patch('/api/1.0/password/update', '', {params:{...item}})
       
       let cols = Object.keys(item).filter((col) => [...PASSWORD_FIELDS, 'password'].indexOf(col) !== -1)

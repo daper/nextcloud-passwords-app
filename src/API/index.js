@@ -88,7 +88,7 @@ export class API {
     try {
       let {data, status} = await axios.get('/ocs/v1.php/cloud/capabilities', {
         baseURL: `${this.credentials.server}`,
-        timeout: 2 * 60 * 1000,
+        timeout: 10 * 1000,
         headers: {'OCS-APIRequest': 'true'},
         rejectUnauthorized: false,
         auth: {
@@ -103,7 +103,7 @@ export class API {
     } catch(err) {
       return {
         data: {},
-        status: err.response.status,
+        status: (err.response || {}).status,
         error: err,
       }
     }

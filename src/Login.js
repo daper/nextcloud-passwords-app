@@ -83,10 +83,20 @@ class Login extends Component<Props> {
   async validateServer() {
     this.props.setLoading(true)
 
+    if (!/^https:\/\//.test(this.props.settings.server)) {
+      await this.props.setSettings({...this.props.settings, server: `https://${this.props.settings.server}`})
+    }
+
+    if (/^http:\/\//.test(this.props.settings.server)) {
+      let server = this.props.settings.server.replace('http://', '')
+      await this.props.setSettings({...this.props.settings, server: `https://${server}`})
+    }
+
     API.init(this.props.settings)
     let {error, status, data} = await API.validateServer()
     if (error) {
       this.props.setLoading(true, error.message)
+      this.props.setSettings({...this.props.settings, server: ''})
       
       setTimeout(() => {
         this.props.setLoading(false, 'Contacting Server...')

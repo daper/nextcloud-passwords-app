@@ -94,10 +94,11 @@ class Dashboard extends Component<Props> {
     if(status === 401) {
       await API.dropDB()
       this.returnToLogin()
+      return false
     } else if (status !== 200) {
       return false
     }
-    
+
     this.props.setLoading(false, 'Loading...')
     return true
   }
@@ -127,19 +128,13 @@ class Dashboard extends Component<Props> {
     this.props.setLoading(true, 'Loading sites...')
     let passwords = await Passwords.getFromFolder(this.props.currentFolder, 
                                           ['id', 'label', 'url', 'username'])
-    return passwords.map((item) => {
-      item.type = 'site'
-      return item
-    })
+    return passwords.map((item) => {return {...item, type: 'site'}})
   }
 
   async searchPasswords() {
     this.setState({filtering: true})
     let rows = await Passwords.search(this.props.filter, ['label', 'uri'], ['id', 'label', 'uri', 'username'])
-    rows = rows.map((item) => {
-      item.type = 'site'
-      return item
-    })
+    rows = rows.map((item) => {return {...item, type: 'site'}})
 
     await this.setState({
       passwordList: rows,
@@ -153,16 +148,13 @@ class Dashboard extends Component<Props> {
     this.props.setLoading(true, 'Loading folders...')
     let folders = await Folders.getChildren(this.props.currentFolder,
                                             ['id', 'label', 'parent'])
-    return folders.map((item) => {
-      item.type = 'folder'
-      return item
-    })    
+    return folders.map((item) => {return {...item, type: 'folder'}})
   }
 
   async getData() {
     let passwords = []
     let folders = []
-    if (this.props.filter.length > 0) {
+    if (this.props.filter.length > 2) {
       passwords = await this.searchPasswords()
     } else {
       passwords = await this.getPasswords()
@@ -189,7 +181,13 @@ class Dashboard extends Component<Props> {
 
   async search(filter) {
     await this.props.setPasswordFilter(filter)
-    await this.getData()
+
+    if (this.searchTimeout) {
+      clearTimeout(this.searchTimeout)
+      this.searchTimeout = null
+    }
+
+    this.searchTimeout = setTimeout(this.getData, 400)
   }
 
   async toClipboard(string) {
@@ -295,7 +293,7 @@ class Dashboard extends Component<Props> {
               <Button transparent
                 styles={{flex: 1}}
                 onPress={() => this.changeFolder(this.state.folder.parent)}>
-                <Icon type="MaterialIcons" name="arrow-back" />
+                <Icon type="MaterialIcons" name="arrow-back" style={{color: Colors.bgColor}} />
               </Button>
               <Button disabled transparent styles={{flex: 1}}>
                 <Text>{this.state.folder.label}</Text>
