@@ -31,7 +31,7 @@ import {
   FooterTab,
 } from 'native-base'
 import {connect} from 'react-redux'
-import API, {Colors, Passwords} from './API'
+import API, {Colors, Passwords, Favicons} from './API'
 import {pushRoute, setLoading, togglePasswordModal} from './redux'
 import GeneratePasswordModal from './GeneratePasswordModal'
 

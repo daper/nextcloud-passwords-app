@@ -1,3 +1,5 @@
+import Favicons from './favicons'
+
 const PASSWORD_FIELDS = [
   'id',
   'label',
@@ -156,6 +158,7 @@ export class Passwords {
       if (__DEV__) console.log(data[0])
 
       await this.deleteAll()
+      await Favicons.deleteAll()
       await this.saveList(data)
 
       return { status, data }
@@ -202,7 +205,10 @@ export class Passwords {
   }
 
   async getItem(id) {
-    let {rows} = await this._executeSql('select * from passwords where id=?', [id])
+    let {rows} = await this._executeSql(`select passwords.*, favicons.data as favicon
+                              from passwords
+                              left join favicons on passwords.id = favicons.id
+                              where passwords.id=? `, [id])
     return rows._array[0]
   }
 
@@ -238,14 +244,16 @@ export class Passwords {
 
     fieldsToSearch = fieldsToSearch
                         .filter((field) => PASSWORD_FIELDS.indexOf(field) !== -1)
-                        .map((field) => `${field} like ?`)
+                        .map((field) => `passwords.${field} like ?`)
     values = fieldsToSearch.map(() => `%${value}%`)
-    fieldsToRetrieve = fieldsToRetrieve.filter((field) => PASSWORD_FIELDS.indexOf(field) !== -1).join(',')
+    fieldsToRetrieve = fieldsToRetrieve.filter((field) => PASSWORD_FIELDS.indexOf(field) !== -1)
+                                        .map((field) => `passwords.${field}`).join(',')
 
     try {
       let {rows} = await this._executeSql(`
-            select ${fieldsToRetrieve}
+            select ${fieldsToRetrieve}, favicons.data as favicon
             from passwords
+            left join favicons on passwords.id = favicons.id
             where ${fieldsToSearch.join(' or ')}
           `, values)
 
@@ -314,6 +322,10 @@ export class Passwords {
         cols = cols.join(',')
 
         await this._executeSql(`insert into passwords(${cols}) values(${questions})`, values)
+
+        // Fetch&save favicon
+        await Favicons.getOrFetchItem(item.id)
+
         return data
       } else {
         return new Error('Invalid API response')
@@ -328,8 +340,12 @@ export class Passwords {
       fields = PASSWORD_FIELDS
     }
 
-    fields = fields.filter((field) => PASSWORD_FIELDS.indexOf(field) !== -1).join(',')
-    let {rows} = await this._executeSql(`select ${fields} from passwords where folder=?`, [folderId])
+    fields = fields.filter((field) => PASSWORD_FIELDS.indexOf(field) !== -1)
+                    .map((field) => `passwords.${field}`).join(',')
+    let {rows} = await this._executeSql(`select ${fields}, favicons.data as favicon
+                                      from passwords
+                                      left join favicons on passwords.id = favicons.id
+                                      where folder=?`, [folderId])
     return rows._array
   }
 }

@@ -9,6 +9,9 @@ export {
   default as Folders,
   ROOT_FOLDER,
 } from './folders'
+import Favicons from './favicons'
+export { default as Favicons } from './favicons'
+import url from 'url'
 
 export const Colors = {
   bgColor: '#0082c9',
@@ -17,7 +20,7 @@ export const Colors = {
 const DB_NAME = 'nextcloud.db'
 
 export class API {
-  models = [Passwords, Folders]
+  models = [Passwords, Folders, Favicons]
 
   constructor() {
     this.credentials = null

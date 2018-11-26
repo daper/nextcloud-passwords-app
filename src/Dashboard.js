@@ -5,6 +5,7 @@ import {
   Dimensions,
   TouchableOpacity,
   BackHandler,
+  Image,
   FlatList,
 } from 'react-native'
 import {Link, Redirect, withRouter} from "react-router-native"
@@ -14,7 +15,6 @@ import {
   Body,
   Content,
   Container,
-  List,
   ListItem,
   Text,
   Right,
@@ -41,7 +41,8 @@ import API, {
   Colors,
   Passwords,
   Folders,
-  ROOT_FOLDER
+  ROOT_FOLDER,
+  Favicons,
 } from './API'
 
 type Props = {}
@@ -56,18 +57,22 @@ class Dashboard extends Component<Props> {
     this.renderRow = this.renderRow.bind(this)
     this.changeFolder = this.changeFolder.bind(this)
     this.getData = this.getData.bind(this)
+    this.processFavicon = this.processFavicon.bind(this)
 
     this.searchTimeout = null
     this.state = {
       passwordList: [],
       filtering: false,
-      folder: {}
+      folder: {},
     }
 
     let {user, password} = this.props.settings
     if (user === '' && password === '') {
       this.returnToLogin()
     }
+
+    this.faviconQueue = []
+    this.processFavicon()
   }
 
   componentWillMount() {
@@ -119,6 +124,24 @@ class Dashboard extends Component<Props> {
     
     this.props.setLoading(false, 'Loading...')
     return true
+  }
+
+  async fetchFavicons(items) {
+    this.props.setLoading(true, 'Pulling favicons...')
+    await this.setState({itemsLoaded: 0})
+
+    let itemsLoaded = 0
+    await Promise.all(items.map(async(item) => {
+      try {
+        await Favicons.getOrFetchItem(item.id)
+        await this.props.setLoading(true, `Pulling favicons (${++itemsLoaded}/${items.length})`)
+        return item
+      } catch(e) {
+        if (__DEV__) console.log('Favicon item failed', item)
+      }
+    }))
+
+    this.props.setLoading(false, 'Loading...')
   }
 
   async fetchData() {
@@ -210,8 +233,21 @@ class Dashboard extends Component<Props> {
 
   renderRow({item}) {
     if (item.type === 'site') {
+      if (!item.favicon) {
+        this.faviconQueue.push(item.id)
+      }
+
       return (
         <ListItem noIndent icon last>
+          <Left>
+            <Button transparent onPress={() => {this.props.history.push(`/view/${item.id}`)}}>
+              {item.favicon && <Image
+                resizeMethod="resize"
+                source={{uri: item.favicon}}
+                key={item.favicon}
+                style={{width: 32, height: 32}} /> || null}
+            </Button>
+          </Left>
           <Body>
             <TouchableOpacity onPress={() => {this.props.history.push(`/view/${item.id}`)}}>
               <Text numberOfLines={1}>
@@ -270,6 +306,16 @@ class Dashboard extends Component<Props> {
     }
     
     this.getData()
+  }
+
+  async processFavicon() {
+    if (this.faviconQueue.length) {
+      let itemId = this.faviconQueue.pop()
+      await Favicons.getOrFetchItem(itemId)
+      setTimeout(this.processFavicon, 300)
+    } else {
+      setTimeout(this.processFavicon, 1000)
+    }
   }
 
   render() {
