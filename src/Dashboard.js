@@ -43,19 +43,19 @@ import API, {
   Folders,
   ROOT_FOLDER
 } from './API'
+import FooterMenu from './FooterMenu'
+import SiteList from './SiteList'
 
 type Props = {}
 class Dashboard extends Component<Props> {
   constructor(props) {
     super(props)
 
-    this.toClipboard = this.toClipboard.bind(this)
-    this.passwordToClipboard = this.passwordToClipboard.bind(this)
     this.search = this.search.bind(this)
     this.refresh = this.refresh.bind(this)
-    this.renderRow = this.renderRow.bind(this)
     this.changeFolder = this.changeFolder.bind(this)
     this.getData = this.getData.bind(this)
+    this.getFolder = this.getFolder.bind(this)
 
     this.searchTimeout = null
     this.state = {
@@ -69,15 +69,13 @@ class Dashboard extends Component<Props> {
       this.returnToLogin()
     }
   }
-
-  componentWillMount() {
-    this.props.pushRoute(this.props.location.pathname)
-  }
   
   async componentDidMount() {
     this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
       if (this.props.currentFolder !== ROOT_FOLDER) {
         this.changeFolder(this.state.folder.parent)
+      } else {
+        this.props.history.push(this.props.lastRoute)
       }
 
       return true
@@ -87,6 +85,7 @@ class Dashboard extends Component<Props> {
   }
 
   componentWillUnmount() {
+    this.props.pushRoute(this.props.location.pathname)
     this.backHandler.remove()
   }
 
@@ -147,6 +146,23 @@ class Dashboard extends Component<Props> {
     return rows
   }
 
+  async getFolder() {
+    let folder = {}
+
+    if (this.props.currentFolder === ROOT_FOLDER) {
+      folder = {
+        id: this.props.currentFolder,
+        label: '/',
+        parent: ROOT_FOLDER,
+      }
+    } else {
+      folder = await Folders.getItem(this.props.currentFolder)
+    }
+
+    await this.setState({folder})
+    return folder
+  }
+
   async getFolders() {
     this.props.setLoading(true, 'Loading folders...')
     let folders = await Folders.getChildren(this.props.currentFolder,
@@ -155,6 +171,9 @@ class Dashboard extends Component<Props> {
   }
 
   async getData() {
+    await this.props.setLoading(true, 'Loading...')
+    await this.getFolder()
+
     let passwords = []
     let folders = []
     if (this.props.filter.length > 2) {
@@ -190,80 +209,12 @@ class Dashboard extends Component<Props> {
       this.searchTimeout = null
     }
 
-    this.searchTimeout = setTimeout(this.getData, 400)
-  }
-
-  async toClipboard(string) {
-    Clipboard.setString(string)
-
-    Toast.show({
-      text: "Copied!",
-      buttonText: "Okay",
-      duration: 2000
-    })
-  }
-
-  async passwordToClipboard(id) {
-    let pass = await Passwords.getPassword(id)
-    this.toClipboard(pass)
-  }
-
-  renderRow({item}) {
-    if (item.type === 'site') {
-      return (
-        <ListItem noIndent icon last>
-          <Body>
-            <TouchableOpacity onPress={() => {this.props.history.push(`/view/${item.id}`)}}>
-              <Text numberOfLines={1}>
-                {item.label}
-              </Text>
-            </TouchableOpacity>
-          </Body>
-          <Right>
-            <Button transparent onPress={() => {this.toClipboard(item.username)}} style={{right: -20}}>
-              <Icon type="MaterialIcons" name="person" color='grey' style={{color: 'grey'}} />
-            </Button>
-            <Button transparent onPress={() => {this.passwordToClipboard(item.id)}} style={{right: -20}}>
-              <Icon type="MaterialIcons" name="content-copy" color='grey' style={{color: 'grey'}} />
-            </Button>
-          </Right>
-        </ListItem>
-      )
-    } else if (item.type === 'folder') {
-      return (
-        <ListItem noIndent icon last>
-          <Left>
-            <Button transparent onPress={() => {this.changeFolder(item.id)}}>
-              <Icon type="MaterialIcons" name="folder" style={{color: "grey", fontSize: 26}} />
-            </Button>
-          </Left>
-          <Body>
-            <TouchableOpacity onPress={() => {this.changeFolder(item.id)}}>
-              <Text numberOfLines={1}>{item.label}</Text>
-            </TouchableOpacity>
-          </Body>
-        </ListItem>
-      )
-    } else {
-      if (__DEV__) console.log('Unrendered list item', item)
-      return null
-    }
+    this.searchTimeout = setTimeout(this.getData, 300)
   }
 
   async changeFolder(id) {
-    this.props.setCurrentFolder(id)
+    await this.props.setCurrentFolder(id)
     if (__DEV__) console.log('changeFolder', id)
-
-    if (id === ROOT_FOLDER) {
-      await this.setState({folder: {
-        id,
-        label: '/',
-        parent: ROOT_FOLDER,
-      }})
-    } else {
-      let folder = await Folders.getItem(id)
-      await this.setState({folder})
-    }
 
     if (this.props.lastLogin === 0) {
       await this.fetchData()
@@ -290,35 +241,19 @@ class Dashboard extends Component<Props> {
           </Button>
           </View>
         </Header>
-        <Content padder>
-          {this.props.currentFolder !== ROOT_FOLDER && 
-            <View style={{borderBottomWidth: 1, flexDirection: 'row'}}>
-              <Button transparent
-                styles={{flex: 1}}
-                onPress={() => this.changeFolder(this.state.folder.parent)}>
-                <Icon type="MaterialIcons" name="arrow-back" style={{color: Colors.bgColor}} />
-              </Button>
-              <Button disabled transparent styles={{flex: 1}}>
-                <Text>{this.state.folder.label}</Text>
-              </Button>
-            </View>}
-        {this.props.loading ? 
-          <View style={styles.spinnerView}>
-            <Spinner style={styles.spinnerContent} color={Colors.bgColor} />
-            <Text style={{color: Colors.bgColor, marginTop: 20, ...styles.spinnerContent}}>{this.props.statusText}</Text>
-          </View>  
-          :
-          <FlatList style={{paddingBottom: 80}}
-            data={this.state.passwordList}
-            keyExtractor={(item) => item.id}
-            renderItem={this.renderRow} />
-        }
+        <Content padder contentContainerStyle={{ flexGrow: 1 }}>
+          <SiteList
+            onChangeFolder={this.changeFolder}
+            passwordList={this.state.passwordList}
+            folder={this.state.folder}
+          />
         </Content>
         {!this.props.loading && <Button rounded primary large 
             style={styles.actionButton}
             onPress={() => this.props.history.push('/create')}>
             <Icon type="MaterialIcons" name="add" style={{fontSize: 40, marginLeft: 8}} />
           </Button>}
+        <FooterMenu />
       </Container>
     )
   }
@@ -332,6 +267,7 @@ const mapStateToProps = (state, ownProps) => {
       filter: state.app.filter,
       currentFolder: state.app.currentFolder,
       lastLogin: state.app.lastLogin,
+      lastRoute: state.app.lastRoute,
   }
 }
  
@@ -355,8 +291,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     alignContent: 'center',
-    height: Dimensions.get('screen').height -128,
-    display: 'flex'
+    display: 'flex',
+    height: '100%',
   },
   spinnerContent: {
     flex: 1,
@@ -369,7 +305,7 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     position: 'absolute',
-    bottom: 20,
+    bottom: 75,
     right: 20,
     backgroundColor: Colors.bgColor,
     paddingLeft: 1,

@@ -126,7 +126,7 @@ export class SingleView extends Component<Props> {
   }
 
   async goBack() {
-    this.props.history.push(`/dashboard`)
+    this.props.history.goBack()
   }
 
   async toClipboard(id) {

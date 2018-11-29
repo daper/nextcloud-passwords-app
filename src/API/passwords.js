@@ -47,7 +47,7 @@ export class Passwords {
   }
 
   async createTable() {
-    return await this._executeSql(`
+    await this._executeSql(`
       create table if not exists passwords(
         id string primary key not null,
         label string,
@@ -72,6 +72,10 @@ export class Passwords {
         created integer,
         updated integer
       )`)
+    await this._executeSql(`create index if not exists passwords_folder on passwords(folder)`)
+    await this._executeSql(`create index if not exists passwords_favorite on passwords(favorite)`)
+    await this._executeSql(`create index if not exists passwords_hidden on passwords(hidden)`)
+    await this._executeSql(`create index if not exists passwords_trashed on passwords(trashed)`)
   }
 
   saveList(list) {
@@ -175,7 +179,7 @@ export class Passwords {
       }
 
       fields = fields.filter((field) => PASSWORD_FIELDS.indexOf(field) !== -1).join(',')
-      let {rows} = await this._executeSql(`select ${fields} from passwords`)
+      let {rows} = await this._executeSql(`select ${fields} from passwords where hidden=0 and trashed=0`)
       return rows._array
     } catch (err) {
       if (__DEV__) console.log('error getting data', err)
@@ -329,7 +333,29 @@ export class Passwords {
     }
 
     fields = fields.filter((field) => PASSWORD_FIELDS.indexOf(field) !== -1).join(',')
-    let {rows} = await this._executeSql(`select ${fields} from passwords where folder=?`, [folderId])
+    let {rows} = await this._executeSql(`select ${fields} from passwords where folder=? and hidden=0 and trashed=0`, [folderId])
+    return rows._array
+  }
+
+  async getAllFavorites(fields = []) {
+    try {
+      if (fields.length === 0) {
+        fields = PASSWORD_FIELDS
+      }
+
+      fields = fields.filter((field) => PASSWORD_FIELDS.indexOf(field) !== -1).join(',')
+      let {rows} = await this._executeSql(`select ${fields} from passwords where hidden=0 and trashed=0 and favorite=1`)
+      return rows._array
+    } catch (err) {
+      if (__DEV__) console.log('error getting data', err)
+      return []
+    }
+  }
+
+  async getFavoritesFromFolder(folderId, fields = PASSWORD_FIELDS) {
+    fields = fields.filter((field) => PASSWORD_FIELDS.indexOf(field) !== -1).join(',')
+    let {rows} = await this._executeSql(`select ${fields} from passwords where folder=?
+                                        and hidden=0 and trashed=0 and favorite=1`, [folderId])
     return rows._array
   }
 }

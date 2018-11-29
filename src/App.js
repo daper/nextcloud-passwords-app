@@ -7,6 +7,8 @@ import Login from './Login'
 import Dashboard from './Dashboard'
 import SingleView from './SingleView'
 import AddSite from './AddSite'
+import Favorites from './Favorites'
+import Settings from './Settings'
 import API, {Colors} from './API'
 
 type Props = {}
@@ -50,6 +52,8 @@ export class App extends Component<Props> {
             <Route exact path="/dashboard" component={Dashboard} />
             <Route exact path="/view/:id" component={SingleView} />
             <Route exact path="/create" component={AddSite} />
+            <Route exact path="/favorites" component={Favorites} />
+            <Route exact path="/settings" component={Settings} />
           </Switch>
         </NativeRouter>
       </Root>

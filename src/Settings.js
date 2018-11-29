@@ -1,0 +1,298 @@
+import React, {Component} from 'react'
+import {
+  BackHandler,
+  StyleSheet,
+  TouchableOpacity,
+  Linking,
+  Platform,
+  Share,
+} from 'react-native'
+import {
+  Container,
+  Header,
+  Content,
+  View,
+  Text,
+  Body,
+  Icon,
+  Left,
+  ListItem,
+  Button,
+  Right,
+  Switch,
+  ActionSheet,
+} from 'native-base'
+import {connect} from 'react-redux'
+import {withRouter} from "react-router-native"
+import API, {
+  Colors,
+  ROOT_FOLDER,
+  Folders,
+  Passwords,
+} from './API'
+import {
+  setLoading,
+  pushRoute,
+  setCurrentFolder,
+  setLastLogin,
+  setSettings,
+} from './redux'
+import FooterMenu from './FooterMenu'
+
+const PLAY_URL = 'https://play.google.com/store/apps/details?id=com.nextcloudpasswords'
+
+type Props = {}
+export class Settings extends Component<Props> {
+  constructor(props) {
+    super(props)
+
+    this.forceSyncDown = this.forceSyncDown.bind(this)
+    this.getLastLogin = this.getLastLogin.bind(this)
+    this.logOut = this.logOut.bind(this)
+    this.rateApp = this.rateApp.bind(this)
+    this.shareApp = this.shareApp.bind(this)
+    this.getSupport = this.getSupport.bind(this)
+  }
+
+  async componentDidMount() {
+    this.props.pushRoute('/settings')
+    this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
+      this.props.history.push(this.props.lastRoute)
+      return true
+    })
+  }
+
+  componentWillUnmount() {
+    this.backHandler.remove()
+  }
+
+  getLastLogin() {
+    let elapsed = new Date().getTime() - this.props.lastLogin
+    let timeExpression = "00:00:00"
+
+    let seconds = (elapsed / 1000).toFixed()
+    let minutes, hours, days = 0
+    if (seconds >= 60) {
+      minutes = (seconds / 60).toFixed()
+      seconds = (seconds % 60).toFixed()
+      if (minutes >= 60) {
+        hours = (minutes / 60).toFixed()
+        minutes = (minutes % 60).toFixed()
+
+        if (hours >= 24) {
+          days = (hours / 24).toFixed()
+          hours = (hours % 24).toFixed()
+
+          timeExpression=`${days}d ${('0' + hours).slice(-2)}:${('0' + minutes).slice(-2)}:${('0' + seconds).slice(-2)}`
+        } else {
+          timeExpression=`${('0' + hours).slice(-2)}:${('0' + minutes).slice(-2)}:${('0' + seconds).slice(-2)}`
+        }
+      } else {
+        timeExpression=`00:${('0' + minutes).slice(-2)}:${('0' + seconds).slice(-2)}`
+      }
+    } else {
+      timeExpression=`00:00:${('0' + seconds).slice(-2)}`
+    }
+
+    return timeExpression
+  }
+
+  async forceSyncDown() {
+    await this.props.setLastLogin(0)
+    this.props.history.push('/dashboard')
+  }
+
+  async returnToLogin() {
+    await API.dropDB()
+    this.props.setLastLogin(0)
+    this.props.setSettings({
+      user: '',
+      password: ''
+    })
+    
+    this.props.history.push('/login')
+  }
+
+  logOut() {
+    ActionSheet.show({
+      options: ["Confirm", "Cancel"],
+      cancelButtonIndex: 1,
+      destructiveButtonIndex: 0,
+      title: "Do you really want to log-out?"
+    },
+    (buttonIndex) => {
+      if (buttonIndex === 0) {
+        this.returnToLogin()
+      }
+    })
+  }
+
+  async rateApp() {
+    if (Platform.OS === 'android') {
+      let url = PLAY_URL
+
+      let supported = await Linking.canOpenURL(url)
+      if (supported) {
+        Linking.openURL(url)
+      }
+    }
+  }
+
+  async getSupport() {
+    let url = 'https://github.com/daper/nextcloud-passwords-app/issues/new'
+
+    let supported = await Linking.canOpenURL(url)
+    if (supported) {
+      Linking.openURL(url)
+    }
+  }
+
+  async shareApp() {
+    await Share.share({
+      title: 'Nextcloud Passwords App',
+      message: `Checkout this great app to manage you Nextcloud passwords on your mobile device. ${PLAY_URL}`
+    }, {})
+  }
+
+  render() {
+    return <Container>
+      <Header style={{backgroundColor: Colors.bgColor}}>
+        <Body style={styles.headerBody}>
+          <Icon type="MaterialIcons" name="settings" style={styles.headerBodyIcon} />
+          <Text style={styles.headerBodyText}>Settings</Text>
+        </Body>
+      </Header>
+      <Content padder contentContainerStyle={{ flexGrow: 1 }}>
+        <ListItem itemDivider>
+          <Text>Synchronization</Text>
+        </ListItem>
+        {/*<ListItem icon>
+          <Left>
+            <Button disabled style={{ backgroundColor: "grey" }}>
+              <Icon active name="sync" />
+            </Button>
+          </Left>
+          <Body>
+            <Text>Automatic Syncing</Text>
+          </Body>
+          <Right>
+            <Switch value={false} />
+          </Right>
+        </ListItem>*/}
+        <ListItem icon>
+            <Left>
+              <Button style={{ backgroundColor: "grey" }}
+                onPress={this.forceSyncDown}>
+                <Icon active name="refresh" />
+              </Button>
+            </Left>
+            <Body>
+              <TouchableOpacity onPess={this.forceSyncDown}>
+                <Text>Force sync down</Text>
+              </TouchableOpacity>
+            </Body>
+            <Right style={{flexDirection: 'column'}}>
+              <Text style={{fontSize: 8}}>Time elapsed:</Text>
+              <Text style={{paddingBottom: 4}}>{this.getLastLogin()}</Text>
+            </Right>
+        </ListItem>
+        <ListItem itemDivider>
+          <Text>Support</Text>
+        </ListItem>
+        <ListItem icon>
+            <Left>
+              <Button warning
+                onPress={this.rateApp}>
+                <Icon active name="star" />
+              </Button>
+            </Left>
+            <Body>
+              <TouchableOpacity onPress={this.rateApp}>
+                <Text>Rate this app</Text>
+              </TouchableOpacity>
+            </Body>
+        </ListItem>
+        <ListItem icon>
+            <Left>
+              <Button style={{backgroundColor: 'grey'}}
+                onPress={this.shareApp}>
+                <Icon active name="share" />
+              </Button>
+            </Left>
+            <Body>
+              <TouchableOpacity onPress={this.shareApp}>
+                <Text>Share this app</Text>
+              </TouchableOpacity>
+            </Body>
+        </ListItem>
+        <ListItem icon>
+            <Left>
+              <Button style={{backgroundColor: 'grey'}}
+                onPress={this.getSupport}>
+                <Icon active name="md-help" />
+              </Button>
+            </Left>
+            <Body>
+              <TouchableOpacity onPress={this.getSupport}>
+                <Text>Report a problem</Text>
+              </TouchableOpacity>
+            </Body>
+        </ListItem>
+        <ListItem itemDivider>
+          <Text>Disconnection</Text>
+        </ListItem>
+        <ListItem icon>
+          <Left>
+            <Button style={{ backgroundColor: "#d9534f" }}
+              onPress={this.logOut}>
+              <Icon active name="md-power" />
+            </Button>
+          </Left>
+          <Body>
+            <TouchableOpacity onPress={this.logOut}>
+              <Text>Log out</Text>
+            </TouchableOpacity>
+          </Body>
+        </ListItem>
+      </Content>
+      <FooterMenu />
+    </Container>
+  }
+}
+
+const mapStateToProps = (state, ownProps) => {
+  return {
+    lastRoute: state.app.lastRoute,
+    lastLogin: state.app.lastLogin,
+  }
+}
+ 
+const mapDispatchToProps = (dispatch, ownProps) => {
+  return {
+    setLoading: (...args) => { dispatch(setLoading.apply(ownProps, args)) },
+    pushRoute: (...args) => { dispatch(pushRoute.apply(ownProps, args)) },
+    setLastLogin: (...args) => { dispatch(setLastLogin.apply(ownProps, args)) },
+    setSettings: (...args) => { dispatch(setSettings.apply(ownProps, args)) },
+  }
+}
+
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Settings))
+
+const styles = StyleSheet.create({
+  headerBody: {
+    justifyContent: 'flex-start',
+    flexDirection: 'row',
+  },
+  headerBodyIcon: {
+    color: 'white',
+    alignSelf: 'center',
+    paddingLeft: 10,
+  },
+  headerBodyText: {
+    color: 'white',
+    flexGrow: 1,
+    fontSize: 20,
+    alignSelf: 'center',
+    paddingLeft: 20,
+  }
+})
