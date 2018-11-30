@@ -1,41 +1,40 @@
-import React, {Component} from 'react'
+import React, { Component } from 'react'
 import {
   Footer,
   FooterTab,
   Button,
   Icon,
 } from 'native-base'
-import {connect} from 'react-redux'
-import {withRouter} from "react-router-native"
-import {Colors} from './API'
+import { connect } from 'react-redux'
+import { withRouter } from 'react-router-native'
+import { Colors } from './API'
 
-type Props = {}
-export class FooterMenu extends Component<Props> {
-  constructor(props) {
+export class FooterMenu extends Component {
+  constructor (props) {
     super(props)
 
     this.navigate = this.navigate.bind(this)
   }
 
-  navigate(route) {
+  navigate (route) {
     this.props.history.push(route)
   }
 
-  render() {
+  render () {
     return <Footer>
-      <FooterTab style={{backgroundColor: Colors.bgColor}}>
+      <FooterTab style={{ backgroundColor: Colors.bgColor }}>
         <Button transparent onPress={() => this.navigate('/dashboard')}>
-          <Icon type="MaterialIcons" name="home" style={{color: 'white'}} />
+          <Icon type='MaterialIcons' name='home' style={{ color: 'white' }} />
         </Button>
       </FooterTab>
-      <FooterTab style={{backgroundColor: Colors.bgColor}}>
+      <FooterTab style={{ backgroundColor: Colors.bgColor }}>
         <Button transparent onPress={() => this.navigate('/favorites')}>
-          <Icon type="MaterialIcons" name="star" style={{color: 'white'}} />
+          <Icon type='MaterialIcons' name='star' style={{ color: 'white' }} />
         </Button>
       </FooterTab>
-      <FooterTab style={{backgroundColor: Colors.bgColor}}>
+      <FooterTab style={{ backgroundColor: Colors.bgColor }}>
         <Button transparent onPress={() => this.navigate('/settings')}>
-          <Icon type="MaterialIcons" name="settings" style={{color: 'white'}} />
+          <Icon type='MaterialIcons' name='settings' style={{ color: 'white' }} />
         </Button>
       </FooterTab>
     </Footer>
@@ -45,7 +44,7 @@ export class FooterMenu extends Component<Props> {
 const mapStateToProps = (state, ownProps) => {
   return {}
 }
- 
+
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {}
 }

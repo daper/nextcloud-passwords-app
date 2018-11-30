@@ -1,11 +1,11 @@
-import React, {Component} from 'react'
+import React, { Component } from 'react'
 import {
   StyleSheet,
   BackHandler,
   Dimensions,
   Clipboard,
 } from 'react-native'
-import {Link, Redirect, withRouter} from "react-router-native"
+import { withRouter } from 'react-router-native'
 import {
   Container,
   Header,
@@ -27,23 +27,23 @@ import {
   Right,
   Toast,
   ActionSheet,
-  Footer,
-  FooterTab,
 } from 'native-base'
-import {connect} from 'react-redux'
-import API, {Colors, Passwords} from './API'
-import {pushRoute, setLoading, togglePasswordModal} from './redux'
+import { connect } from 'react-redux'
+import { Colors, Passwords } from './API'
+import { pushRoute, setLoading, togglePasswordModal } from './redux'
 import GeneratePasswordModal from './GeneratePasswordModal'
 
-type Props = {}
-export class SingleView extends Component<Props> {
-  constructor(props) {
+export class SingleView extends Component {
+  constructor (props) {
     super(props)
 
     this.updateHandler = this.updateHandler.bind(this)
     this.stopEditing = this.stopEditing.bind(this)
     this.startEditing = this.startEditing.bind(this)
     this.setFavorite = this.setFavorite.bind(this)
+    this.goBack = this.goBack.bind(this)
+    this.delete = this.delete.bind(this)
+    this.save = this.save.bind(this)
 
     this.state = {
       untouchedItem: {},
@@ -55,24 +55,24 @@ export class SingleView extends Component<Props> {
       favoriteUpdating: false,
     }
 
-    let {match} = props
+    let { match } = props
     console.log(`Showing ${match.params.id}`)
   }
 
-  componentWillMount() {
+  componentWillMount () {
     this.props.pushRoute(this.props.location.pathname)
   }
 
-  async componentDidMount() {
+  async componentDidMount () {
     this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
       this.goBack()
       return true
     })
 
-    let {id} = this.props.match.params
+    let { id } = this.props.match.params
 
     this.props.setLoading(true, 'Loading site...')
-    
+
     let item = await Passwords.getItem(id)
     if (__DEV__) console.log(item)
 
@@ -81,32 +81,32 @@ export class SingleView extends Component<Props> {
     item.password = String(item.password)
     item.username = String(item.username)
 
-    this.setState({item, untouchedItem: {...item}})
-    
+    this.setState({ item, untouchedItem: { ...item } })
+
     this.props.setLoading(false)
   }
 
-  componentWillUnmount() {
+  componentWillUnmount () {
     this.backHandler.remove()
   }
 
-  async save() {
+  async save () {
     try {
       this.props.setLoading(true, 'Saving...')
-      let {id, label, username, password, url, notes} = this.state.item
-      await Passwords.updateItem({id, label, username, password, url, notes})
+      let { id, label, username, password, url, notes } = this.state.item
+      await Passwords.updateItem({ id, label, username, password, url, notes })
     } catch (err) {
       if (__DEV__) console.log('save', err)
     }
     this.props.setLoading(false)
   }
 
-  delete() {
+  delete () {
     ActionSheet.show({
-      options: ["Delete", "Cancel"],
+      options: ['Delete', 'Cancel'],
       cancelButtonIndex: 1,
       destructiveButtonIndex: 0,
-      title: "Do you really want to delete this entry?"
+      title: 'Do you really want to delete this entry?'
     },
     (buttonIndex) => {
       if (buttonIndex === 0) {
@@ -119,30 +119,30 @@ export class SingleView extends Component<Props> {
     })
   }
 
-  updateHandler(name, value) {
+  updateHandler (name, value) {
     let item = this.state.item
     item[name] = value
-    this.setState({item})
+    this.setState({ item })
   }
 
-  async goBack() {
+  async goBack () {
     this.props.history.goBack()
   }
 
-  async toClipboard(id) {
+  async toClipboard (id) {
     let pass = await Passwords.getPassword(id)
 
     Clipboard.setString(pass)
 
     Toast.show({
-      text: "Copied!",
-      buttonText: "Okay",
+      text: 'Copied!',
+      buttonText: 'Okay',
       duration: 2000
     })
   }
 
-  renderIcons() {
-    let {item} = this.state
+  renderIcons () {
+    let { item } = this.state
     if (this.props.loading) {
       return <Right />
     } else {
@@ -152,54 +152,53 @@ export class SingleView extends Component<Props> {
       else if (item.status === 2) color = 'red'
 
       return <Right>
-          <Button transparent>
-            <Icon type="FontAwesome" name="shield" style={{color}} />
+        <Button transparent>
+          <Icon type='FontAwesome' name='shield' style={{ color }} />
+        </Button>
+        {this.state.favoriteUpdating
+          ? <Button transparent>
+            <Spinner color='white' />
           </Button>
-          {this.state.favoriteUpdating ?
-            <Button transparent>
-              <Spinner color="white" />
-            </Button>
-            :
-            <Button transparent onPress={this.setFavorite}>
-              <Icon
-                type="MaterialIcons"
-                name={item.favorite ? 'star' : 'star-border'}
-                style={{color: item.favorite ? 'yellow' : 'white', fontSize: 30}}
-                active={Boolean(item.favorite)}
-              />
-            </Button>
-          }
-        </Right>
+          : <Button transparent onPress={this.setFavorite}>
+            <Icon
+              type='MaterialIcons'
+              name={item.favorite ? 'star' : 'star-border'}
+              style={{ color: item.favorite ? 'yellow' : 'white', fontSize: 30 }}
+              active={Boolean(item.favorite)}
+            />
+          </Button>
+        }
+      </Right>
     }
   }
 
-  stopEditing() {
+  stopEditing () {
     this.setState({
       editing: false,
-      item: {...this.state.untouchedItem},
+      item: { ...this.state.untouchedItem },
     })
   }
 
-  startEditing() {
-    this.setState({editing: true})
+  startEditing () {
+    this.setState({ editing: true })
   }
 
-  async setFavorite() {
-    this.setState({favoriteUpdating: true})
+  async setFavorite () {
+    this.setState({ favoriteUpdating: true })
     let item = await Passwords.setFavorite(this.state.item.id)
     if (!(item instanceof Error)) {
-      this.setState({item})
+      this.setState({ item })
     }
-    this.setState({favoriteUpdating: false})
+    this.setState({ favoriteUpdating: false })
   }
 
-  render() {
+  render () {
     return (
       <Container>
-        <Header style={{backgroundColor: Colors.bgColor}}>
+        <Header style={{ backgroundColor: Colors.bgColor }}>
           <Left>
-            <Button transparent onPress={this.goBack.bind(this)}>
-              <Icon type="MaterialIcons" name="arrow-back" />
+            <Button transparent onPress={this.goBack}>
+              <Icon type='MaterialIcons' name='arrow-back' />
             </Button>
           </Left>
           <Body>
@@ -209,17 +208,16 @@ export class SingleView extends Component<Props> {
           {this.renderIcons()}
         </Header>
         <Content padder>
-          {this.props.loading ?
-            <View style={styles.spinnerView}>
+          {this.props.loading
+            ? <View style={styles.spinnerView}>
               <Spinner style={styles.spinnerContent} color={Colors.bgColor} />
-              <Text style={{color: Colors.bgColor, marginTop: 20, ...styles.spinnerContent}}>{this.props.statusText}</Text>
+              <Text style={{ color: Colors.bgColor, marginTop: 20, ...styles.spinnerContent }}>{this.props.statusText}</Text>
             </View>
-            :
-            <View>
+            : <View>
               <Form>
                 <Item stackedLabel disabled={!this.state.editing} last>
                   <Label>Username</Label>
-                  <Input 
+                  <Input
                     disabled={!this.state.editing}
                     defaultValue={this.state.item.username}
                     value={this.state.item.username}
@@ -232,25 +230,25 @@ export class SingleView extends Component<Props> {
                     secureTextEntry={!this.state.showPassword && !this.state.editing}
                     defaultValue={this.state.item.password}
                     value={this.state.item.password}
-                    style={{width: '75%'}}
+                    style={{ width: '75%' }}
                     onChangeText={(filter) => this.updateHandler('password', filter)} />
                   {!this.state.editing && <Button transparent style={styles.copyPassButton}
-                    onPress={() => {this.toClipboard(this.state.item.id)}}>
-                    <Icon type="MaterialIcons" name="content-copy" style={styles.showPassIcon} />
+                    onPress={() => { this.toClipboard(this.state.item.id) }}>
+                    <Icon type='MaterialIcons' name='content-copy' style={styles.showPassIcon} />
                   </Button>}
                   {!this.state.editing && <Button transparent style={styles.showPassButton}>
                     <Icon active style={styles.showPassIcon}
-                      type="MaterialIcons" name={this.state.showPassword ? 'visibility' : 'visibility-off'}
-                      onPress={() => this.setState({showPassword: this.state.showPassword ? false : true})} />
+                      type='MaterialIcons' name={this.state.showPassword ? 'visibility' : 'visibility-off'}
+                      onPress={() => this.setState({ showPassword: !this.state.showPassword })} />
                   </Button>}
                   {this.state.editing && <Button transparent style={styles.showPassButton}
                     onPress={() => this.props.togglePasswordModal(true)}>
-                    <Icon active style={styles.showPassIcon} type="MaterialIcons" name="update" />
+                    <Icon active style={styles.showPassIcon} type='MaterialIcons' name='update' />
                   </Button>}
                 </Item>
                 <Item stackedLabel disabled={!this.state.editing} last>
                   <Label>Address</Label>
-                  <Input 
+                  <Input
                     disabled={!this.state.editing}
                     defaultValue={this.state.item.url}
                     value={this.state.item.url}
@@ -261,39 +259,38 @@ export class SingleView extends Component<Props> {
                   <Textarea
                     disabled={!this.state.editing}
                     rowSpan={5}
-                    style={{width: '100%'}}
+                    style={{ width: '100%' }}
                     defaultValue={this.state.item.notes}
                     value={this.state.item.notes}
                     onChangeText={(filter) => this.updateHandler('notes', filter)} />
                 </Item>
               </Form>
-              {this.state.editing ?
-                <View style={{flexDirection: 'row', marginTop: 20}}>
+              {this.state.editing
+                ? <View style={{ flexDirection: 'row', marginTop: 20 }}>
                   <Button block danger
-                    onPress={this.delete.bind(this)}>
-                    <Icon type="MaterialIcons" name="delete" style={{color: 'white'}} />
+                    onPress={this.delete}>
+                    <Icon type='MaterialIcons' name='delete' style={{ color: 'white' }} />
                   </Button>
-                  <Button block success 
-                    style={{flex: 1, marginLeft: 20, marginRight: 20}}
-                    onPress={this.save.bind(this)}>
+                  <Button block success
+                    style={{ flex: 1, marginLeft: 20, marginRight: 20 }}
+                    onPress={this.save}>
                     <Text>Save</Text>
                   </Button>
                   <Button block dark onPress={this.stopEditing}>
-                    <Icon type="MaterialIcons" name="close" />
+                    <Icon type='MaterialIcons' name='close' />
                   </Button>
                 </View>
-                :
-                <View style={{flexDirection: 'row', marginTop: 20}}>
+                : <View style={{ flexDirection: 'row', marginTop: 20 }}>
                   <Button bordered
-                    style={{flex: 1, borderColor: Colors.bgColor, justifyContent: 'center'}}
+                    style={{ flex: 1, borderColor: Colors.bgColor, justifyContent: 'center' }}
                     onPress={this.startEditing}>
-                    <Text style={{color: Colors.bgColor}}>Edit</Text>
+                    <Text style={{ color: Colors.bgColor }}>Edit</Text>
                   </Button>
                 </View>
               }
             </View>
           }
-          <GeneratePasswordModal onSelectPassword={(value) => {this.updateHandler('password', value)}}/>
+          <GeneratePasswordModal onSelectPassword={(value) => { this.updateHandler('password', value) }} />
         </Content>
       </Container>
     )
@@ -307,7 +304,7 @@ const mapStateToProps = (state, ownProps) => {
     passwordModalValue: state.app.passwordModalValue,
   }
 }
- 
+
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     pushRoute: (...args) => { dispatch(pushRoute.apply(ownProps, args)) },
@@ -315,7 +312,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     togglePasswordModal: (...args) => { dispatch(togglePasswordModal.apply(ownProps, args)) },
   }
 }
- 
+
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(SingleView))
 
 const styles = StyleSheet.create({
@@ -339,7 +336,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     alignContent: 'center',
-    height: Dimensions.get('screen').height -128,
+    height: Dimensions.get('screen').height - 128,
     display: 'flex'
   },
   spinnerContent: {

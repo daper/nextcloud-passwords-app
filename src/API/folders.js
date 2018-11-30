@@ -16,15 +16,15 @@ const FOLDER_FIELDS = [
 export const ROOT_FOLDER = '00000000-0000-0000-0000-000000000000'
 
 export class Folders {
-  setDb(db) {
+  setDb (db) {
     this.db = db
   }
 
-  setHttp(http) {
+  setHttp (http) {
     this.http = http
   }
 
-  _executeSql(query, data = []) {
+  _executeSql (query, data = []) {
     return new Promise((resolve, reject) => {
       this.db.transaction((txn) => {
         txn.executeSql(query, data,
@@ -38,8 +38,8 @@ export class Folders {
     })
   }
 
-  async createTable() {
-    return await this._executeSql(`
+  async createTable () {
+    await this._executeSql(`
       create table if not exists folders(
         id string primary key not null,
         label string,
@@ -60,25 +60,25 @@ export class Folders {
     await this._executeSql(`create index if not exists folders_favorite on folders(favorite)`)
   }
 
-  saveList(list) {
-    return new Promise((res, rej) => {
+  saveList (list) {
+    return new Promise((resolve, reject) => {
       this.db.transaction((txn) => {
         Promise.all(list.map((obj) => this.objectToRow(obj))
           .map(row => {
             return this.saveRow(txn, row)
           }))
-        .then(res)
-        .catch(rej)
-      })      
+          .then(resolve)
+          .catch(reject)
+      })
     })
   }
 
-  saveRow(txn, row) {
+  saveRow (txn, row) {
     let questions = FOLDER_FIELDS.map((field) => '?').join(',')
     return this._executeSql(`insert or replace into folders values (${questions})`, row)
   }
 
-  rowToObject(row) {
+  rowToObject (row) {
     let labels = [
       'id',
       'label',
@@ -94,11 +94,11 @@ export class Folders {
       'favorite',
     ]
     let ret = {}
-    labels.forEach((label, pos) => ret[label] = row[pos])
+    labels.forEach((label, pos) => { ret[label] = row[pos] })
     return ret
   }
 
-  objectToRow(object) {
+  objectToRow (object) {
     return [
       object.id,
       object.label,
@@ -115,9 +115,9 @@ export class Folders {
     ]
   }
 
-  async fetchAll() {
+  async fetchAll () {
     try {
-      let {data, status} = await this.http.post('/api/1.0/folder/list', {detailLevel: 'model+parent+folders+passwords'})
+      let { data, status } = await this.http.post('/api/1.0/folder/list', { detailLevel: 'model+parent+folders+passwords' })
       data = Object.keys(data).map((key) => data[key])
       if (__DEV__) console.log(data[0])
 
@@ -134,10 +134,10 @@ export class Folders {
     }
   }
 
-  async getAll(fields = FOLDER_FIELDS) {
+  async getAll (fields = FOLDER_FIELDS) {
     try {
       fields = fields.filter((field) => FOLDER_FIELDS.indexOf(field) !== -1).join(',')
-      let {rows} = await this._executeSql(`select ${fields} from folders where hidden=0 and trashed=0`)
+      let { rows } = await this._executeSql(`select ${fields} from folders where hidden=0 and trashed=0`)
       return rows._array
     } catch (err) {
       if (__DEV__) console.log('error getting data', err)
@@ -145,9 +145,9 @@ export class Folders {
     }
   }
 
-  async getItem(id) {
+  async getItem (id) {
     try {
-      let {rows} = await this._executeSql('select * from folders where id=?', [id])
+      let { rows } = await this._executeSql('select * from folders where id=?', [id])
       return rows._array[0]
     } catch (err) {
       if (__DEV__) console.log('error getting data', err)
@@ -155,22 +155,22 @@ export class Folders {
     }
   }
 
-  async getChildren(folderId, fields = FOLDER_FIELDS) {
-    let {rows} = await this._executeSql(`select ${fields.join(',')} 
+  async getChildren (folderId, fields = FOLDER_FIELDS) {
+    let { rows } = await this._executeSql(`select ${fields.join(',')} 
                                           from folders where parent=? and hidden=0 and trashed=0`, [folderId])
     return rows._array
   }
 
-  async getFavoriteChildren(folderId, fields = FOLDER_FIELDS) {
-    let {rows} = await this._executeSql(`select ${fields.join(',')} 
+  async getFavoriteChildren (folderId, fields = FOLDER_FIELDS) {
+    let { rows } = await this._executeSql(`select ${fields.join(',')} 
                                           from folders where parent=?
                                           and hidden=0 and trashed=0
                                           and favorite=1`, [folderId])
     return rows._array
   }
 
-  async deleteAll() {
-    return await this._executeSql(`delete from folders`)
+  async deleteAll () {
+    return this._executeSql(`delete from folders`)
   }
 }
 

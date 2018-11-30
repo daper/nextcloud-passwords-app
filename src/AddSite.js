@@ -1,4 +1,4 @@
-import React, {Component} from 'react'
+import React, { Component } from 'react'
 import {
   StyleSheet,
   BackHandler,
@@ -30,13 +30,12 @@ import {
   togglePasswordModal,
   setLoading,
 } from './redux'
-import {connect} from 'react-redux'
-import {Colors, Passwords} from './API'
+import { connect } from 'react-redux'
+import { Colors, Passwords } from './API'
 import GeneratePasswordModal from './GeneratePasswordModal'
 
-type Props = {}
-export class AddSite extends Component<Props> {
-  constructor(props) {
+export class AddSite extends Component {
+  constructor (props) {
     super(props)
 
     this.state = {
@@ -53,51 +52,51 @@ export class AddSite extends Component<Props> {
     this.submit = this.submit.bind(this)
   }
 
-  componentWillMount() {
+  componentWillMount () {
     this.props.pushRoute(this.props.location.pathname)
   }
 
-  componentDidMount() {
+  componentDidMount () {
     this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
       this.goBack()
       return true
     })
   }
 
-  componentWillUnmount() {
+  componentWillUnmount () {
     this.backHandler.remove()
   }
 
-  async goBack() {
+  async goBack () {
     this.props.history.push(`/dashboard`)
   }
 
-  updateHandler(name, value) {
+  updateHandler (name, value) {
     let item = this.state.item
     item[name] = value
-    this.setState({item})
+    this.setState({ item })
   }
 
-  validate() {
+  validate () {
     let result = true
     if (this.state.item.password) {
-      this.setState({passwordIsError: false})
+      this.setState({ passwordIsError: false })
     } else {
-      this.setState({passwordIsError: true})
+      this.setState({ passwordIsError: true })
       result = false
     }
 
     if (this.state.item.label) {
-      this.setState({labelIsError: false})
+      this.setState({ labelIsError: false })
     } else {
-      this.setState({labelIsError: true})
+      this.setState({ labelIsError: true })
       result = false
     }
 
     return result
   }
 
-  async submit() {
+  async submit () {
     if (this.validate()) {
       this.props.setLoading(true, 'Creating site...')
       let data = await Passwords.create(this.state.item)
@@ -109,13 +108,13 @@ export class AddSite extends Component<Props> {
     }
   }
 
-  render() {
+  render () {
     return (
       <Container>
-        {!this.props.loading && <Header style={{backgroundColor: Colors.bgColor}}>
+        {!this.props.loading && <Header style={{ backgroundColor: Colors.bgColor }}>
           <Left>
             <Button transparent onPress={this.goBack}>
-              <Icon type="MaterialIcons" name="arrow-back" />
+              <Icon type='MaterialIcons' name='arrow-back' />
             </Button>
           </Left>
           <Body>
@@ -123,13 +122,12 @@ export class AddSite extends Component<Props> {
           </Body>
         </Header>}
         <Content padder>
-          {this.props.loading ? 
-            <View style={styles.spinnerView}>
+          {this.props.loading
+            ? <View style={styles.spinnerView}>
               <Spinner style={styles.spinnerContent} color={Colors.bgColor} />
-              <Text style={{color: Colors.bgColor, marginTop: 20, ...styles.spinnerContent}}>{this.props.statusText}</Text>
-            </View>  
-            :
-            <Form>
+              <Text style={{ color: Colors.bgColor, marginTop: 20, ...styles.spinnerContent }}>{this.props.statusText}</Text>
+            </View>
+            : <Form>
               <Item stackedLabel last>
                 <Label>Username</Label>
                 <Input
@@ -144,12 +142,12 @@ export class AddSite extends Component<Props> {
                   onChangeText={(filter) => this.updateHandler('password', filter)} />
                 <Button transparent style={styles.copyPassButton}>
                   <Icon active style={styles.showPassIcon}
-                    type="MaterialIcons" name={this.state.showPassword ? 'visibility' : 'visibility-off'}
-                    onPress={() => this.setState({showPassword: this.state.showPassword ? false : true})} />
+                    type='MaterialIcons' name={this.state.showPassword ? 'visibility' : 'visibility-off'}
+                    onPress={() => this.setState({ showPassword: !this.state.showPassword })} />
                 </Button>
                 <Button transparent style={styles.showPassButton}
                   onPress={() => this.props.togglePasswordModal(true)}>
-                  <Icon active style={styles.showPassIcon} type="MaterialIcons" name="update" />
+                  <Icon active style={styles.showPassIcon} type='MaterialIcons' name='update' />
                 </Button>
               </Item>
               <Item stackedLabel last error={this.state.labelIsError}>
@@ -166,31 +164,31 @@ export class AddSite extends Component<Props> {
               </Item>
               <Item stackedLabel last>
                 <Label>Notes</Label>
-                    <Textarea
-                      rowSpan={5}
-                      style={{width: '100%'}}
-                      defaultValue={this.state.item.notes}
-                      value={this.state.item.notes}
-                      onChangeText={(filter) => this.updateHandler('notes', filter)} />
+                <Textarea
+                  rowSpan={5}
+                  style={{ width: '100%' }}
+                  defaultValue={this.state.item.notes}
+                  value={this.state.item.notes}
+                  onChangeText={(filter) => this.updateHandler('notes', filter)} />
               </Item>
-              <Item last style={{paddingTop: 10, paddingBottom: 10}}>
+              <Item last style={{ paddingTop: 10, paddingBottom: 10 }}>
                 <CheckBox checked={this.state.item.favorite}
-                  onPress={() => this.updateHandler('favorite', this.state.item.favorite ? false : true)}
+                  onPress={() => this.updateHandler('favorite', !this.state.item.favorite)}
                 />
-                <Button transparent full 
-                  style={{justifyContent: 'flex-start', width: '80%', marginLeft: 30}}
-                  onPress={() => this.updateHandler('favorite', this.state.item.favorite ? false : true)}>
-                  <Text uppercase={false} style={{color: 'grey'}}>Favorite</Text>
+                <Button transparent full
+                  style={{ justifyContent: 'flex-start', width: '80%', marginLeft: 30 }}
+                  onPress={() => this.updateHandler('favorite', !this.state.item.favorite)}>
+                  <Text uppercase={false} style={{ color: 'grey' }}>Favorite</Text>
                 </Button>
               </Item>
             </Form>
           }
-          {!this.props.loading && <GeneratePasswordModal onSelectPassword={(value) => {this.updateHandler('password', value)}}/>}
+          {!this.props.loading && <GeneratePasswordModal onSelectPassword={(value) => { this.updateHandler('password', value) }} />}
         </Content>
         {!this.props.loading && <Footer>
           <FooterTab>
             <Button full success onPress={this.submit}>
-              <Text style={{color: 'white', fontSize: 16}}>Create</Text>
+              <Text style={{ color: 'white', fontSize: 16 }}>Create</Text>
             </Button>
           </FooterTab>
         </Footer>}
@@ -198,7 +196,6 @@ export class AddSite extends Component<Props> {
     )
   }
 }
-
 
 const mapStateToProps = (state, ownProps) => {
   return {
@@ -208,7 +205,7 @@ const mapStateToProps = (state, ownProps) => {
     currentFolder: state.app.currentFolder,
   }
 }
- 
+
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     pushRoute: (...args) => { dispatch(pushRoute.apply(ownProps, args)) },
@@ -216,7 +213,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     setLoading: (...args) => { dispatch(setLoading.apply(ownProps, args)) },
   }
 }
- 
+
 export default connect(mapStateToProps, mapDispatchToProps)(AddSite)
 
 const styles = StyleSheet.create({
@@ -240,7 +237,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     alignContent: 'center',
-    height: Dimensions.get('screen').height -128,
+    height: Dimensions.get('screen').height - 128,
     display: 'flex'
   },
   spinnerContent: {

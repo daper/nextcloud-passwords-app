@@ -1,31 +1,20 @@
-import React, {Component} from 'react'
+import React, { Component } from 'react'
 import {
-  Clipboard,
   StyleSheet,
-  Dimensions,
-  TouchableOpacity,
   BackHandler,
-  FlatList,
 } from 'react-native'
-import {Link, Redirect, withRouter} from "react-router-native"
-import {connect} from 'react-redux'
+import { withRouter } from 'react-router-native'
+import { connect } from 'react-redux'
 import {
   Header,
-  Body,
   Content,
   Container,
-  List,
-  ListItem,
-  Text,
-  Right,
   Icon,
   Item,
   Input,
-  Toast,
   View,
   Spinner,
   Button,
-  Left,
 } from 'native-base'
 import {
   setLoading,
@@ -46,9 +35,8 @@ import API, {
 import FooterMenu from './FooterMenu'
 import SiteList from './SiteList'
 
-type Props = {}
-class Dashboard extends Component<Props> {
-  constructor(props) {
+class Dashboard extends Component {
+  constructor (props) {
     super(props)
 
     this.search = this.search.bind(this)
@@ -64,13 +52,13 @@ class Dashboard extends Component<Props> {
       folder: {}
     }
 
-    let {user, password} = this.props.settings
+    let { user, password } = this.props.settings
     if (user === '' && password === '') {
       this.returnToLogin()
     }
   }
-  
-  async componentDidMount() {
+
+  async componentDidMount () {
     this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
       if (this.props.currentFolder !== ROOT_FOLDER) {
         this.changeFolder(this.state.folder.parent)
@@ -84,16 +72,16 @@ class Dashboard extends Component<Props> {
     await this.changeFolder(this.props.currentFolder)
   }
 
-  componentWillUnmount() {
+  componentWillUnmount () {
     this.props.pushRoute(this.props.location.pathname)
     this.backHandler.remove()
   }
 
-  async fetchPasswords() {
+  async fetchPasswords () {
     this.props.setLoading(true, 'Pulling sites...')
-    let {status, data, error} = await Passwords.fetchAll()
+    let { status } = await Passwords.fetchAll()
 
-    if(status === 401) {
+    if (status === 401) {
       await API.dropDB()
       this.returnToLogin()
       return false
@@ -105,38 +93,38 @@ class Dashboard extends Component<Props> {
     return true
   }
 
-  async fetchFolders() {
+  async fetchFolders () {
     this.props.setLoading(true, 'Pulling folders...')
-    let {status, data, error} = await Folders.fetchAll()
+    let { status } = await Folders.fetchAll()
 
-    if(status === 401) {
+    if (status === 401) {
       await API.dropDB()
       this.returnToLogin()
     } else if (status !== 200) {
       return false
     }
-    
+
     this.props.setLoading(false, 'Loading...')
     return true
   }
 
-  async fetchData() {
+  async fetchData () {
     await this.fetchPasswords()
     await this.fetchFolders()
     this.props.touchLastLogin()
   }
 
-  async getPasswords() {
+  async getPasswords () {
     this.props.setLoading(true, 'Loading sites...')
-    let passwords = await Passwords.getFromFolder(this.props.currentFolder, 
-                                          ['id', 'label', 'url', 'username'])
-    return passwords.map((item) => {return {...item, type: 'site'}})
+    let passwords = await Passwords.getFromFolder(this.props.currentFolder,
+      ['id', 'label', 'url', 'username'])
+    return passwords.map((item) => { return { ...item, type: 'site' } })
   }
 
-  async searchPasswords() {
-    this.setState({filtering: true})
+  async searchPasswords () {
+    this.setState({ filtering: true })
     let rows = await Passwords.search(this.props.filter, ['label', 'uri'], ['id', 'label', 'uri', 'username'])
-    rows = rows.map((item) => {return {...item, type: 'site'}})
+    rows = rows.map((item) => { return { ...item, type: 'site' } })
 
     await this.setState({
       passwordList: rows,
@@ -146,7 +134,7 @@ class Dashboard extends Component<Props> {
     return rows
   }
 
-  async getFolder() {
+  async getFolder () {
     let folder = {}
 
     if (this.props.currentFolder === ROOT_FOLDER) {
@@ -159,18 +147,18 @@ class Dashboard extends Component<Props> {
       folder = await Folders.getItem(this.props.currentFolder)
     }
 
-    await this.setState({folder})
+    await this.setState({ folder })
     return folder
   }
 
-  async getFolders() {
+  async getFolders () {
     this.props.setLoading(true, 'Loading folders...')
     let folders = await Folders.getChildren(this.props.currentFolder,
-                                            ['id', 'label', 'parent'])
-    return folders.map((item) => {return {...item, type: 'folder'}})
+      ['id', 'label', 'parent'])
+    return folders.map((item) => { return { ...item, type: 'folder' } })
   }
 
-  async getData() {
+  async getData () {
     await this.props.setLoading(true, 'Loading...')
     await this.getFolder()
 
@@ -183,16 +171,16 @@ class Dashboard extends Component<Props> {
       folders = await this.getFolders()
     }
 
-    await this.setState({passwordList: [...folders, ...passwords]})
+    await this.setState({ passwordList: [...folders, ...passwords] })
     this.props.setLoading(false)
   }
 
-  async refresh() {
+  async refresh () {
     await this.fetchData()
     await this.getData()
   }
 
-  returnToLogin() {
+  returnToLogin () {
     this.props.setLastLogin(0)
     this.props.setSettings({
       user: '',
@@ -201,7 +189,7 @@ class Dashboard extends Component<Props> {
     this.props.history.push('/login')
   }
 
-  async search(filter) {
+  async search (filter) {
     await this.props.setPasswordFilter(filter)
 
     if (this.searchTimeout) {
@@ -212,33 +200,32 @@ class Dashboard extends Component<Props> {
     this.searchTimeout = setTimeout(this.getData, 300)
   }
 
-  async changeFolder(id) {
+  async changeFolder (id) {
     await this.props.setCurrentFolder(id)
     if (__DEV__) console.log('changeFolder', id)
 
     if (this.props.lastLogin === 0) {
       await this.fetchData()
     }
-    
+
     this.getData()
   }
 
-  render() {
+  render () {
     return (
       <Container>
-        <Header searchBar rounded style={{backgroundColor: Colors.bgColor}}>
+        <Header searchBar rounded style={{ backgroundColor: Colors.bgColor }}>
           <Item>
-            {this.state.filtering ?
-              <Spinner color="black" size="small" style={{padding: 10}}/>
-              :
-              <Icon type="MaterialIcons" name="search" />
+            {this.state.filtering
+              ? <Spinner color='black' size='small' style={{ padding: 10 }} />
+              : <Icon type='MaterialIcons' name='search' />
             }
-            <Input placeholder="Search" defaultValue={this.props.filter} onChangeText={this.search} />
+            <Input placeholder='Search' defaultValue={this.props.filter} onChangeText={this.search} />
           </Item>
-          <View style={{alignSelf: 'center', marginLeft: 10}}>
-          <Button transparent onPress={this.refresh}>
-            <Icon type="MaterialIcons" name="sync" style={{color: 'white', fontSize: 32}} />
-          </Button>
+          <View style={{ alignSelf: 'center', marginLeft: 10 }}>
+            <Button transparent onPress={this.refresh}>
+              <Icon type='MaterialIcons' name='sync' style={{ color: 'white', fontSize: 32 }} />
+            </Button>
           </View>
         </Header>
         <Content padder contentContainerStyle={{ flexGrow: 1 }}>
@@ -248,11 +235,11 @@ class Dashboard extends Component<Props> {
             folder={this.state.folder}
           />
         </Content>
-        {!this.props.loading && <Button rounded primary large 
-            style={styles.actionButton}
-            onPress={() => this.props.history.push('/create')}>
-            <Icon type="MaterialIcons" name="add" style={{fontSize: 40, marginLeft: 8}} />
-          </Button>}
+        {!this.props.loading && <Button rounded primary large
+          style={styles.actionButton}
+          onPress={() => this.props.history.push('/create')}>
+          <Icon type='MaterialIcons' name='add' style={{ fontSize: 40, marginLeft: 8 }} />
+        </Button>}
         <FooterMenu />
       </Container>
     )
@@ -261,16 +248,16 @@ class Dashboard extends Component<Props> {
 
 const mapStateToProps = (state, ownProps) => {
   return {
-      loading: state.app.loading,
-      statusText: state.app.statusText,
-      settings: state.app.settings,
-      filter: state.app.filter,
-      currentFolder: state.app.currentFolder,
-      lastLogin: state.app.lastLogin,
-      lastRoute: state.app.lastRoute,
+    loading: state.app.loading,
+    statusText: state.app.statusText,
+    settings: state.app.settings,
+    filter: state.app.filter,
+    currentFolder: state.app.currentFolder,
+    lastLogin: state.app.lastLogin,
+    lastRoute: state.app.lastRoute,
   }
 }
- 
+
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     setLoading: (...args) => { dispatch(setLoading.apply(ownProps, args)) },
@@ -283,7 +270,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     touchLastLogin: (...args) => { dispatch(touchLastLogin.apply(ownProps, args)) },
   }
 }
- 
+
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Dashboard))
 
 const styles = StyleSheet.create({

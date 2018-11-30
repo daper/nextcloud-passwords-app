@@ -1,8 +1,7 @@
-import React, {Component} from 'react'
+import React, { Component } from 'react'
 import {
   StyleSheet,
   Modal,
-  TouchableOpacity,
   Slider,
 } from 'react-native'
 import {
@@ -11,7 +10,6 @@ import {
   Body,
   Title,
   Right,
-  Left,
   Spinner,
   Content,
   Button,
@@ -23,13 +21,12 @@ import {
   Text,
   CheckBox,
 } from 'native-base'
-import {connect} from 'react-redux'
-import API, {Colors, Passwords} from './API'
-import {togglePasswordModal, setPasswordModalValue} from './redux'
+import { connect } from 'react-redux'
+import { Colors, Passwords } from './API'
+import { togglePasswordModal, setPasswordModalValue } from './redux'
 
-type Props = {}
-export class GeneratePasswordModal extends Component<Props> {
-  constructor(props) {
+export class GeneratePasswordModal extends Component {
+  constructor (props) {
     super(props)
 
     this.requestNewPassword = this.requestNewPassword.bind(this)
@@ -45,15 +42,15 @@ export class GeneratePasswordModal extends Component<Props> {
     }
   }
 
-  async requestNewPassword() {
-    this.setState({requestingNewPassword: true})
+  async requestNewPassword () {
+    this.setState({ requestingNewPassword: true })
 
     let data = await Passwords.generateDefaultPassword({
       numbers: this.state.enableNumbers,
       special: this.state.enableSpecial,
       strength: this.state.strength,
     })
-    
+
     this.setState({
       requestingNewPassword: false,
       enableNumbers: data.numbers,
@@ -64,36 +61,36 @@ export class GeneratePasswordModal extends Component<Props> {
     this.props.setPasswordModalValue(data.password)
   }
 
-  closeModal() {
+  closeModal () {
     this.props.togglePasswordModal(false)
   }
 
-  usePassword() {
+  usePassword () {
     this.closeModal()
     if (this.props.passwordModalValue !== '') {
       this.props.onSelectPassword(this.props.passwordModalValue)
     }
   }
 
-  updatePassword(value) {
+  updatePassword (value) {
     this.props.setPasswordModalValue(value)
   }
 
-  render() {
+  render () {
     return <Modal
-      animationType="none"
-      transparent={true}
+      animationType='none'
+      transparent
       visible={this.props.passwordModalVisible}
       onRequestClose={this.closeModal}>
       <View style={styles.modalContainer}>
         <View style={styles.modalContent}>
-          <Header style={{backgroundColor: Colors.bgColor}}>
+          <Header style={{ backgroundColor: Colors.bgColor }}>
             <Body>
-              <Title style={{fontSize: 16}}>Generate Password</Title>
+              <Title style={{ fontSize: 16 }}>Generate Password</Title>
             </Body>
             <Right>
               <Button block transparent onPress={this.closeModal}>
-                <Icon type="MaterialIcons" name="close" />
+                <Icon type='MaterialIcons' name='close' />
               </Button>
             </Right>
           </Header>
@@ -102,41 +99,40 @@ export class GeneratePasswordModal extends Component<Props> {
               <Input placeholder='password'
                 value={this.props.passwordModalValue}
                 onChangeText={this.updatePassword} />
-              {!this.state.requestingNewPassword ?
-                <Button transparent onPress={this.requestNewPassword}>
-                  <Icon type="MaterialIcons" active name='sync' style={{fontSize: 40, color: 'grey'}} />
+              {!this.state.requestingNewPassword
+                ? <Button transparent onPress={this.requestNewPassword}>
+                  <Icon type='MaterialIcons' active name='sync' style={{ fontSize: 40, color: 'grey' }} />
                 </Button>
-                :
-                <Spinner style={{height: 10}} color={Colors.bgColor} />
+                : <Spinner style={{ height: 10 }} color={Colors.bgColor} />
               }
             </Item>
             <Item>
               <CheckBox checked={this.state.enableNumbers}
-                onPress={() => this.setState({enableNumbers: this.state.enableNumbers ? false : true})}
+                onPress={() => this.setState({ enableNumbers: !this.state.enableNumbers })}
               />
               <Button transparent full
-                onPress={() => this.setState({enableNumbers: this.state.enableNumbers ? false : true})}>
-                <Text uppercase={false} style={{marginLeft: 30, color: 'grey'}}>Enable numbers</Text>
+                onPress={() => this.setState({ enableNumbers: !this.state.enableNumbers })}>
+                <Text uppercase={false} style={{ marginLeft: 30, color: 'grey' }}>Enable numbers</Text>
               </Button>
             </Item>
             <Item>
               <CheckBox checked={this.state.enableSpecial}
-                onPress={() => this.setState({enableSpecial: this.state.enableSpecial ? false : true})}
+                onPress={() => this.setState({ enableSpecial: !this.state.enableSpecial })}
               />
               <Button transparent full
-                onPress={() => this.setState({enableSpecial: this.state.enableSpecial ? false : true})}>
-                <Text uppercase={false} style={{marginLeft: 30, color: 'grey'}}>Enable special</Text>
+                onPress={() => this.setState({ enableSpecial: !this.state.enableSpecial })}>
+                <Text uppercase={false} style={{ marginLeft: 30, color: 'grey' }}>Enable special</Text>
               </Button>
             </Item>
-            <Item style={{height: 50}}>
-              <Text style={{width: '10%', marginLeft: 10}}>{this.state.strength}</Text>
+            <Item style={{ height: 50 }}>
+              <Text style={{ width: '10%', marginLeft: 10 }}>{this.state.strength}</Text>
               <Slider
                 step={1}
                 maximumValue={10}
                 minimumValue={1}
-                onValueChange={(value) => {this.setState({strength: value})}}
+                onValueChange={(value) => { this.setState({ strength: value }) }}
                 value={this.state.strength}
-                style={{width: '80%'}}
+                style={{ width: '80%' }}
                 thumbTintColor={Colors.bgColor}
                 minimumTrackTintColor={Colors.bgColor}
               />
@@ -145,7 +141,7 @@ export class GeneratePasswordModal extends Component<Props> {
           <Footer>
             <FooterTab>
               <Button full success style={styles.modalFooterStyle} onPress={this.usePassword}>
-                <Text style={{color: 'white', fontSize: 14}}>Use</Text>
+                <Text style={{ color: 'white', fontSize: 14 }}>Use</Text>
               </Button>
             </FooterTab>
           </Footer>
@@ -161,14 +157,14 @@ const mapStateToProps = (state, ownProps) => {
     passwordModalValue: state.app.passwordModalValue,
   }
 }
- 
+
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     togglePasswordModal: (...args) => { dispatch(togglePasswordModal.apply(ownProps, args)) },
     setPasswordModalValue: (...args) => { dispatch(setPasswordModalValue.apply(ownProps, args)) },
   }
 }
- 
+
 export default connect(mapStateToProps, mapDispatchToProps)(GeneratePasswordModal)
 
 const styles = StyleSheet.create({

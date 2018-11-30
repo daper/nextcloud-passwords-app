@@ -1,4 +1,4 @@
-import React, {Component} from 'react'
+import React, { Component } from 'react'
 import {
   BackHandler,
   StyleSheet,
@@ -7,13 +7,12 @@ import {
   Container,
   Header,
   Content,
-  View,
   Text,
   Body,
   Icon,
 } from 'native-base'
-import {connect} from 'react-redux'
-import {withRouter} from "react-router-native"
+import { connect } from 'react-redux'
+import { withRouter } from 'react-router-native'
 import {
   Colors,
   ROOT_FOLDER,
@@ -28,9 +27,8 @@ import {
 import FooterMenu from './FooterMenu'
 import SiteList from './SiteList'
 
-type Props = {}
-export class Favorites extends Component<Props> {
-  constructor(props) {
+export class Favorites extends Component {
+  constructor (props) {
     super(props)
 
     this.changeFolder = this.changeFolder.bind(this)
@@ -41,7 +39,7 @@ export class Favorites extends Component<Props> {
     }
   }
 
-  async componentDidMount() {
+  async componentDidMount () {
     this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
       this.props.history.push(this.props.lastRoute)
       return true
@@ -50,20 +48,21 @@ export class Favorites extends Component<Props> {
     await this.changeFolder(this.props.currentFolder)
   }
 
-  componentWillUnmount() {
+  componentWillUnmount () {
     this.props.pushRoute('/favorites')
     this.backHandler.remove()
   }
 
-  async getPasswords() {
+  async getPasswords () {
     this.props.setLoading(true, 'Loading sites...')
     let passwords = await Passwords.getAllFavorites(['id', 'label', 'url', 'username'])
-    return passwords.map((item) => {return {...item, type: 'site'}})
+    return passwords.map((item) => { return { ...item, type: 'site' } })
   }
 
-  async getFolder() {
+  async getFolder () {
     let folder = {}
 
+    /* eslint-disable-next-line no-constant-condition */
     if (true || this.props.currentFolder === ROOT_FOLDER) {
       folder = {
         id: ROOT_FOLDER,
@@ -74,40 +73,40 @@ export class Favorites extends Component<Props> {
       folder = await Folders.getItem(this.props.currentFolder)
     }
 
-    await this.setState({folder})
+    await this.setState({ folder })
     return folder
   }
 
-  async getFolders() {
+  async getFolders () {
     this.props.setLoading(true, 'Loading folders...')
     let folders = await Folders.getFavoriteChildren(this.props.currentFolder,
-                                            ['id', 'label', 'parent'])
-    return folders.map((item) => {return {...item, type: 'folder'}})
+      ['id', 'label', 'parent'])
+    return folders.map((item) => { return { ...item, type: 'folder' } })
   }
 
-  async getData() {
+  async getData () {
     await this.props.setLoading(true, 'Loading...')
     await this.getFolder()
 
     let passwords = await this.getPasswords()
     let folders = await this.getFolders()
 
-    await this.setState({passwordList: [...folders, ...passwords]})
+    await this.setState({ passwordList: [...folders, ...passwords] })
     this.props.setLoading(false)
   }
 
-  async changeFolder(id) {
+  async changeFolder (id) {
     await this.props.setCurrentFolder(id)
     if (__DEV__) console.log('changeFolder', id)
-    
+
     this.getData()
   }
 
-  render() {
+  render () {
     return <Container>
-      <Header style={{backgroundColor: Colors.bgColor}}>
+      <Header style={{ backgroundColor: Colors.bgColor }}>
         <Body style={styles.headerBody}>
-          <Icon type="MaterialIcons" name="star" style={styles.headerBodyIcon} />
+          <Icon type='MaterialIcons' name='star' style={styles.headerBodyIcon} />
           <Text style={styles.headerBodyText}>Favorites</Text>
         </Body>
       </Header>
@@ -130,7 +129,7 @@ const mapStateToProps = (state, ownProps) => {
     currentFolder: state.app.currentFolder,
   }
 }
- 
+
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     setLoading: (...args) => { dispatch(setLoading.apply(ownProps, args)) },

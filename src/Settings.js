@@ -1,4 +1,4 @@
-import React, {Component} from 'react'
+import React, { Component } from 'react'
 import {
   BackHandler,
   StyleSheet,
@@ -11,7 +11,6 @@ import {
   Container,
   Header,
   Content,
-  View,
   Text,
   Body,
   Icon,
@@ -19,21 +18,16 @@ import {
   ListItem,
   Button,
   Right,
-  Switch,
   ActionSheet,
 } from 'native-base'
-import {connect} from 'react-redux'
-import {withRouter} from "react-router-native"
+import { connect } from 'react-redux'
+import { withRouter } from 'react-router-native'
 import API, {
   Colors,
-  ROOT_FOLDER,
-  Folders,
-  Passwords,
 } from './API'
 import {
   setLoading,
   pushRoute,
-  setCurrentFolder,
   setLastLogin,
   setSettings,
 } from './redux'
@@ -41,9 +35,8 @@ import FooterMenu from './FooterMenu'
 
 const PLAY_URL = 'https://play.google.com/store/apps/details?id=com.nextcloudpasswords'
 
-type Props = {}
-export class Settings extends Component<Props> {
-  constructor(props) {
+export class Settings extends Component {
+  constructor (props) {
     super(props)
 
     this.forceSyncDown = this.forceSyncDown.bind(this)
@@ -54,7 +47,7 @@ export class Settings extends Component<Props> {
     this.getSupport = this.getSupport.bind(this)
   }
 
-  async componentDidMount() {
+  async componentDidMount () {
     this.props.pushRoute('/settings')
     this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
       this.props.history.push(this.props.lastRoute)
@@ -62,16 +55,16 @@ export class Settings extends Component<Props> {
     })
   }
 
-  componentWillUnmount() {
+  componentWillUnmount () {
     this.backHandler.remove()
   }
 
-  getLastLogin() {
+  getLastLogin () {
     let elapsed = new Date().getTime() - this.props.lastLogin
-    let timeExpression = "00:00:00"
+    let timeExpression = '00:00:00'
 
     let seconds = (elapsed / 1000).toFixed()
-    let minutes, hours, days = 0
+    let minutes; let hours; let days = 0
     if (seconds >= 60) {
       minutes = (seconds / 60).toFixed()
       seconds = (seconds % 60).toFixed()
@@ -83,42 +76,42 @@ export class Settings extends Component<Props> {
           days = (hours / 24).toFixed()
           hours = (hours % 24).toFixed()
 
-          timeExpression=`${days}d ${('0' + hours).slice(-2)}:${('0' + minutes).slice(-2)}:${('0' + seconds).slice(-2)}`
+          timeExpression = `${days}d ${('0' + hours).slice(-2)}:${('0' + minutes).slice(-2)}:${('0' + seconds).slice(-2)}`
         } else {
-          timeExpression=`${('0' + hours).slice(-2)}:${('0' + minutes).slice(-2)}:${('0' + seconds).slice(-2)}`
+          timeExpression = `${('0' + hours).slice(-2)}:${('0' + minutes).slice(-2)}:${('0' + seconds).slice(-2)}`
         }
       } else {
-        timeExpression=`00:${('0' + minutes).slice(-2)}:${('0' + seconds).slice(-2)}`
+        timeExpression = `00:${('0' + minutes).slice(-2)}:${('0' + seconds).slice(-2)}`
       }
     } else {
-      timeExpression=`00:00:${('0' + seconds).slice(-2)}`
+      timeExpression = `00:00:${('0' + seconds).slice(-2)}`
     }
 
     return timeExpression
   }
 
-  async forceSyncDown() {
+  async forceSyncDown () {
     await this.props.setLastLogin(0)
     this.props.history.push('/dashboard')
   }
 
-  async returnToLogin() {
+  async returnToLogin () {
     await API.dropDB()
     this.props.setLastLogin(0)
     this.props.setSettings({
       user: '',
       password: ''
     })
-    
+
     this.props.history.push('/login')
   }
 
-  logOut() {
+  logOut () {
     ActionSheet.show({
-      options: ["Confirm", "Cancel"],
+      options: ['Confirm', 'Cancel'],
       cancelButtonIndex: 1,
       destructiveButtonIndex: 0,
-      title: "Do you really want to log-out?"
+      title: 'Do you really want to log-out?'
     },
     (buttonIndex) => {
       if (buttonIndex === 0) {
@@ -127,7 +120,7 @@ export class Settings extends Component<Props> {
     })
   }
 
-  async rateApp() {
+  async rateApp () {
     if (Platform.OS === 'android') {
       let url = PLAY_URL
 
@@ -138,7 +131,7 @@ export class Settings extends Component<Props> {
     }
   }
 
-  async getSupport() {
+  async getSupport () {
     let url = 'https://github.com/daper/nextcloud-passwords-app/issues/new'
 
     let supported = await Linking.canOpenURL(url)
@@ -147,18 +140,18 @@ export class Settings extends Component<Props> {
     }
   }
 
-  async shareApp() {
+  async shareApp () {
     await Share.share({
       title: 'Nextcloud Passwords App',
       message: `Checkout this great app to manage you Nextcloud passwords on your mobile device. ${PLAY_URL}`
     }, {})
   }
 
-  render() {
+  render () {
     return <Container>
-      <Header style={{backgroundColor: Colors.bgColor}}>
+      <Header style={{ backgroundColor: Colors.bgColor }}>
         <Body style={styles.headerBody}>
-          <Icon type="MaterialIcons" name="settings" style={styles.headerBodyIcon} />
+          <Icon type='MaterialIcons' name='settings' style={styles.headerBodyIcon} />
           <Text style={styles.headerBodyText}>Settings</Text>
         </Body>
       </Header>
@@ -166,7 +159,7 @@ export class Settings extends Component<Props> {
         <ListItem itemDivider>
           <Text>Synchronization</Text>
         </ListItem>
-        {/*<ListItem icon>
+        {/* <ListItem icon>
           <Left>
             <Button disabled style={{ backgroundColor: "grey" }}>
               <Icon active name="sync" />
@@ -178,74 +171,74 @@ export class Settings extends Component<Props> {
           <Right>
             <Switch value={false} />
           </Right>
-        </ListItem>*/}
+        </ListItem> */}
         <ListItem icon>
-            <Left>
-              <Button style={{ backgroundColor: "grey" }}
-                onPress={this.forceSyncDown}>
-                <Icon active name="refresh" />
-              </Button>
-            </Left>
-            <Body>
-              <TouchableOpacity onPess={this.forceSyncDown}>
-                <Text>Force sync down</Text>
-              </TouchableOpacity>
-            </Body>
-            <Right style={{flexDirection: 'column'}}>
-              <Text style={{fontSize: 8}}>Time elapsed:</Text>
-              <Text style={{paddingBottom: 4}}>{this.getLastLogin()}</Text>
-            </Right>
+          <Left>
+            <Button style={{ backgroundColor: 'grey' }}
+              onPress={this.forceSyncDown}>
+              <Icon active name='refresh' />
+            </Button>
+          </Left>
+          <Body>
+            <TouchableOpacity onPess={this.forceSyncDown}>
+              <Text>Force sync down</Text>
+            </TouchableOpacity>
+          </Body>
+          <Right style={{ flexDirection: 'column' }}>
+            <Text style={{ fontSize: 8 }}>Time elapsed:</Text>
+            <Text style={{ paddingBottom: 4 }}>{this.getLastLogin()}</Text>
+          </Right>
         </ListItem>
         <ListItem itemDivider>
           <Text>Support</Text>
         </ListItem>
         <ListItem icon>
-            <Left>
-              <Button warning
-                onPress={this.rateApp}>
-                <Icon active name="star" />
-              </Button>
-            </Left>
-            <Body>
-              <TouchableOpacity onPress={this.rateApp}>
-                <Text>Rate this app</Text>
-              </TouchableOpacity>
-            </Body>
+          <Left>
+            <Button warning
+              onPress={this.rateApp}>
+              <Icon active name='star' />
+            </Button>
+          </Left>
+          <Body>
+            <TouchableOpacity onPress={this.rateApp}>
+              <Text>Rate this app</Text>
+            </TouchableOpacity>
+          </Body>
         </ListItem>
         <ListItem icon>
-            <Left>
-              <Button style={{backgroundColor: 'grey'}}
-                onPress={this.shareApp}>
-                <Icon active name="share" />
-              </Button>
-            </Left>
-            <Body>
-              <TouchableOpacity onPress={this.shareApp}>
-                <Text>Share this app</Text>
-              </TouchableOpacity>
-            </Body>
+          <Left>
+            <Button style={{ backgroundColor: 'grey' }}
+              onPress={this.shareApp}>
+              <Icon active name='share' />
+            </Button>
+          </Left>
+          <Body>
+            <TouchableOpacity onPress={this.shareApp}>
+              <Text>Share this app</Text>
+            </TouchableOpacity>
+          </Body>
         </ListItem>
         <ListItem icon>
-            <Left>
-              <Button style={{backgroundColor: 'grey'}}
-                onPress={this.getSupport}>
-                <Icon active name="md-help" />
-              </Button>
-            </Left>
-            <Body>
-              <TouchableOpacity onPress={this.getSupport}>
-                <Text>Report a problem</Text>
-              </TouchableOpacity>
-            </Body>
+          <Left>
+            <Button style={{ backgroundColor: 'grey' }}
+              onPress={this.getSupport}>
+              <Icon active name='md-help' />
+            </Button>
+          </Left>
+          <Body>
+            <TouchableOpacity onPress={this.getSupport}>
+              <Text>Report a problem</Text>
+            </TouchableOpacity>
+          </Body>
         </ListItem>
         <ListItem itemDivider>
           <Text>Disconnection</Text>
         </ListItem>
         <ListItem icon>
           <Left>
-            <Button style={{ backgroundColor: "#d9534f" }}
+            <Button style={{ backgroundColor: '#d9534f' }}
               onPress={this.logOut}>
-              <Icon active name="md-power" />
+              <Icon active name='md-power' />
             </Button>
           </Left>
           <Body>
@@ -266,7 +259,7 @@ const mapStateToProps = (state, ownProps) => {
     lastLogin: state.app.lastLogin,
   }
 }
- 
+
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     setLoading: (...args) => { dispatch(setLoading.apply(ownProps, args)) },
