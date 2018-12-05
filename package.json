@@ -11,8 +11,10 @@
   "dependencies": {
     "axios": "^0.18.0",
     "native-base": "^2.8.1",
+    "prop-types": "^15.6.2",
     "react": "16.6.0-alpha.8af6728",
     "react-native": "^0.57.4",
+    "react-native-fingerprint-scanner": "^2.5.0",
     "react-native-fs": "^2.12.1",
     "react-native-sensitive-info": "git://github.com/mcodex/react-native-sensitive-info.git#keystore",
     "react-native-sqlcipher-2": "^1.0.2",

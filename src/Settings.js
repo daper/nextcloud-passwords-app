@@ -6,6 +6,7 @@ import {
   Linking,
   Platform,
   Share,
+  Image,
 } from 'react-native'
 import {
   Container,
@@ -19,6 +20,8 @@ import {
   Button,
   Right,
   ActionSheet,
+  Picker,
+  Input,
 } from 'native-base'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-native'
@@ -27,13 +30,16 @@ import API, {
 } from './API'
 import {
   setLoading,
-  pushRoute,
   setLastLogin,
   setSettings,
+  setLockTimeout,
+  setPasscode,
 } from './redux'
 import FooterMenu from './FooterMenu'
 
 const PLAY_URL = 'https://play.google.com/store/apps/details?id=com.nextcloudpasswords'
+const PAYPAL_URL = 'https://paypal.me/daper'
+const GITHUB_URL = 'https://github.com/daper/nextcloud-passwords-app/issues/new'
 
 export class Settings extends Component {
   constructor (props) {
@@ -45,12 +51,13 @@ export class Settings extends Component {
     this.rateApp = this.rateApp.bind(this)
     this.shareApp = this.shareApp.bind(this)
     this.getSupport = this.getSupport.bind(this)
+    this.setPasscode = this.setPasscode.bind(this)
+    this.donate = this.donate.bind(this)
   }
 
   async componentDidMount () {
-    this.props.pushRoute('/settings')
     this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
-      this.props.history.push(this.props.lastRoute)
+      this.props.history.goBack()
       return true
     })
   }
@@ -132,11 +139,9 @@ export class Settings extends Component {
   }
 
   async getSupport () {
-    let url = 'https://github.com/daper/nextcloud-passwords-app/issues/new'
-
-    let supported = await Linking.canOpenURL(url)
+    let supported = await Linking.canOpenURL(GITHUB_URL)
     if (supported) {
-      Linking.openURL(url)
+      Linking.openURL(GITHUB_URL)
     }
   }
 
@@ -145,6 +150,25 @@ export class Settings extends Component {
       title: 'Nextcloud Passwords App',
       message: `Checkout this great app to manage you Nextcloud passwords on your mobile device. ${PLAY_URL}`
     }, {})
+  }
+
+  async donate () {
+    let supported = await Linking.canOpenURL(PAYPAL_URL)
+    if (supported) {
+      Linking.openURL(PAYPAL_URL)
+    }
+  }
+
+  async setPasscode (code) {
+    if (!code.length || /^[0-9]{1,4}$/.test(code)) {
+      await this.props.setPasscode(code)
+    } else {
+      await this.props.setPasscode(code.slice(0, 4))
+    }
+
+    if (this.props.passcode.length !== 4 && this.props.lockTimeout !== null) {
+      this.props.setLockTimeout(null)
+    }
   }
 
   render () {
@@ -190,7 +214,70 @@ export class Settings extends Component {
           </Right>
         </ListItem>
         <ListItem itemDivider>
+          <Text>Security</Text>
+        </ListItem>
+        <ListItem icon>
+          <Left>
+            <Button style={{ backgroundColor: 'grey' }}>
+              <Icon active type='MaterialIcons' name='lock' />
+            </Button>
+          </Left>
+          <Body>
+            <Input secureTextEntry
+              placeholder='Current passcode (not set)'
+              keyboardType='numeric'
+              defaultValue={this.props.passcode}
+              value={this.props.passcode}
+              onChangeText={this.setPasscode} />
+          </Body>
+        </ListItem>
+        <ListItem icon>
+          <Left>
+            <Button
+              disabled={this.props.passcode.length !== 4}
+              style={{ backgroundColor: 'grey' }}>
+              <Icon active type='MaterialIcons' name='timer' />
+            </Button>
+          </Left>
+          <Body>
+            <Picker
+              enabled={this.props.passcode.length === 4}
+              mode='dropdown'
+              iosIcon={<Icon name='ios-arrow-down-outline' />}
+              placeholder='Lock Timeout'
+              selectedValue={this.props.lockTimeout}
+              onValueChange={this.props.setLockTimeout}
+              style={{ marginRight: -10 }}
+            >
+              <Picker.Item label='Disabled' value={null} />
+              <Picker.Item label='30 sec' value={30 * 1000} />
+              <Picker.Item label='3 min' value={3 * 60 * 1000} />
+              <Picker.Item label='10 min' value={10 * 60 * 1000} />
+              <Picker.Item label='30 min' value={30 * 60 * 1000} />
+            </Picker>
+          </Body>
+        </ListItem>
+        <ListItem itemDivider>
           <Text>Support</Text>
+        </ListItem>
+        <ListItem icon>
+          <Left>
+            <Button onPress={this.donate}>
+              <Image
+                source={require('../assets/pint-of-beer.png')}
+                style={{
+                  width: 29,
+                  height: 29,
+                  borderRadius: 6,
+                  marginTop: 2,
+                }} />
+            </Button>
+          </Left>
+          <Body>
+            <TouchableOpacity onPress={this.donate}>
+              <Text>Buy me a pint</Text>
+            </TouchableOpacity>
+          </Body>
         </ListItem>
         <ListItem icon>
           <Left>
@@ -255,17 +342,19 @@ export class Settings extends Component {
 
 const mapStateToProps = (state, ownProps) => {
   return {
-    lastRoute: state.app.lastRoute,
     lastLogin: state.app.lastLogin,
+    lockTimeout: state.app.lockTimeout,
+    passcode: state.app.passcode,
   }
 }
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     setLoading: (...args) => { dispatch(setLoading.apply(ownProps, args)) },
-    pushRoute: (...args) => { dispatch(pushRoute.apply(ownProps, args)) },
     setLastLogin: (...args) => { dispatch(setLastLogin.apply(ownProps, args)) },
     setSettings: (...args) => { dispatch(setSettings.apply(ownProps, args)) },
+    setLockTimeout: (...args) => { dispatch(setLockTimeout.apply(ownProps, args)) },
+    setPasscode: (...args) => { dispatch(setPasscode.apply(ownProps, args)) },
   }
 }
 

@@ -30,7 +30,7 @@ import {
 } from 'native-base'
 import { connect } from 'react-redux'
 import { Colors, Passwords } from './API'
-import { pushRoute, setLoading, togglePasswordModal } from './redux'
+import { setLoading, togglePasswordModal } from './redux'
 import GeneratePasswordModal from './GeneratePasswordModal'
 
 export class SingleView extends Component {
@@ -56,11 +56,7 @@ export class SingleView extends Component {
     }
 
     let { match } = props
-    console.log(`Showing ${match.params.id}`)
-  }
-
-  componentWillMount () {
-    this.props.pushRoute(this.props.location.pathname)
+    if (__DEV__) console.log(`Showing ${match.params.id}`)
   }
 
   async componentDidMount () {
@@ -307,7 +303,6 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
-    pushRoute: (...args) => { dispatch(pushRoute.apply(ownProps, args)) },
     setLoading: (...args) => { dispatch(setLoading.apply(ownProps, args)) },
     togglePasswordModal: (...args) => { dispatch(togglePasswordModal.apply(ownProps, args)) },
   }

@@ -21,7 +21,6 @@ import {
 } from './API'
 import {
   setLoading,
-  pushRoute,
   setCurrentFolder,
 } from './redux'
 import FooterMenu from './FooterMenu'
@@ -41,7 +40,7 @@ export class Favorites extends Component {
 
   async componentDidMount () {
     this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
-      this.props.history.push(this.props.lastRoute)
+      this.props.history.goBack()
       return true
     })
 
@@ -49,7 +48,6 @@ export class Favorites extends Component {
   }
 
   componentWillUnmount () {
-    this.props.pushRoute('/favorites')
     this.backHandler.remove()
   }
 
@@ -124,7 +122,6 @@ export class Favorites extends Component {
 
 const mapStateToProps = (state, ownProps) => {
   return {
-    lastRoute: state.app.lastRoute,
     filter: state.app.filter,
     currentFolder: state.app.currentFolder,
   }
@@ -133,7 +130,6 @@ const mapStateToProps = (state, ownProps) => {
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     setLoading: (...args) => { dispatch(setLoading.apply(ownProps, args)) },
-    pushRoute: (...args) => { dispatch(pushRoute.apply(ownProps, args)) },
     setCurrentFolder: (...args) => { dispatch(setCurrentFolder.apply(ownProps, args)) },
   }
 }

@@ -26,7 +26,6 @@ import {
 } from './API'
 import {
   setLoading,
-  pushRoute,
   setCurrentFolder,
 } from './redux'
 
@@ -127,7 +126,6 @@ export class SiteList extends Component {
 
 const mapStateToProps = (state, ownProps) => {
   return {
-    lastRoute: state.app.lastRoute,
     loading: state.app.loading,
     statusText: state.app.statusText,
     currentFolder: state.app.currentFolder,
@@ -137,7 +135,6 @@ const mapStateToProps = (state, ownProps) => {
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     setLoading: (...args) => { dispatch(setLoading.apply(ownProps, args)) },
-    pushRoute: (...args) => { dispatch(pushRoute.apply(ownProps, args)) },
     setCurrentFolder: (...args) => { dispatch(setCurrentFolder.apply(ownProps, args)) },
   }
 }

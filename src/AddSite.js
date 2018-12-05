@@ -26,7 +26,6 @@ import {
   Spinner,
 } from 'native-base'
 import {
-  pushRoute,
   togglePasswordModal,
   setLoading,
 } from './redux'
@@ -50,10 +49,6 @@ export class AddSite extends Component {
     this.goBack = this.goBack.bind(this)
     this.updateHandler = this.updateHandler.bind(this)
     this.submit = this.submit.bind(this)
-  }
-
-  componentWillMount () {
-    this.props.pushRoute(this.props.location.pathname)
   }
 
   componentDidMount () {
@@ -208,7 +203,6 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
-    pushRoute: (...args) => { dispatch(pushRoute.apply(ownProps, args)) },
     togglePasswordModal: (...args) => { dispatch(togglePasswordModal.apply(ownProps, args)) },
     setLoading: (...args) => { dispatch(setLoading.apply(ownProps, args)) },
   }

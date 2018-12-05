@@ -5,8 +5,8 @@ buildscript {
         buildToolsVersion = "27.0.3"
         minSdkVersion = 16
         compileSdkVersion = 27
-        targetSdkVersion = 26
-        supportLibVersion = "27.1.1"
+        targetSdkVersion = 27
+        supportLibVersion = "27.0.3"
     }
     repositories {
         google()
