@@ -90,7 +90,9 @@ class Lock extends Component {
   async numberPressed (number) {
     if (this.state.passcode.length < 4) {
       await this.setState({ passcode: `${this.state.passcode}${number}` })
-    } else if (this.state.passcode === this.props.passcode) {
+    }
+
+    if (this.state.passcode === this.props.passcode) {
       this.goBack()
     }
   }
