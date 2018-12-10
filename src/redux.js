@@ -19,6 +19,8 @@ export const ActionTypes = {
   SET_CURRENT_FOLDER: 'SET_CURRENT_FOLDER',
   SET_FINGERPRINT_AVAILABLE: 'SET_FINGERPRINT_AVAILABLE',
   SET_LOCKED: 'SET_LOCKED',
+  SET_PASSCODE: 'SET_PASSCODE',
+  SET_LOCK_TIMEOUT: 'SET_LOCK_TIMEOUT',
 }
 
 // Actions
@@ -65,13 +67,6 @@ export function setLastLogin (ts) {
   }
 }
 
-export function pushRoute (route) {
-  return {
-    type: ActionTypes.PUSH_ROUTE,
-    route
-  }
-}
-
 export function setPasswordFilter (filter) {
   return {
     type: ActionTypes.SET_PASSWORD_FILTER,
@@ -114,13 +109,26 @@ export function setLocked (value) {
   }
 }
 
+export function setPasscode (code) {
+  return {
+    type: ActionTypes.SET_PASSCODE,
+    value: code || ''
+  }
+}
+
+export function setLockTimeout (time) {
+  return {
+    type: ActionTypes.SET_LOCK_TIMEOUT,
+    value: time
+  }
+}
+
 let defaultState = {
   loading: false,
   statusText: 'Contacting Server...',
   loginContainerSize: Dimensions.get('screen').height - 25,
   authFlow: false,
   lastLogin: 0,
-  lastRoute: '',
   settings: {
     server: '',
     user: '',
@@ -132,6 +140,8 @@ let defaultState = {
   currentFolder: '00000000-0000-0000-0000-000000000000',
   isFingerPrintAvailable: false,
   isLocked: false,
+  passcode: '',
+  lockTimeout: Infinity,
 }
 
 // Reducers
@@ -162,9 +172,6 @@ export function appReducer (state = defaultState, action) {
     case ActionTypes.SET_LAST_LOGIN:
       return { ...state, lastLogin: action.timestamp }
 
-    case ActionTypes.PUSH_ROUTE:
-      return { ...state, lastRoute: action.route }
-
     case ActionTypes.SET_PASSWORD_FILTER:
       return { ...state, filter: action.filter }
 
@@ -187,6 +194,12 @@ export function appReducer (state = defaultState, action) {
 
     case ActionTypes.SET_LOCKED:
       return { ...state, isLocked: action.value }
+
+    case ActionTypes.SET_PASSCODE:
+      return { ...state, passcode: action.value }
+
+    case ActionTypes.SET_LOCK_TIMEOUT:
+      return { ...state, lockTimeout: action.value }
 
     default:
       return state

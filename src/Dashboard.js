@@ -21,7 +21,6 @@ import {
   pushPassword,
   setSettings,
   setLastLogin,
-  pushRoute,
   setPasswordFilter,
   setCurrentFolder,
   touchLastLogin,
@@ -63,7 +62,7 @@ class Dashboard extends Component {
       if (this.props.currentFolder !== ROOT_FOLDER) {
         this.changeFolder(this.state.folder.parent)
       } else {
-        this.props.history.push(this.props.lastRoute)
+        this.props.history.goBack()
       }
 
       return true
@@ -73,7 +72,6 @@ class Dashboard extends Component {
   }
 
   componentWillUnmount () {
-    this.props.pushRoute(this.props.location.pathname)
     this.backHandler.remove()
   }
 
@@ -254,7 +252,6 @@ const mapStateToProps = (state, ownProps) => {
     filter: state.app.filter,
     currentFolder: state.app.currentFolder,
     lastLogin: state.app.lastLogin,
-    lastRoute: state.app.lastRoute,
   }
 }
 
@@ -264,7 +261,6 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     pushPassword: (...args) => { dispatch(pushPassword.apply(ownProps, args)) },
     setSettings: (...args) => { dispatch(setSettings.apply(ownProps, args)) },
     setLastLogin: (...args) => { dispatch(setLastLogin.apply(ownProps, args)) },
-    pushRoute: (...args) => { dispatch(pushRoute.apply(ownProps, args)) },
     setPasswordFilter: (...args) => { dispatch(setPasswordFilter.apply(ownProps, args)) },
     setCurrentFolder: (...args) => { dispatch(setCurrentFolder.apply(ownProps, args)) },
     touchLastLogin: (...args) => { dispatch(touchLastLogin.apply(ownProps, args)) },
