@@ -11,7 +11,10 @@ import Favorites from './Favorites'
 import Settings from './Settings'
 import Lock from './Lock'
 import API from './API'
-import { setLocked } from './redux'
+import {
+  setLocked,
+  setLastForeground,
+} from './redux'
 
 export class App extends Component {
   constructor (props) {
@@ -19,15 +22,18 @@ export class App extends Component {
     this.state = {
       default: null,
       appState: AppState.currentState,
-      lastForeground: 0,
     }
 
     this.renderDefault = this.renderDefault.bind(this)
     this.renderComponent = this.renderComponent.bind(this)
     this._handleAppStateChange = this._handleAppStateChange.bind(this)
+    this.checkLock = this.checkLock.bind(this)
 
     API.init(this.props.settings)
     API.openDB()
+
+    this.checkLock()
+    this.props.setLastForeground(new Date().getTime())
   }
 
   componentDidMount () {
@@ -42,15 +48,22 @@ export class App extends Component {
     if (this.props.lockTimeout === null || this.props.isLocked) { return }
 
     if (this.state.appState.match(/inactive|background/) && nextAppState === 'active') {
-      let elapsed = new Date().getTime() - this.state.lastForeground
-      if (elapsed > this.props.lockTimeout) {
-        await this.props.setLocked(true)
-      }
+      this.checkLock()
     } else { // App went to background
-      await this.setState({ lastForeground: new Date().getTime() })
+      await this.props.setLastForeground(new Date().getTime())
     }
 
     await this.setState({ appState: nextAppState })
+  }
+
+  async checkLock () {
+    let elapsed = new Date().getTime() - this.props.lastForeground
+    if (this.props.lockTimeout !== null && elapsed > this.props.lockTimeout) {
+      await this.props.setLocked(true)
+      return true
+    } else {
+      return false
+    }
   }
 
   isLoggedIn () {
@@ -97,12 +110,14 @@ const mapStateToProps = (state, ownProps) => {
     lastLogin: state.app.lastLogin,
     lockTimeout: state.app.lockTimeout,
     isLocked: state.app.isLocked,
+    lastForeground: state.app.lastForeground,
   }
 }
 
 const mapDispatchToProps = (dispatch, ownProps) => {
   return {
     setLocked: (...args) => { dispatch(setLocked.apply(ownProps, args)) },
+    setLastForeground: (...args) => { dispatch(setLastForeground.apply(ownProps, args)) },
   }
 }
 

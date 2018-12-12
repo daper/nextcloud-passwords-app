@@ -21,6 +21,7 @@ export const ActionTypes = {
   SET_LOCKED: 'SET_LOCKED',
   SET_PASSCODE: 'SET_PASSCODE',
   SET_LOCK_TIMEOUT: 'SET_LOCK_TIMEOUT',
+  SET_LAST_FOREGROUND: 'SET_LAST_FOREGROUND',
 }
 
 // Actions
@@ -123,6 +124,13 @@ export function setLockTimeout (time) {
   }
 }
 
+export function setLastForeground (time) {
+  return {
+    type: ActionTypes.SET_LAST_FOREGROUND,
+    value: time
+  }
+}
+
 let defaultState = {
   loading: false,
   statusText: 'Contacting Server...',
@@ -142,6 +150,7 @@ let defaultState = {
   isLocked: false,
   passcode: '',
   lockTimeout: Infinity,
+  lastForeground: '',
 }
 
 // Reducers
@@ -200,6 +209,9 @@ export function appReducer (state = defaultState, action) {
 
     case ActionTypes.SET_LOCK_TIMEOUT:
       return { ...state, lockTimeout: action.value }
+
+    case ActionTypes.SET_LAST_FOREGROUND:
+      return { ...state, lastForeground: action.value }
 
     default:
       return state
