@@ -57,6 +57,7 @@
 		C692597282AE49D9A2C043CC /* libRNFS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DBD12A55FD0F4E3EAD02A893 /* libRNFS.a */; };
 		7E3F965A7F904206BF4953F3 /* libRNSensitiveInfo.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B67B096B255C45FA860A3AEF /* libRNSensitiveInfo.a */; };
 		772BDD4E23034FFBBD9255B3 /* libReactNativeFingerprintScanner.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E44E3ED6495F4425B5D694CE /* libReactNativeFingerprintScanner.a */; };
+		F7735392E2A743F29876EAE8 /* libRNBackgroundJob.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 92692F6A104C4A08BBFCDF01 /* libRNBackgroundJob.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -387,6 +388,8 @@
 		B67B096B255C45FA860A3AEF /* libRNSensitiveInfo.a */ = {isa = PBXFileReference; name = "libRNSensitiveInfo.a"; path = "libRNSensitiveInfo.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
 		CF3087B4EE404EC293001FF1 /* ReactNativeFingerprintScanner.xcodeproj */ = {isa = PBXFileReference; name = "ReactNativeFingerprintScanner.xcodeproj"; path = "../node_modules/react-native-fingerprint-scanner/ios/ReactNativeFingerprintScanner.xcodeproj"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = wrapper.pb-project; explicitFileType = undefined; includeInIndex = 0; };
 		E44E3ED6495F4425B5D694CE /* libReactNativeFingerprintScanner.a */ = {isa = PBXFileReference; name = "libReactNativeFingerprintScanner.a"; path = "libReactNativeFingerprintScanner.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
+		ED1EDC3F447A4BA781DBAE25 /* RNBackgroundJob.xcodeproj */ = {isa = PBXFileReference; name = "RNBackgroundJob.xcodeproj"; path = "../node_modules/react-native-background-job/ios/RNBackgroundJob.xcodeproj"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = wrapper.pb-project; explicitFileType = undefined; includeInIndex = 0; };
+		92692F6A104C4A08BBFCDF01 /* libRNBackgroundJob.a */ = {isa = PBXFileReference; name = "libRNBackgroundJob.a"; path = "libRNBackgroundJob.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -419,6 +422,7 @@
 				C692597282AE49D9A2C043CC /* libRNFS.a in Frameworks */,
 				7E3F965A7F904206BF4953F3 /* libRNSensitiveInfo.a in Frameworks */,
 				772BDD4E23034FFBBD9255B3 /* libReactNativeFingerprintScanner.a in Frameworks */,
+				F7735392E2A743F29876EAE8 /* libRNBackgroundJob.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -612,6 +616,7 @@
 				BB96A1F6764D41BB99927F9E /* RNFS.xcodeproj */,
 				ED3826B9DA104AE094349D0E /* RNSensitiveInfo.xcodeproj */,
 				CF3087B4EE404EC293001FF1 /* ReactNativeFingerprintScanner.xcodeproj */,
+				ED1EDC3F447A4BA781DBAE25 /* RNBackgroundJob.xcodeproj */,
 			);
 			name = Libraries;
 			sourceTree = "<group>";
@@ -1278,6 +1283,7 @@
 					"$(inherited)",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1286,6 +1292,7 @@
 					"$(SRCROOT)/../node_modules/react-native-fs/**",
 					"$(SRCROOT)/../node_modules/react-native-sensitive-info/ios/RNSensitiveInfo",
 					"$(SRCROOT)/../node_modules/react-native-fingerprint-scanner/ios",
+					"$(SRCROOT)/../node_modules/react-native-background-job/ios",
 				);
 			};
 			name = Debug;
@@ -1309,6 +1316,7 @@
 					"$(inherited)",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1317,6 +1325,7 @@
 					"$(SRCROOT)/../node_modules/react-native-fs/**",
 					"$(SRCROOT)/../node_modules/react-native-sensitive-info/ios/RNSensitiveInfo",
 					"$(SRCROOT)/../node_modules/react-native-fingerprint-scanner/ios",
+					"$(SRCROOT)/../node_modules/react-native-background-job/ios",
 				);
 			};
 			name = Release;
@@ -1344,6 +1353,7 @@
 					"$(SRCROOT)/../node_modules/react-native-fs/**",
 					"$(SRCROOT)/../node_modules/react-native-sensitive-info/ios/RNSensitiveInfo",
 					"$(SRCROOT)/../node_modules/react-native-fingerprint-scanner/ios",
+					"$(SRCROOT)/../node_modules/react-native-background-job/ios",
 				);
 			};
 			name = Debug;
@@ -1370,6 +1380,7 @@
 					"$(SRCROOT)/../node_modules/react-native-fs/**",
 					"$(SRCROOT)/../node_modules/react-native-sensitive-info/ios/RNSensitiveInfo",
 					"$(SRCROOT)/../node_modules/react-native-fingerprint-scanner/ios",
+					"$(SRCROOT)/../node_modules/react-native-background-job/ios",
 				);
 			};
 			name = Release;
@@ -1401,6 +1412,7 @@
 					"$(inherited)",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1409,6 +1421,7 @@
 					"$(SRCROOT)/../node_modules/react-native-fs/**",
 					"$(SRCROOT)/../node_modules/react-native-sensitive-info/ios/RNSensitiveInfo",
 					"$(SRCROOT)/../node_modules/react-native-fingerprint-scanner/ios",
+					"$(SRCROOT)/../node_modules/react-native-background-job/ios",
 				);
 			};
 			name = Debug;
@@ -1440,6 +1453,7 @@
 					"$(inherited)",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1448,6 +1462,7 @@
 					"$(SRCROOT)/../node_modules/react-native-fs/**",
 					"$(SRCROOT)/../node_modules/react-native-sensitive-info/ios/RNSensitiveInfo",
 					"$(SRCROOT)/../node_modules/react-native-fingerprint-scanner/ios",
+					"$(SRCROOT)/../node_modules/react-native-background-job/ios",
 				);
 			};
 			name = Release;
@@ -1478,6 +1493,7 @@
 					"$(inherited)",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1486,6 +1502,7 @@
 					"$(SRCROOT)/../node_modules/react-native-fs/**",
 					"$(SRCROOT)/../node_modules/react-native-sensitive-info/ios/RNSensitiveInfo",
 					"$(SRCROOT)/../node_modules/react-native-fingerprint-scanner/ios",
+					"$(SRCROOT)/../node_modules/react-native-background-job/ios",
 				);
 			};
 			name = Debug;
@@ -1516,6 +1533,7 @@
 					"$(inherited)",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1524,6 +1542,7 @@
 					"$(SRCROOT)/../node_modules/react-native-fs/**",
 					"$(SRCROOT)/../node_modules/react-native-sensitive-info/ios/RNSensitiveInfo",
 					"$(SRCROOT)/../node_modules/react-native-fingerprint-scanner/ios",
+					"$(SRCROOT)/../node_modules/react-native-background-job/ios",
 				);
 			};
 			name = Release;

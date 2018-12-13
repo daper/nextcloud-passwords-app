@@ -3,6 +3,7 @@ package com.nextcloudpasswords;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import com.pilloxa.backgroundjob.BackgroundJobPackage;
 import com.hieuvp.fingerprint.ReactNativeFingerprintScannerPackage;
 import com.reactnativecommunity.webview.RNCWebViewPackage;
 import com.rnfs.RNFSPackage;
@@ -29,6 +30,7 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new BackgroundJobPackage(),
             new ReactNativeFingerprintScannerPackage(),
             new RNCWebViewPackage(),
             new RNFSPackage(),

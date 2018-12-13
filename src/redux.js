@@ -22,6 +22,7 @@ export const ActionTypes = {
   SET_PASSCODE: 'SET_PASSCODE',
   SET_LOCK_TIMEOUT: 'SET_LOCK_TIMEOUT',
   SET_LAST_FOREGROUND: 'SET_LAST_FOREGROUND',
+  SET_SYNC_FREQUENCY: 'SET_SYNC_FREQUENCY',
 }
 
 // Actions
@@ -131,6 +132,13 @@ export function setLastForeground (time) {
   }
 }
 
+export function setSyncFrequency (time) {
+  return {
+    type: ActionTypes.SET_SYNC_FREQUENCY,
+    value: time
+  }
+}
+
 let defaultState = {
   loading: false,
   statusText: 'Contacting Server...',
@@ -149,8 +157,9 @@ let defaultState = {
   isFingerPrintAvailable: false,
   isLocked: false,
   passcode: '',
-  lockTimeout: Infinity,
+  lockTimeout: null,
   lastForeground: '',
+  syncFrequency: null
 }
 
 // Reducers
@@ -212,6 +221,9 @@ export function appReducer (state = defaultState, action) {
 
     case ActionTypes.SET_LAST_FOREGROUND:
       return { ...state, lastForeground: action.value }
+
+    case ActionTypes.SET_SYNC_FREQUENCY:
+      return { ...state, syncFrequency: action.value }
 
     default:
       return state

@@ -34,8 +34,11 @@ import {
   setSettings,
   setLockTimeout,
   setPasscode,
+  setSyncFrequency,
 } from './redux'
 import FooterMenu from './FooterMenu'
+import BackgroundJob from 'react-native-background-job'
+import { ServiceName, schedule } from './service'
 
 const PLAY_URL = 'https://play.google.com/store/apps/details?id=com.nextcloudpasswords'
 const PAYPAL_URL = 'https://paypal.me/daper'
@@ -53,6 +56,7 @@ export class Settings extends Component {
     this.getSupport = this.getSupport.bind(this)
     this.setPasscode = this.setPasscode.bind(this)
     this.donate = this.donate.bind(this)
+    this.setSyncFrequency = this.setSyncFrequency.bind(this)
   }
 
   async componentDidMount () {
@@ -171,6 +175,15 @@ export class Settings extends Component {
     }
   }
 
+  async setSyncFrequency (value) {
+    this.props.setSyncFrequency(value)
+    await BackgroundJob.cancel({ jobKey: ServiceName })
+
+    if (value) {
+      schedule(value)
+    }
+  }
+
   render () {
     return <Container>
       <Header style={{ backgroundColor: Colors.bgColor }}>
@@ -183,19 +196,6 @@ export class Settings extends Component {
         <ListItem itemDivider>
           <Text>Synchronization</Text>
         </ListItem>
-        {/* <ListItem icon>
-          <Left>
-            <Button disabled style={{ backgroundColor: "grey" }}>
-              <Icon active name="sync" />
-            </Button>
-          </Left>
-          <Body>
-            <Text>Automatic Syncing</Text>
-          </Body>
-          <Right>
-            <Switch value={false} />
-          </Right>
-        </ListItem> */}
         <ListItem icon>
           <Left>
             <Button style={{ backgroundColor: 'grey' }}
@@ -212,6 +212,29 @@ export class Settings extends Component {
             <Text style={{ fontSize: 8 }}>Time elapsed:</Text>
             <Text style={{ paddingBottom: 4 }}>{this.getLastLogin()}</Text>
           </Right>
+        </ListItem>
+        <ListItem icon>
+          <Left>
+            <Button style={{ backgroundColor: 'grey' }}>
+              <Icon active type='MaterialIcons' name='timer' />
+            </Button>
+          </Left>
+          <Body>
+            <Picker
+              mode='dropdown'
+              iosIcon={<Icon name='ios-arrow-down-outline' />}
+              placeholder='Sync frequency'
+              selectedValue={this.props.syncFrequency}
+              onValueChange={this.setSyncFrequency}
+              style={{ marginRight: -10 }}
+            >
+              <Picker.Item label='Disabled' value={null} />
+              <Picker.Item label='15 min' value={15 * 60 * 1000} />
+              <Picker.Item label='3 hours' value={3 * 60 * 60 * 1000} />
+              <Picker.Item label='1 day' value={24 * 60 * 60 * 1000} />
+              <Picker.Item label='7 day' value={7 * 24 * 60 * 60 * 1000} />
+            </Picker>
+          </Body>
         </ListItem>
         <ListItem itemDivider>
           <Text>Security</Text>
@@ -345,6 +368,7 @@ const mapStateToProps = (state, ownProps) => {
     lastLogin: state.app.lastLogin,
     lockTimeout: state.app.lockTimeout,
     passcode: state.app.passcode,
+    syncFrequency: state.app.syncFrequency,
   }
 }
 
@@ -355,6 +379,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     setSettings: (...args) => { dispatch(setSettings.apply(ownProps, args)) },
     setLockTimeout: (...args) => { dispatch(setLockTimeout.apply(ownProps, args)) },
     setPasscode: (...args) => { dispatch(setPasscode.apply(ownProps, args)) },
+    setSyncFrequency: (...args) => { dispatch(setSyncFrequency.apply(ownProps, args)) },
   }
 }
 
