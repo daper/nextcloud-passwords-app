@@ -32,7 +32,10 @@ export class App extends Component {
     API.init(this.props.settings)
     API.openDB()
 
-    this.checkLock()
+    if (this.props.enableSecurity === true) {
+      this.props.setLocked(true)
+    }
+
     this.props.setLastForeground(new Date().getTime())
   }
 
@@ -45,7 +48,7 @@ export class App extends Component {
   }
 
   async _handleAppStateChange (nextAppState) {
-    if (this.props.lockTimeout === null || this.props.isLocked) { return }
+    if (this.props.enableSecurity === false || this.props.isLocked) { return }
 
     if (this.state.appState.match(/inactive|background/) && nextAppState === 'active') {
       this.checkLock()
@@ -58,7 +61,7 @@ export class App extends Component {
 
   async checkLock () {
     let elapsed = new Date().getTime() - this.props.lastForeground
-    if (this.props.lockTimeout !== null && elapsed > this.props.lockTimeout) {
+    if (elapsed > this.props.lockTimeout) {
       await this.props.setLocked(true)
       return true
     } else {
@@ -111,6 +114,7 @@ const mapStateToProps = (state, ownProps) => {
     lockTimeout: state.app.lockTimeout,
     isLocked: state.app.isLocked,
     lastForeground: state.app.lastForeground,
+    enableSecurity: state.app.enableSecurity,
   }
 }
 

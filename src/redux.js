@@ -22,6 +22,7 @@ export const ActionTypes = {
   SET_PASSCODE: 'SET_PASSCODE',
   SET_LOCK_TIMEOUT: 'SET_LOCK_TIMEOUT',
   SET_LAST_FOREGROUND: 'SET_LAST_FOREGROUND',
+  TOGGLE_SECURITY: 'TOGGLE_SECURITY',
 }
 
 // Actions
@@ -131,6 +132,13 @@ export function setLastForeground (time) {
   }
 }
 
+export function toggleSecurity (value) {
+  return {
+    type: ActionTypes.TOGGLE_SECURITY,
+    value: Boolean(value)
+  }
+}
+
 let defaultState = {
   loading: false,
   statusText: 'Contacting Server...',
@@ -151,6 +159,7 @@ let defaultState = {
   passcode: '',
   lockTimeout: Infinity,
   lastForeground: '',
+  enableSecurity: false,
 }
 
 // Reducers
@@ -212,6 +221,9 @@ export function appReducer (state = defaultState, action) {
 
     case ActionTypes.SET_LAST_FOREGROUND:
       return { ...state, lastForeground: action.value }
+
+    case ActionTypes.TOGGLE_SECURITY:
+      return { ...state, enableSecurity: action.value }
 
     default:
       return state

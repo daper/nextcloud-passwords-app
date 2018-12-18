@@ -22,6 +22,7 @@ import {
   ActionSheet,
   Picker,
   Input,
+  Switch,
 } from 'native-base'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-native'
@@ -34,6 +35,7 @@ import {
   setSettings,
   setLockTimeout,
   setPasscode,
+  toggleSecurity,
 } from './redux'
 import FooterMenu from './FooterMenu'
 
@@ -53,6 +55,8 @@ export class Settings extends Component {
     this.getSupport = this.getSupport.bind(this)
     this.setPasscode = this.setPasscode.bind(this)
     this.donate = this.donate.bind(this)
+    this.toggleSecurity = this.toggleSecurity.bind(this)
+    this.canEnableSecurity = this.canEnableSecurity.bind(this)
   }
 
   async componentDidMount () {
@@ -166,9 +170,26 @@ export class Settings extends Component {
       await this.props.setPasscode(code.slice(0, 4))
     }
 
-    if (this.props.passcode.length !== 4 && this.props.lockTimeout !== null) {
-      this.props.setLockTimeout(null)
+    if (this.props.passcode.length !== 4 && this.props.enableSecurity === true) {
+      await this.props.toggleSecurity(false)
     }
+  }
+
+  async toggleSecurity (value = null) {
+    if (typeof value !== 'boolean') {
+      value = !this.props.enableSecurity
+    }
+
+    if (!this.canEnableSecurity()) {
+      value = false
+    }
+
+    await this.props.toggleSecurity(value)
+  }
+
+  canEnableSecurity () {
+    return this.props.passcode !== null &&
+      this.props.passcode.length === 4
   }
 
   render () {
@@ -218,8 +239,26 @@ export class Settings extends Component {
         </ListItem>
         <ListItem icon>
           <Left>
+            <Button disabled style={{ backgroundColor: 'grey' }} onPress={this.toggleSecurity}>
+              <Icon active type='MaterialIcons' name={this.props.enableSecurity ? 'lock' : 'lock-open'} />
+            </Button>
+          </Left>
+          <Body>
+            <TouchableOpacity onPress={this.toggleSecurity}>
+              <Text>Toggle security</Text>
+            </TouchableOpacity>
+          </Body>
+          <Right>
+            <Switch
+              disabled={!this.canEnableSecurity()}
+              value={this.props.enableSecurity}
+              onValueChange={this.toggleSecurity} />
+          </Right>
+        </ListItem>
+        <ListItem icon>
+          <Left>
             <Button style={{ backgroundColor: 'grey' }}>
-              <Icon active type='MaterialIcons' name='lock' />
+              <Icon active type='MaterialIcons' name='vpn-key' />
             </Button>
           </Left>
           <Body>
@@ -234,14 +273,14 @@ export class Settings extends Component {
         <ListItem icon>
           <Left>
             <Button
-              disabled={this.props.passcode.length !== 4}
+              disabled={!this.canEnableSecurity()}
               style={{ backgroundColor: 'grey' }}>
               <Icon active type='MaterialIcons' name='timer' />
             </Button>
           </Left>
           <Body>
             <Picker
-              enabled={this.props.passcode.length === 4}
+              enabled={this.canEnableSecurity()}
               mode='dropdown'
               iosIcon={<Icon name='ios-arrow-down-outline' />}
               placeholder='Lock Timeout'
@@ -345,6 +384,7 @@ const mapStateToProps = (state, ownProps) => {
     lastLogin: state.app.lastLogin,
     lockTimeout: state.app.lockTimeout,
     passcode: state.app.passcode,
+    enableSecurity: state.app.enableSecurity,
   }
 }
 
@@ -355,6 +395,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     setSettings: (...args) => { dispatch(setSettings.apply(ownProps, args)) },
     setLockTimeout: (...args) => { dispatch(setLockTimeout.apply(ownProps, args)) },
     setPasscode: (...args) => { dispatch(setPasscode.apply(ownProps, args)) },
+    toggleSecurity: (...args) => { dispatch(toggleSecurity.apply(ownProps, args)) },
   }
 }
 

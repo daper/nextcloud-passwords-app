@@ -82,7 +82,7 @@ class Lock extends Component {
         await this.setState({ isError: true, errorMessage: err.message })
         this.errorTimeout = setTimeout(() => {
           this.setState({ isError: null, errorMessage: null })
-        }, 400)
+        }, 300)
         break
     }
   }
@@ -195,6 +195,14 @@ class Lock extends Component {
               onPress={() => { this.numberPressed(9) }}>
               <Text style={styles.numberText}>9</Text>
             </Button>
+          </View>
+          <View style={styles.numbersRowContainer}>
+            <Button disabled style={styles.number} />
+            <Button style={styles.number}
+              onPress={() => { this.numberPressed(0) }}>
+              <Text style={styles.numberText}>0</Text>
+            </Button>
+            <Button disabled style={styles.number} />
           </View>
         </View>
       </Content>
