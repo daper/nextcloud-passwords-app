@@ -40,7 +40,6 @@ export class API {
       baseURL: `${this.credentials.server}/index.php/apps/passwords`,
       timeout: 2 * 60 * 1000,
       headers: { 'OCS-APIRequest': 'true' },
-      rejectUnauthorized: false,
       auth
     })
 
@@ -90,7 +89,6 @@ export class API {
         baseURL: `${this.credentials.server}`,
         timeout: 10 * 1000,
         headers: { 'OCS-APIRequest': 'true' },
-        rejectUnauthorized: false,
         auth: {
           username: this.credentials.user,
           password: this.credentials.password,
