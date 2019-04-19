@@ -6,4 +6,8 @@
             <certificates src="user"/>
         </trust-anchors>
     </base-config>
+    <domain-config cleartextTrafficPermitted="true">
+        <domain>127.0.0.1</domain>
+        <domain>localhost</domain>
+    </domain-config>
 </network-security-config>
