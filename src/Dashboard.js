@@ -43,6 +43,7 @@ class Dashboard extends Component {
     this.changeFolder = this.changeFolder.bind(this)
     this.getData = this.getData.bind(this)
     this.getFolder = this.getFolder.bind(this)
+    this.clearSearchFilter = this.clearSearchFilter.bind(this)
 
     this.searchTimeout = null
     this.state = {
@@ -199,6 +200,10 @@ class Dashboard extends Component {
     this.searchTimeout = setTimeout(this.getData, 300)
   }
 
+  async clearSearchFilter() {
+    await this.search('')
+  }
+
   async changeFolder (id) {
     await this.props.setCurrentFolder(id)
     if (__DEV__) console.log('changeFolder', id)
@@ -220,6 +225,12 @@ class Dashboard extends Component {
               : <Icon type='MaterialIcons' name='search' />
             }
             <Input placeholder='Search' defaultValue={this.props.filter} onChangeText={this.search} />
+            {this.props.filter.length !== 0
+              ? <Button transparent onPress={this.clearSearchFilter} style={{ paddingTop: 3 }}>
+                  <Icon type='MaterialIcons' name="close" style={{ color: Colors.grey, marginRight: 8 }} />
+                </Button>
+              : null
+            }
           </Item>
           <View style={{ alignSelf: 'center', marginLeft: 10 }}>
             <Button transparent onPress={this.refresh}>

@@ -9,6 +9,7 @@ import { PersistGate } from 'redux-persist/integration/react'
 import configureStore from './src/redux'
 
 if (__DEV__) {
+  console.disableYellowBox = true
   YellowBox.ignoreWarnings([
     'Remote debugger',
     'unknown call: "relay:check"'

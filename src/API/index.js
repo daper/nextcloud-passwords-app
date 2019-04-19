@@ -12,6 +12,7 @@ export {
 
 export const Colors = {
   bgColor: '#0082c9',
+  grey: '#414142'
 }
 
 const DB_NAME = 'nextcloud.db'
