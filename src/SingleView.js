@@ -4,6 +4,7 @@ import {
   BackHandler,
   Dimensions,
   Clipboard,
+  Linking,
 } from 'react-native'
 import { withRouter } from 'react-router-native'
 import {
@@ -76,6 +77,12 @@ export class SingleView extends Component {
     item.url = String(item.url)
     item.password = String(item.password)
     item.username = String(item.username)
+    
+    if (item.customFields.length !== 0) {
+      item.customFields = JSON.parse(item.customFields)
+    } else {
+      item.customFields = []
+    }
 
     this.setState({ item, untouchedItem: { ...item } })
 
@@ -89,8 +96,10 @@ export class SingleView extends Component {
   async save () {
     try {
       this.props.setLoading(true, 'Saving...')
-      let { id, label, username, password, url, notes } = this.state.item
-      await Passwords.updateItem({ id, label, username, password, url, notes })
+      let { id, label, username, password, url, notes, customFields } = this.state.item
+      await Passwords.updateItem({ id, label, username, password, url, notes, customFields: JSON.stringify(customFields) })
+      let item = this.state.item
+      await this.setState({ item, untouchedItem: { ...item } })
     } catch (err) {
       if (__DEV__) console.log('save', err)
     }
@@ -117,7 +126,14 @@ export class SingleView extends Component {
 
   updateHandler (name, value) {
     let item = this.state.item
-    item[name] = value
+
+    if (name === "customFields") {
+      let index = item.customFields.findIndex((item) => item.id === value.id)
+      item.customFields[index] = value
+    } else {
+      item[name] = value
+    }
+    
     this.setState({ item })
   }
 
@@ -125,16 +141,19 @@ export class SingleView extends Component {
     this.props.history.goBack()
   }
 
-  async toClipboard (id) {
-    let pass = await Passwords.getPassword(id)
-
-    Clipboard.setString(pass)
+  toClipboard(value) {
+    Clipboard.setString(value)
 
     Toast.show({
       text: 'Copied!',
       buttonText: 'Okay',
       duration: 2000
     })
+  }
+
+  async passwordToClipboard (id) {
+    let pass = await Passwords.getPassword(id)
+    this.toClipboard(pass)
   }
 
   renderIcons () {
@@ -188,6 +207,97 @@ export class SingleView extends Component {
     this.setState({ favoriteUpdating: false })
   }
 
+  renderCustomField (field) {
+    switch (field.type) {
+      case 'text':
+        return (
+          <Item key={field.id} stackedLabel disabled={!this.state.editing} last>
+            <Label>{field.label}</Label>
+            <Input
+              disabled={!this.state.editing}
+              defaultValue={field.value}
+              value={field.value}
+              onChangeText={(filter) => this.updateHandler('customFields', {...field, value: filter})} />
+          </Item>
+        )
+        break
+      case 'secret':
+        let showPasswordKey = `showPassword_${field.label}`
+        return (
+          <Item key={field.id} stackedLabel disabled={!this.state.editing} last>
+            <Label>{field.label}</Label>
+            <Input
+              disabled={!this.state.editing}
+              secureTextEntry={!this.state[showPasswordKey] && !this.state.editing}
+              defaultValue={field.value}
+              value={field.value}
+              style={{ width: '75%' }}
+              onChangeText={(filter) => this.updateHandler('customFields', {...field, value: filter})} />
+            {!this.state.editing && <Button transparent style={styles.copyPassButton}
+              onPress={() => { this.toClipboard(field.value) }}>
+              <Icon type='MaterialIcons' name='content-copy' style={styles.showPassIcon} />
+            </Button>}
+            {!this.state.editing && <Button transparent style={styles.showPassButton}>
+              <Icon active style={styles.showPassIcon}
+                type='MaterialIcons' name={this.state[showPasswordKey] ? 'visibility' : 'visibility-off'}
+                onPress={() => this.setState({[showPasswordKey]: !this.state[showPasswordKey] })} />
+            </Button>}
+          </Item>
+        )
+        break
+      case 'email':
+        return (
+          <Item key={field.id} stackedLabel disabled={!this.state.editing} last>
+            <Label>{field.label}</Label>
+            {!this.state.editing
+              ? <Button transparent onPress={() => Linking.openURL(`mailto:${field.value}`) }
+                  title={field.value}>
+                  <Icon type='MaterialIcons' name='mail-outline' style={{ marginLeft: 8, marginRight: 0 }}/>
+                  <Text uppercase={false} style={{ marginLeft: 0, paddingLeft: 8 }}>{field.value}</Text>
+                </Button>
+              : <Input
+                  disabled={!this.state.editing}
+                  defaultValue={field.value}
+                  value={field.value}
+                  onChangeText={(filter) => this.updateHandler('customFields', {...field, value: filter})} />
+            }
+          </Item>
+        )
+        break
+      case 'url':
+        return (
+          <Item key={field.id} stackedLabel disabled={!this.state.editing} last>
+            <Label>{field.label}</Label>
+            {!this.state.editing
+              ? <Button transparent onPress={() => Linking.openURL(`${field.value}`) }
+                  title={field.value}>
+                  <Icon type='MaterialIcons' name='link' style={{ marginLeft: 8, marginRight: 0 }}/>
+                  <Text uppercase={false} style={{ marginLeft: 0, paddingLeft: 8 }}>{field.value}</Text>
+                </Button>
+              : <Input
+                  disabled={!this.state.editing}
+                  defaultValue={field.value}
+                  value={field.value}
+                  onChangeText={(filter) => this.updateHandler('customFields', {...field, value: filter})} />
+            }
+          </Item>
+        )
+        break
+      case 'file':
+        break
+      default:
+        return (
+          <Item key={field.id} stackedLabel disabled={!this.state.editing} last>
+            <Label>{field.label}</Label>
+              <Input
+                disabled={true}
+                defaultValue={field.value}
+                value={field.value} />
+          </Item>
+        )
+    }
+  }
+
   render () {
     return (
       <Container>
@@ -229,7 +339,7 @@ export class SingleView extends Component {
                     style={{ width: '75%' }}
                     onChangeText={(filter) => this.updateHandler('password', filter)} />
                   {!this.state.editing && <Button transparent style={styles.copyPassButton}
-                    onPress={() => { this.toClipboard(this.state.item.id) }}>
+                    onPress={() => { this.passwordToClipboard(this.state.item.id) }}>
                     <Icon type='MaterialIcons' name='content-copy' style={styles.showPassIcon} />
                   </Button>}
                   {!this.state.editing && <Button transparent style={styles.showPassButton}>
@@ -260,6 +370,7 @@ export class SingleView extends Component {
                     value={this.state.item.notes}
                     onChangeText={(filter) => this.updateHandler('notes', filter)} />
                 </Item>
+                {(this.state.item.customFields || []).map((field) => this.renderCustomField(field))}
               </Form>
               {this.state.editing
                 ? <View style={{ flexDirection: 'row', marginTop: 20 }}>
