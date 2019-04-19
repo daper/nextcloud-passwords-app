@@ -60,7 +60,12 @@ export class API {
     if (this.credentials.password === '') {
       return new Error('Cannot open DB. Invalid master password')
     } else if (!this.db) {
-      this.db = SQLite.openDatabase(encodeName(DB_NAME, this.credentials.password), '1.0', '', 200)
+      this.db = await new Promise((res, rej) => {
+        let db = SQLite.openDatabase(encodeName(DB_NAME, this.credentials.password), '1.0', '', 200, () => {
+          res(db)
+        })
+      })
+
       this.models.forEach((model) => model.setDb(this.db))
 
       await Promise.all(this.models.map((model) => model.createTable()))

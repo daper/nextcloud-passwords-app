@@ -34,15 +34,19 @@ export class Passwords {
 
   _executeSql (query, data = []) {
     return new Promise((resolve, reject) => {
-      this.db.transaction((txn) => {
-        txn.executeSql(query, data,
-          (txn, data) => resolve(data),
-          (txn, err) => {
-            if (__DEV__) console.log(err)
-            reject(err)
-          }
-        )
-      })
+      if (!this.db) {
+        reject(new Error('DB not initialized'))
+      } else {
+        this.db.transaction((txn) => {
+          txn.executeSql(query, data,
+            (txn, data) => resolve(data),
+            (txn, err) => {
+              if (__DEV__) console.log(err)
+              reject(err)
+            }
+          )
+        })
+      }
     })
   }
 
@@ -52,7 +56,7 @@ export class Passwords {
         id string primary key not null,
         label string,
         username string,
-        password string,
+        password blob,
         url string,
         notes string,
         customFields string,

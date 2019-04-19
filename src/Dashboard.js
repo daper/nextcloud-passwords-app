@@ -68,6 +68,7 @@ class Dashboard extends Component {
       return true
     })
 
+    await API.openDB()
     await this.changeFolder(this.props.currentFolder)
   }
 
