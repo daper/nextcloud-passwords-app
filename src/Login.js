@@ -175,7 +175,10 @@ class Login extends Component {
     if (this.props.authFlow) {
       let src = {
         uri: `${this.props.settings.server}/index.php/login/flow`,
-        headers: { 'OCS-APIRequest': 'true' }
+        headers: {
+          'OCS-APIRequest': 'true',
+          'User-Agent': 'Nextcloud Passwords for Android'
+        }
       }
       return (
         <WebView
@@ -183,13 +186,14 @@ class Login extends Component {
           ref={c => { this.WebView = c }}
           source={src}
           style={styles.webview}
+          ignoreSslError
           javaScriptEnabled
           automaticallyAdjustContentInsets
           onError={(err) => { if (__DEV__) console.log('onError', err) }}
-          ignoreSslError
           renderError={(err) => { if (__DEV__) console.log('renderError', err) }}
           onShouldStartLoadWithRequest={this._handleOpenURL}
           onNavigationStateChange={this._handleOpenURL}
+          cacheEnabled={false}
         />
       )
     } else {

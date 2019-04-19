@@ -7,7 +7,8 @@
     "test": "jest",
     "build-android": "cd android && ./gradlew assembleRelease",
     "flow": "flow",
-    "run-android": "npx react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res && npx react-native run-android"
+    "run-android": "npx react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res && npx react-native run-android",
+    "cache-clean": "cd android && ./gradlew clean && cd .. && rm -rf node_modules/ && npm cache clean --force && npm install && npm start -- --reset-cache"
   },
   "dependencies": {
     "axios": "^0.18.0",
@@ -20,7 +21,7 @@
     "react-native-sensitive-info": "git://github.com/mcodex/react-native-sensitive-info.git#keystore",
     "react-native-sqlcipher-2": "^1.0.2",
     "react-native-svg": "^8.0.11",
-    "react-native-webview": "^2.15.0",
+    "react-native-webview": "^5.7.0",
     "react-redux": "^5.1.0",
     "react-router-native": "^4.3.0",
     "redux": "^4.0.1",
