@@ -36,6 +36,7 @@ class Lock extends Component {
       isError: null,
       fallback: true,
       passcode: '',
+      sensorAvail: true
     }
   }
 
@@ -48,12 +49,13 @@ class Lock extends Component {
     try {
       let isAvailable = await FingerprintScanner.isSensorAvailable()
       if (!isAvailable) {
-        throw new Error('Sensor not available')
+        this.setState({ sensorAvail: isAvailable })
+      } else {
+        await FingerprintScanner.authenticate({ onAttempt: this.setError })
+        await this.setState({ isError: false })
+        
+        setTimeout(this.goBack, 400)
       }
-      await FingerprintScanner.authenticate({ onAttempt: this.setError })
-      await this.setState({ isError: false })
-
-      setTimeout(this.goBack, 400)
     } catch (err) {
       this.setError(err)
     }
@@ -93,7 +95,8 @@ class Lock extends Component {
     }
 
     if (this.state.passcode === this.props.passcode) {
-      this.goBack()
+      await this.setState({ isError: false })
+      setTimeout(this.goBack, 300)
     }
   }
 
@@ -130,13 +133,15 @@ class Lock extends Component {
       <Content contentContainerStyle={styles.container} padder>
         <View style={styles.numbersContainer}>
           <View style={{ alignItems: 'center', marginTop: 25 }}>
-            <Icon type='MaterialIcons' name='fingerprint'
+            <Icon type='MaterialIcons' name={this.state.sensorAvail ? 'fingerprint' : (this.state.isError === false ? 'lock-open' : 'lock')}
               style={this.getFingerprintStyles()} />
             <View style={{ width: '80%' }}>
               <Text style={{ color: 'white', textAlign: 'center' }}>
                 {this.state.isError
                   ? this.state.errorMessage
-                  : 'Scan your fingerprint on the\ndevice scanner to continue'}
+                  : (this.state.sensorAvail
+                    ? 'Scan your fingerprint on the\ndevice scanner to continue'
+                    : 'Type your passcode to continue')}
               </Text>
             </View>
           </View>
