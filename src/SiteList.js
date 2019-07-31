@@ -38,11 +38,11 @@ export class SiteList extends Component {
     this.renderRow = this.renderRow.bind(this)
   }
 
-  async toClipboard (string) {
+  async toClipboard (string, element) {
     Clipboard.setString(string)
 
     Toast.show({
-      text: 'Copied!',
+      text: element + ' copied!',
       buttonText: 'Okay',
       duration: 2000
     })
@@ -50,7 +50,7 @@ export class SiteList extends Component {
 
   async passwordToClipboard (id) {
     let pass = await Passwords.getPassword(id)
-    this.toClipboard(pass)
+    this.toClipboard(pass, "Password")
   }
 
   renderRow ({ item }) {
@@ -65,7 +65,7 @@ export class SiteList extends Component {
             </TouchableOpacity>
           </Body>
           <Right>
-            <Button transparent onPress={() => { this.toClipboard(item.username) }} style={{ right: -20 }}>
+            <Button transparent onPress={() => { this.toClipboard(item.username, "Username") }} style={{ right: -20 }}>
               <Icon type='MaterialIcons' name='person' color='grey' style={{ color: 'grey' }} />
             </Button>
             <Button transparent onPress={() => { this.passwordToClipboard(item.id) }} style={{ right: -20 }}>
