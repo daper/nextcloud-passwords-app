@@ -156,13 +156,13 @@ export class Folders {
   }
 
   async getChildren (folderId, fields = FOLDER_FIELDS) {
-    let { rows } = await this._executeSql(`select ${fields.join(',')} 
+    let { rows } = await this._executeSql(`select ${fields.join(',')}
                                           from folders where parent=? and hidden=0 and trashed=0`, [folderId])
     return rows._array
   }
 
   async getFavoriteChildren (folderId, fields = FOLDER_FIELDS) {
-    let { rows } = await this._executeSql(`select ${fields.join(',')} 
+    let { rows } = await this._executeSql(`select ${fields.join(',')}
                                           from folders where parent=?
                                           and hidden=0 and trashed=0
                                           and favorite=1`, [folderId])

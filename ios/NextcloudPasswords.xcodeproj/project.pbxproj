@@ -51,12 +51,6 @@
 		FD4F123CD18A47C2BC598C88 /* rubicon-icon-font.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F79ACF8891AD40FF8301CEC9 /* rubicon-icon-font.ttf */; };
 		8FDA82260E224CBDB4E02D66 /* SimpleLineIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 36C96359AB694641A50262DB /* SimpleLineIcons.ttf */; };
 		F9854BE7684E400DB03F4578 /* Zocial.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 7F20AE9E8C16486AAD84E959 /* Zocial.ttf */; };
-		F068E7C7E8074879B481D03D /* libRNSVG.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1211077437A44689AB35C884 /* libRNSVG.a */; };
-		0811051CE2E3441F8BF80A68 /* libRNSVG-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 38A7278275484B0DB16E7135 /* libRNSVG-tvOS.a */; };
-		B512003E209C4FD9822A134A /* libRNSqlite2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E5402D3B050E43C2911D87C7 /* libRNSqlite2.a */; };
-		C692597282AE49D9A2C043CC /* libRNFS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DBD12A55FD0F4E3EAD02A893 /* libRNFS.a */; };
-		7E3F965A7F904206BF4953F3 /* libRNSensitiveInfo.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B67B096B255C45FA860A3AEF /* libRNSensitiveInfo.a */; };
-		772BDD4E23034FFBBD9255B3 /* libReactNativeFingerprintScanner.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E44E3ED6495F4425B5D694CE /* libReactNativeFingerprintScanner.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -376,17 +370,6 @@
 		F79ACF8891AD40FF8301CEC9 /* rubicon-icon-font.ttf */ = {isa = PBXFileReference; name = "rubicon-icon-font.ttf"; path = "../node_modules/native-base/Fonts/rubicon-icon-font.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 		36C96359AB694641A50262DB /* SimpleLineIcons.ttf */ = {isa = PBXFileReference; name = "SimpleLineIcons.ttf"; path = "../node_modules/native-base/Fonts/SimpleLineIcons.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 		7F20AE9E8C16486AAD84E959 /* Zocial.ttf */ = {isa = PBXFileReference; name = "Zocial.ttf"; path = "../node_modules/native-base/Fonts/Zocial.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		87461E57F30E4EBCA6D2315E /* RNSVG.xcodeproj */ = {isa = PBXFileReference; name = "RNSVG.xcodeproj"; path = "../node_modules/react-native-svg/ios/RNSVG.xcodeproj"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = wrapper.pb-project; explicitFileType = undefined; includeInIndex = 0; };
-		1211077437A44689AB35C884 /* libRNSVG.a */ = {isa = PBXFileReference; name = "libRNSVG.a"; path = "libRNSVG.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
-		38A7278275484B0DB16E7135 /* libRNSVG-tvOS.a */ = {isa = PBXFileReference; name = "libRNSVG-tvOS.a"; path = "libRNSVG-tvOS.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
-		775580E890B04F4CAD959185 /* RNSqlite2.xcodeproj */ = {isa = PBXFileReference; name = "RNSqlite2.xcodeproj"; path = "../node_modules/react-native-sqlcipher-2/ios/RNSqlite2.xcodeproj"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = wrapper.pb-project; explicitFileType = undefined; includeInIndex = 0; };
-		E5402D3B050E43C2911D87C7 /* libRNSqlite2.a */ = {isa = PBXFileReference; name = "libRNSqlite2.a"; path = "libRNSqlite2.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
-		BB96A1F6764D41BB99927F9E /* RNFS.xcodeproj */ = {isa = PBXFileReference; name = "RNFS.xcodeproj"; path = "../node_modules/react-native-fs/RNFS.xcodeproj"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = wrapper.pb-project; explicitFileType = undefined; includeInIndex = 0; };
-		DBD12A55FD0F4E3EAD02A893 /* libRNFS.a */ = {isa = PBXFileReference; name = "libRNFS.a"; path = "libRNFS.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
-		ED3826B9DA104AE094349D0E /* RNSensitiveInfo.xcodeproj */ = {isa = PBXFileReference; name = "RNSensitiveInfo.xcodeproj"; path = "../node_modules/react-native-sensitive-info/ios/RNSensitiveInfo.xcodeproj"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = wrapper.pb-project; explicitFileType = undefined; includeInIndex = 0; };
-		B67B096B255C45FA860A3AEF /* libRNSensitiveInfo.a */ = {isa = PBXFileReference; name = "libRNSensitiveInfo.a"; path = "libRNSensitiveInfo.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
-		CF3087B4EE404EC293001FF1 /* ReactNativeFingerprintScanner.xcodeproj */ = {isa = PBXFileReference; name = "ReactNativeFingerprintScanner.xcodeproj"; path = "../node_modules/react-native-fingerprint-scanner/ios/ReactNativeFingerprintScanner.xcodeproj"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = wrapper.pb-project; explicitFileType = undefined; includeInIndex = 0; };
-		E44E3ED6495F4425B5D694CE /* libReactNativeFingerprintScanner.a */ = {isa = PBXFileReference; name = "libReactNativeFingerprintScanner.a"; path = "libReactNativeFingerprintScanner.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -414,11 +397,6 @@
 				832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */,
 				00C302EA1ABCBA2D00DB3ED1 /* libRCTVibration.a in Frameworks */,
 				139FDEF61B0652A700C62182 /* libRCTWebSocket.a in Frameworks */,
-				F068E7C7E8074879B481D03D /* libRNSVG.a in Frameworks */,
-				B512003E209C4FD9822A134A /* libRNSqlite2.a in Frameworks */,
-				C692597282AE49D9A2C043CC /* libRNFS.a in Frameworks */,
-				7E3F965A7F904206BF4953F3 /* libRNSensitiveInfo.a in Frameworks */,
-				772BDD4E23034FFBBD9255B3 /* libReactNativeFingerprintScanner.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -607,11 +585,6 @@
 				832341B01AAA6A8300B99B32 /* RCTText.xcodeproj */,
 				00C302DF1ABCB9EE00DB3ED1 /* RCTVibration.xcodeproj */,
 				139FDEE61B06529A00C62182 /* RCTWebSocket.xcodeproj */,
-				87461E57F30E4EBCA6D2315E /* RNSVG.xcodeproj */,
-				775580E890B04F4CAD959185 /* RNSqlite2.xcodeproj */,
-				BB96A1F6764D41BB99927F9E /* RNFS.xcodeproj */,
-				ED3826B9DA104AE094349D0E /* RNSensitiveInfo.xcodeproj */,
-				CF3087B4EE404EC293001FF1 /* ReactNativeFingerprintScanner.xcodeproj */,
 			);
 			name = Libraries;
 			sourceTree = "<group>";
@@ -1276,16 +1249,9 @@
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/NextcloudPasswords.app/NextcloudPasswords";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(SRCROOT)/../node_modules/react-native-svg/ios/**",
-					"$(SRCROOT)/../node_modules/react-native-sqlcipher-2/ios",
-					"$(SRCROOT)/../node_modules/react-native-fs/**",
-					"$(SRCROOT)/../node_modules/react-native-sensitive-info/ios/RNSensitiveInfo",
-					"$(SRCROOT)/../node_modules/react-native-fingerprint-scanner/ios",
 				);
 			};
 			name = Debug;
@@ -1307,16 +1273,9 @@
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/NextcloudPasswords.app/NextcloudPasswords";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(SRCROOT)/../node_modules/react-native-svg/ios/**",
-					"$(SRCROOT)/../node_modules/react-native-sqlcipher-2/ios",
-					"$(SRCROOT)/../node_modules/react-native-fs/**",
-					"$(SRCROOT)/../node_modules/react-native-sensitive-info/ios/RNSensitiveInfo",
-					"$(SRCROOT)/../node_modules/react-native-fingerprint-scanner/ios",
 				);
 			};
 			name = Release;
@@ -1339,11 +1298,6 @@
 				VERSIONING_SYSTEM = "apple-generic";
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(SRCROOT)/../node_modules/react-native-svg/ios/**",
-					"$(SRCROOT)/../node_modules/react-native-sqlcipher-2/ios",
-					"$(SRCROOT)/../node_modules/react-native-fs/**",
-					"$(SRCROOT)/../node_modules/react-native-sensitive-info/ios/RNSensitiveInfo",
-					"$(SRCROOT)/../node_modules/react-native-fingerprint-scanner/ios",
 				);
 			};
 			name = Debug;
@@ -1365,11 +1319,6 @@
 				VERSIONING_SYSTEM = "apple-generic";
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(SRCROOT)/../node_modules/react-native-svg/ios/**",
-					"$(SRCROOT)/../node_modules/react-native-sqlcipher-2/ios",
-					"$(SRCROOT)/../node_modules/react-native-fs/**",
-					"$(SRCROOT)/../node_modules/react-native-sensitive-info/ios/RNSensitiveInfo",
-					"$(SRCROOT)/../node_modules/react-native-fingerprint-scanner/ios",
 				);
 			};
 			name = Release;
@@ -1399,16 +1348,9 @@
 				TVOS_DEPLOYMENT_TARGET = 9.2;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(SRCROOT)/../node_modules/react-native-svg/ios/**",
-					"$(SRCROOT)/../node_modules/react-native-sqlcipher-2/ios",
-					"$(SRCROOT)/../node_modules/react-native-fs/**",
-					"$(SRCROOT)/../node_modules/react-native-sensitive-info/ios/RNSensitiveInfo",
-					"$(SRCROOT)/../node_modules/react-native-fingerprint-scanner/ios",
 				);
 			};
 			name = Debug;
@@ -1438,16 +1380,9 @@
 				TVOS_DEPLOYMENT_TARGET = 9.2;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(SRCROOT)/../node_modules/react-native-svg/ios/**",
-					"$(SRCROOT)/../node_modules/react-native-sqlcipher-2/ios",
-					"$(SRCROOT)/../node_modules/react-native-fs/**",
-					"$(SRCROOT)/../node_modules/react-native-sensitive-info/ios/RNSensitiveInfo",
-					"$(SRCROOT)/../node_modules/react-native-fingerprint-scanner/ios",
 				);
 			};
 			name = Release;
@@ -1476,16 +1411,9 @@
 				TVOS_DEPLOYMENT_TARGET = 10.1;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(SRCROOT)/../node_modules/react-native-svg/ios/**",
-					"$(SRCROOT)/../node_modules/react-native-sqlcipher-2/ios",
-					"$(SRCROOT)/../node_modules/react-native-fs/**",
-					"$(SRCROOT)/../node_modules/react-native-sensitive-info/ios/RNSensitiveInfo",
-					"$(SRCROOT)/../node_modules/react-native-fingerprint-scanner/ios",
 				);
 			};
 			name = Debug;
@@ -1514,16 +1442,9 @@
 				TVOS_DEPLOYMENT_TARGET = 10.1;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(SRCROOT)/../node_modules/react-native-svg/ios/**",
-					"$(SRCROOT)/../node_modules/react-native-sqlcipher-2/ios",
-					"$(SRCROOT)/../node_modules/react-native-fs/**",
-					"$(SRCROOT)/../node_modules/react-native-sensitive-info/ios/RNSensitiveInfo",
-					"$(SRCROOT)/../node_modules/react-native-fingerprint-scanner/ios",
 				);
 			};
 			name = Release;
