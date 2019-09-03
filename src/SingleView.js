@@ -141,11 +141,11 @@ export class SingleView extends Component {
     this.props.history.goBack()
   }
 
-  toClipboard(value) {
+  toClipboard(value, element) {
     Clipboard.setString(value)
 
     Toast.show({
-      text: 'Copied!',
+      text: element + ' copied!',
       buttonText: 'Okay',
       duration: 2000
     })
@@ -153,7 +153,7 @@ export class SingleView extends Component {
 
   async passwordToClipboard (id) {
     let pass = await Passwords.getPassword(id)
-    this.toClipboard(pass)
+    this.toClipboard(pass, 'Password')
   }
 
   renderIcons () {
@@ -234,7 +234,7 @@ export class SingleView extends Component {
               style={{ width: '75%' }}
               onChangeText={(filter) => this.updateHandler('customFields', {...field, value: filter})} />
             {!this.state.editing && <Button transparent style={styles.copyPassButton}
-              onPress={() => { this.toClipboard(field.value) }}>
+              onPress={() => { this.toClipboard(field.value, field.label) }}>
               <Icon type='MaterialIcons' name='content-copy' style={styles.showPassIcon} />
             </Button>}
             {!this.state.editing && <Button transparent style={styles.showPassButton}>
