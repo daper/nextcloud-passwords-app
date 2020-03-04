@@ -12,7 +12,7 @@
     "cache-clean": "cd android && ./gradlew clean cleanBuildCache && cd .. && rm -rf node_modules/ && npm cache clean --force && npm install && npm start -- --reset-cache"
   },
   "dependencies": {
-    "axios": "^0.18.1",
+    "axios": "0.18.0",
     "native-base": "^2.13.6",
     "prop-types": "^15.7.2",
     "react": "16.6.0-alpha.8af6728",
