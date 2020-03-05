@@ -105,9 +105,7 @@ class Login extends Component {
         this.props.setLoading(false, 'Contacting Server...')
       }, 1000)
     } else {
-      let name = data.ocs.data.capabilities.theming.name
-      let version = data.ocs.data.version.string
-      this.props.setLoading(true, `${name} ${version}`)
+      this.props.setLoading(true, "validation successful")
       this.props.setAuthFlow(true)
     }
   }

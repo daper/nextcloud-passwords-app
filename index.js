@@ -1,5 +1,15 @@
 /** @format */
 
+import {decode, encode} from 'base-64'
+
+if (!global.btoa) {
+    global.btoa = encode;
+}
+
+if (!global.atob) {
+    global.atob = decode;
+}
+
 import React, { Component } from 'react'
 import { AppRegistry, YellowBox } from 'react-native'
 import App from './src/App'
