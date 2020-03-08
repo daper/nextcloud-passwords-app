@@ -49,8 +49,8 @@ export class SiteList extends Component {
   }
 
   async passwordToClipboard (id) {
-    let pass = await Passwords.getPassword(id)
-    this.toClipboard(pass, "Password")
+    const pass = await Passwords.getPassword(id)
+    this.toClipboard(pass, 'Password')
   }
 
   renderRow ({ item }) {
@@ -65,7 +65,7 @@ export class SiteList extends Component {
             </TouchableOpacity>
           </Body>
           <Right>
-            <Button transparent onPress={() => { this.toClipboard(item.username, "Username") }} style={{ right: -20 }}>
+            <Button transparent onPress={() => { this.toClipboard(item.username, 'Username') }} style={{ right: -20 }}>
               <Icon type='MaterialIcons' name='person' color='grey' style={{ color: 'grey' }} />
             </Button>
             <Button transparent onPress={() => { this.passwordToClipboard(item.id) }} style={{ right: -20 }}>
@@ -100,9 +100,11 @@ export class SiteList extends Component {
       <View>
         {!this.props.loading && this.props.folder.id !== ROOT_FOLDER &&
           <View style={{ borderBottomWidth: 1, flexDirection: 'row' }}>
-            <Button transparent
+            <Button
+              transparent
               styles={{ flex: 1 }}
-              onPress={() => this.props.onChangeFolder(this.props.folder.parent)}>
+              onPress={() => this.props.onChangeFolder(this.props.folder.parent)}
+            >
               <Icon type='MaterialIcons' name='arrow-back' style={{ color: Colors.bgColor }} />
             </Button>
             <Button disabled transparent styles={{ flex: 1 }}>
@@ -114,11 +116,12 @@ export class SiteList extends Component {
             <Spinner style={styles.spinnerContent} color={Colors.bgColor} />
             <Text style={{ color: Colors.bgColor, marginTop: 20, ...styles.spinnerContent }}>{this.props.statusText}</Text>
           </View>
-          : <FlatList style={{ paddingBottom: 80 }}
+          : <FlatList
+            style={{ paddingBottom: 80 }}
             data={this.props.passwordList}
             keyExtractor={(item) => item.id}
-            renderItem={this.renderRow} />
-        }
+            renderItem={this.renderRow}
+            />}
       </View>
     )
   }

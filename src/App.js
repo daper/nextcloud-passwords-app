@@ -60,7 +60,7 @@ export class App extends Component {
   }
 
   async checkLock () {
-    let elapsed = new Date().getTime() - this.props.lastForeground
+    const elapsed = new Date().getTime() - this.props.lastForeground
     if (elapsed > this.props.lockTimeout) {
       await this.props.setLocked(true)
       return true

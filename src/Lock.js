@@ -47,7 +47,7 @@ class Lock extends Component {
     }
 
     try {
-      let isAvailable = await FingerprintScanner.isSensorAvailable()
+      const isAvailable = await FingerprintScanner.isSensorAvailable()
       if (!isAvailable) {
         this.setState({ sensorAvail: isAvailable })
       } else {
@@ -133,8 +133,10 @@ class Lock extends Component {
       <Content contentContainerStyle={styles.container} padder>
         <View style={styles.numbersContainer}>
           <View style={{ alignItems: 'center', marginTop: 25 }}>
-            <Icon type='MaterialIcons' name={this.state.sensorAvail ? 'fingerprint' : (this.state.isError === false ? 'lock-open' : 'lock')}
-              style={this.getFingerprintStyles()} />
+            <Icon
+              type='MaterialIcons' name={this.state.sensorAvail ? 'fingerprint' : (this.state.isError === false ? 'lock-open' : 'lock')}
+              style={this.getFingerprintStyles()}
+            />
             <View style={{ width: '80%' }}>
               <Text style={{ color: 'white', textAlign: 'center' }}>
                 {this.state.isError
@@ -151,60 +153,83 @@ class Lock extends Component {
                 secureTextEntry
                 disabled
                 value={this.state.passcode}
-                style={styles.inputField} />
+                style={styles.inputField}
+              />
             </Item>
-            <Button transparent style={styles.backspaceIcon}
+            <Button
+              transparent style={styles.backspaceIcon}
               onPress={this.backspacePressed}
-              onLongPress={this.backspacePressedLong}>
+              onLongPress={this.backspacePressedLong}
+            >
               <Icon type='MaterialIcons' name='backspace' style={{ color: 'white' }} />
             </Button>
           </View>
           <View style={styles.numbersRowContainer}>
-            <Button style={styles.number}
-              onPress={() => { this.numberPressed(1) }}>
+            <Button
+              style={styles.number}
+              onPress={() => { this.numberPressed(1) }}
+            >
               <Text style={styles.numberText}>1</Text>
             </Button>
-            <Button style={styles.number}
-              onPress={() => { this.numberPressed(2) }}>
+            <Button
+              style={styles.number}
+              onPress={() => { this.numberPressed(2) }}
+            >
               <Text style={styles.numberText}>2</Text>
             </Button>
-            <Button style={styles.number}
-              onPress={() => { this.numberPressed(3) }}>
+            <Button
+              style={styles.number}
+              onPress={() => { this.numberPressed(3) }}
+            >
               <Text style={styles.numberText}>3</Text>
             </Button>
           </View>
           <View style={styles.numbersRowContainer}>
-            <Button style={styles.number}
-              onPress={() => { this.numberPressed(4) }}>
+            <Button
+              style={styles.number}
+              onPress={() => { this.numberPressed(4) }}
+            >
               <Text style={styles.numberText}>4</Text>
             </Button>
-            <Button style={styles.number}
-              onPress={() => { this.numberPressed(5) }}>
+            <Button
+              style={styles.number}
+              onPress={() => { this.numberPressed(5) }}
+            >
               <Text style={styles.numberText}>5</Text>
             </Button>
-            <Button style={styles.number}
-              onPress={() => { this.numberPressed(6) }}>
+            <Button
+              style={styles.number}
+              onPress={() => { this.numberPressed(6) }}
+            >
               <Text style={styles.numberText}>6</Text>
             </Button>
           </View>
           <View style={styles.numbersRowContainer}>
-            <Button style={styles.number}
-              onPress={() => { this.numberPressed(7) }}>
+            <Button
+              style={styles.number}
+              onPress={() => { this.numberPressed(7) }}
+            >
               <Text style={styles.numberText}>7</Text>
             </Button>
-            <Button style={styles.number}
-              onPress={() => { this.numberPressed(8) }}>
+            <Button
+              style={styles.number}
+              onPress={() => { this.numberPressed(8) }}
+            >
               <Text style={styles.numberText}>8</Text>
             </Button>
-            <Button style={styles.number}
-              onPress={() => { this.numberPressed(9) }}>
+            <Button
+              style={styles.number}
+              onPress={() => { this.numberPressed(9) }}
+            >
               <Text style={styles.numberText}>9</Text>
             </Button>
           </View>
           <View style={styles.numbersRowContainer}>
             <Button disabled style={styles.number} />
-            <Button style={styles.number}
-              onPress={() => { this.numberPressed(0) }}>
+            <Button
+              style={styles.number}
+              onPress={() => { this.numberPressed(0) }}
+            >
               <Text style={styles.numberText}>0</Text>
             </Button>
             <Button disabled style={styles.number} />

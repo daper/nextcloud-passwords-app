@@ -54,10 +54,10 @@ export class Folders {
         trashed integer,
         favorite integer
       )`)
-    await this._executeSql(`create index if not exists folders_parent on folders(parent)`)
-    await this._executeSql(`create index if not exists folders_hidden on folders(hidden)`)
-    await this._executeSql(`create index if not exists folders_trashed on folders(trashed)`)
-    await this._executeSql(`create index if not exists folders_favorite on folders(favorite)`)
+    await this._executeSql('create index if not exists folders_parent on folders(parent)')
+    await this._executeSql('create index if not exists folders_hidden on folders(hidden)')
+    await this._executeSql('create index if not exists folders_trashed on folders(trashed)')
+    await this._executeSql('create index if not exists folders_favorite on folders(favorite)')
   }
 
   saveList (list) {
@@ -74,12 +74,12 @@ export class Folders {
   }
 
   saveRow (txn, row) {
-    let questions = FOLDER_FIELDS.map((field) => '?').join(',')
+    const questions = FOLDER_FIELDS.map((field) => '?').join(',')
     return this._executeSql(`insert or replace into folders values (${questions})`, row)
   }
 
   rowToObject (row) {
-    let labels = [
+    const labels = [
       'id',
       'label',
       'parent',
@@ -93,7 +93,7 @@ export class Folders {
       'trashed',
       'favorite',
     ]
-    let ret = {}
+    const ret = {}
     labels.forEach((label, pos) => { ret[label] = row[pos] })
     return ret
   }
@@ -137,7 +137,7 @@ export class Folders {
   async getAll (fields = FOLDER_FIELDS) {
     try {
       fields = fields.filter((field) => FOLDER_FIELDS.indexOf(field) !== -1).join(',')
-      let { rows } = await this._executeSql(`select ${fields} from folders where hidden=0 and trashed=0`)
+      const { rows } = await this._executeSql(`select ${fields} from folders where hidden=0 and trashed=0`)
       return rows._array
     } catch (err) {
       if (__DEV__) console.log('error getting data', err)
@@ -147,7 +147,7 @@ export class Folders {
 
   async getItem (id) {
     try {
-      let { rows } = await this._executeSql('select * from folders where id=?', [id])
+      const { rows } = await this._executeSql('select * from folders where id=?', [id])
       return rows._array[0]
     } catch (err) {
       if (__DEV__) console.log('error getting data', err)
@@ -156,13 +156,13 @@ export class Folders {
   }
 
   async getChildren (folderId, fields = FOLDER_FIELDS) {
-    let { rows } = await this._executeSql(`select ${fields.join(',')}
+    const { rows } = await this._executeSql(`select ${fields.join(',')}
                                           from folders where parent=? and hidden=0 and trashed=0`, [folderId])
     return rows._array
   }
 
   async getFavoriteChildren (folderId, fields = FOLDER_FIELDS) {
-    let { rows } = await this._executeSql(`select ${fields.join(',')}
+    const { rows } = await this._executeSql(`select ${fields.join(',')}
                                           from folders where parent=?
                                           and hidden=0 and trashed=0
                                           and favorite=1`, [folderId])
@@ -170,7 +170,7 @@ export class Folders {
   }
 
   async deleteAll () {
-    return this._executeSql(`delete from folders`)
+    return this._executeSql('delete from folders')
   }
 }
 

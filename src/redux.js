@@ -139,7 +139,7 @@ export function toggleSecurity (value) {
   }
 }
 
-let defaultState = {
+const defaultState = {
   loading: false,
   statusText: 'Contacting Server...',
   loginContainerSize: Dimensions.get('screen').height - 25,
@@ -174,7 +174,7 @@ export function appReducer (state = defaultState, action) {
       return { ...state, loading: status, statusText: action.text }
 
     case ActionTypes.SETTINGS:
-      let settings = { ...state.settings, ...action.settings }
+      const settings = { ...state.settings, ...action.settings }
       API.init(settings)
       return { ...state, settings }
 
@@ -246,7 +246,7 @@ export default function configureStore () {
     store = createStore(reducers)
   }
 
-  let persistor = persistStore(store)
+  const persistor = persistStore(store)
 
   return { persistor, store }
 }

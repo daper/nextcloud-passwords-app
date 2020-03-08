@@ -56,7 +56,7 @@ export class SingleView extends Component {
       favoriteUpdating: false,
     }
 
-    let { match } = props
+    const { match } = props
     if (__DEV__) console.log(`Showing ${match.params.id}`)
   }
 
@@ -66,18 +66,18 @@ export class SingleView extends Component {
       return true
     })
 
-    let { id } = this.props.match.params
+    const { id } = this.props.match.params
 
     this.props.setLoading(true, 'Loading site...')
 
-    let item = await Passwords.getItem(id)
+    const item = await Passwords.getItem(id)
     if (__DEV__) console.log(item)
 
     item.notes = String(item.notes)
     item.url = String(item.url)
     item.password = String(item.password)
     item.username = String(item.username)
-    
+
     if (item.customFields.length !== 0) {
       item.customFields = JSON.parse(item.customFields)
     } else {
@@ -96,9 +96,9 @@ export class SingleView extends Component {
   async save () {
     try {
       this.props.setLoading(true, 'Saving...')
-      let { id, label, username, password, url, notes, customFields } = this.state.item
+      const { id, label, username, password, url, notes, customFields } = this.state.item
       await Passwords.updateItem({ id, label, username, password, url, notes, customFields: JSON.stringify(customFields) })
-      let item = this.state.item
+      const item = this.state.item
       await this.setState({ item, untouchedItem: { ...item } })
     } catch (err) {
       if (__DEV__) console.log('save', err)
@@ -125,15 +125,15 @@ export class SingleView extends Component {
   }
 
   updateHandler (name, value) {
-    let item = this.state.item
+    const item = this.state.item
 
-    if (name === "customFields") {
-      let index = item.customFields.findIndex((item) => item.id === value.id)
+    if (name === 'customFields') {
+      const index = item.customFields.findIndex((item) => item.id === value.id)
       item.customFields[index] = value
     } else {
       item[name] = value
     }
-    
+
     this.setState({ item })
   }
 
@@ -141,7 +141,7 @@ export class SingleView extends Component {
     this.props.history.goBack()
   }
 
-  toClipboard(value, element) {
+  toClipboard (value, element) {
     Clipboard.setString(value)
 
     Toast.show({
@@ -152,12 +152,12 @@ export class SingleView extends Component {
   }
 
   async passwordToClipboard (id) {
-    let pass = await Passwords.getPassword(id)
+    const pass = await Passwords.getPassword(id)
     this.toClipboard(pass, 'Password')
   }
 
   renderIcons () {
-    let { item } = this.state
+    const { item } = this.state
     if (this.props.loading) {
       return <Right />
     } else {
@@ -181,8 +181,7 @@ export class SingleView extends Component {
               style={{ color: item.favorite ? 'yellow' : 'white', fontSize: 30 }}
               active={Boolean(item.favorite)}
             />
-          </Button>
-        }
+          </Button>}
       </Right>
     }
   }
@@ -200,7 +199,7 @@ export class SingleView extends Component {
 
   async setFavorite () {
     this.setState({ favoriteUpdating: true })
-    let item = await Passwords.setFavorite(this.state.item.id)
+    const item = await Passwords.setFavorite(this.state.item.id)
     if (!(item instanceof Error)) {
       this.setState({ item })
     }
@@ -217,12 +216,13 @@ export class SingleView extends Component {
               disabled={!this.state.editing}
               defaultValue={field.value}
               value={field.value}
-              onChangeText={(filter) => this.updateHandler('customFields', {...field, value: filter})} />
+              onChangeText={(filter) => this.updateHandler('customFields', { ...field, value: filter })}
+            />
           </Item>
         )
         break
       case 'secret':
-        let showPasswordKey = `showPassword_${field.label}`
+        const showPasswordKey = `showPassword_${field.label}`
         return (
           <Item key={field.id} stackedLabel disabled={!this.state.editing} last>
             <Label>{field.label}</Label>
@@ -232,15 +232,20 @@ export class SingleView extends Component {
               defaultValue={field.value}
               value={field.value}
               style={{ width: '75%' }}
-              onChangeText={(filter) => this.updateHandler('customFields', {...field, value: filter})} />
-            {!this.state.editing && <Button transparent style={styles.copyPassButton}
-              onPress={() => { this.toClipboard(field.value, field.label) }}>
+              onChangeText={(filter) => this.updateHandler('customFields', { ...field, value: filter })}
+            />
+            {!this.state.editing && <Button
+              transparent style={styles.copyPassButton}
+              onPress={() => { this.toClipboard(field.value, field.label) }}
+                                    >
               <Icon type='MaterialIcons' name='content-copy' style={styles.showPassIcon} />
             </Button>}
             {!this.state.editing && <Button transparent style={styles.showPassButton}>
-              <Icon active style={styles.showPassIcon}
+              <Icon
+                active style={styles.showPassIcon}
                 type='MaterialIcons' name={this.state[showPasswordKey] ? 'visibility' : 'visibility-off'}
-                onPress={() => this.setState({[showPasswordKey]: !this.state[showPasswordKey] })} />
+                onPress={() => this.setState({ [showPasswordKey]: !this.state[showPasswordKey] })}
+              />
             </Button>}
           </Item>
         )
@@ -250,17 +255,19 @@ export class SingleView extends Component {
           <Item key={field.id} stackedLabel disabled={!this.state.editing} last>
             <Label>{field.label}</Label>
             {!this.state.editing
-              ? <Button transparent onPress={() => Linking.openURL(`mailto:${field.value}`) }
-                  title={field.value}>
-                  <Icon type='MaterialIcons' name='mail-outline' style={{ marginLeft: 8, marginRight: 0 }}/>
-                  <Text uppercase={false} style={{ marginLeft: 0, paddingLeft: 8 }}>{field.value}</Text>
+              ? <Button
+                transparent onPress={() => Linking.openURL(`mailto:${field.value}`)}
+                title={field.value}
+                >
+                <Icon type='MaterialIcons' name='mail-outline' style={{ marginLeft: 8, marginRight: 0 }} />
+                <Text uppercase={false} style={{ marginLeft: 0, paddingLeft: 8 }}>{field.value}</Text>
                 </Button>
               : <Input
-                  disabled={!this.state.editing}
-                  defaultValue={field.value}
-                  value={field.value}
-                  onChangeText={(filter) => this.updateHandler('customFields', {...field, value: filter})} />
-            }
+                disabled={!this.state.editing}
+                defaultValue={field.value}
+                value={field.value}
+                onChangeText={(filter) => this.updateHandler('customFields', { ...field, value: filter })}
+                />}
           </Item>
         )
         break
@@ -269,17 +276,19 @@ export class SingleView extends Component {
           <Item key={field.id} stackedLabel disabled={!this.state.editing} last>
             <Label>{field.label}</Label>
             {!this.state.editing
-              ? <Button transparent onPress={() => Linking.openURL(`${field.value}`) }
-                  title={field.value}>
-                  <Icon type='MaterialIcons' name='link' style={{ marginLeft: 8, marginRight: 0 }}/>
-                  <Text uppercase={false} style={{ marginLeft: 0, paddingLeft: 8 }}>{field.value}</Text>
+              ? <Button
+                transparent onPress={() => Linking.openURL(`${field.value}`)}
+                title={field.value}
+                >
+                <Icon type='MaterialIcons' name='link' style={{ marginLeft: 8, marginRight: 0 }} />
+                <Text uppercase={false} style={{ marginLeft: 0, paddingLeft: 8 }}>{field.value}</Text>
                 </Button>
               : <Input
-                  disabled={!this.state.editing}
-                  defaultValue={field.value}
-                  value={field.value}
-                  onChangeText={(filter) => this.updateHandler('customFields', {...field, value: filter})} />
-            }
+                disabled={!this.state.editing}
+                defaultValue={field.value}
+                value={field.value}
+                onChangeText={(filter) => this.updateHandler('customFields', { ...field, value: filter })}
+                />}
           </Item>
         )
         break
@@ -289,10 +298,11 @@ export class SingleView extends Component {
         return (
           <Item key={field.id} stackedLabel disabled={!this.state.editing} last>
             <Label>{field.label}</Label>
-              <Input
-                disabled={true}
-                defaultValue={field.value}
-                value={field.value} />
+            <Input
+              disabled
+              defaultValue={field.value}
+              value={field.value}
+            />
           </Item>
         )
     }
@@ -327,7 +337,8 @@ export class SingleView extends Component {
                     disabled={!this.state.editing}
                     defaultValue={this.state.item.username}
                     value={this.state.item.username}
-                    onChangeText={(filter) => this.updateHandler('username', filter)} />
+                    onChangeText={(filter) => this.updateHandler('username', filter)}
+                  />
                 </Item>
                 <Item stackedLabel disabled={!this.state.editing} last>
                   <Label>Password</Label>
@@ -337,18 +348,25 @@ export class SingleView extends Component {
                     defaultValue={this.state.item.password}
                     value={this.state.item.password}
                     style={{ width: '75%' }}
-                    onChangeText={(filter) => this.updateHandler('password', filter)} />
-                  {!this.state.editing && <Button transparent style={styles.copyPassButton}
-                    onPress={() => { this.passwordToClipboard(this.state.item.id) }}>
+                    onChangeText={(filter) => this.updateHandler('password', filter)}
+                  />
+                  {!this.state.editing && <Button
+                    transparent style={styles.copyPassButton}
+                    onPress={() => { this.passwordToClipboard(this.state.item.id) }}
+                                          >
                     <Icon type='MaterialIcons' name='content-copy' style={styles.showPassIcon} />
                   </Button>}
                   {!this.state.editing && <Button transparent style={styles.showPassButton}>
-                    <Icon active style={styles.showPassIcon}
+                    <Icon
+                      active style={styles.showPassIcon}
                       type='MaterialIcons' name={this.state.showPassword ? 'visibility' : 'visibility-off'}
-                      onPress={() => this.setState({ showPassword: !this.state.showPassword })} />
+                      onPress={() => this.setState({ showPassword: !this.state.showPassword })}
+                    />
                   </Button>}
-                  {this.state.editing && <Button transparent style={styles.showPassButton}
-                    onPress={() => this.props.togglePasswordModal(true)}>
+                  {this.state.editing && <Button
+                    transparent style={styles.showPassButton}
+                    onPress={() => this.props.togglePasswordModal(true)}
+                                         >
                     <Icon active style={styles.showPassIcon} type='MaterialIcons' name='update' />
                   </Button>}
                 </Item>
@@ -358,7 +376,8 @@ export class SingleView extends Component {
                     disabled={!this.state.editing}
                     defaultValue={this.state.item.url}
                     value={this.state.item.url}
-                    onChangeText={(filter) => this.updateHandler('url', filter)} />
+                    onChangeText={(filter) => this.updateHandler('url', filter)}
+                  />
                 </Item>
                 <Item stackedLabel disabled={!this.state.editing} last>
                   <Label>Notes</Label>
@@ -368,19 +387,24 @@ export class SingleView extends Component {
                     style={{ width: '100%' }}
                     defaultValue={this.state.item.notes}
                     value={this.state.item.notes}
-                    onChangeText={(filter) => this.updateHandler('notes', filter)} />
+                    onChangeText={(filter) => this.updateHandler('notes', filter)}
+                  />
                 </Item>
                 {(this.state.item.customFields || []).map((field) => this.renderCustomField(field))}
               </Form>
               {this.state.editing
                 ? <View style={{ flexDirection: 'row', marginTop: 20 }}>
-                  <Button block danger
-                    onPress={this.delete}>
+                  <Button
+                    block danger
+                    onPress={this.delete}
+                  >
                     <Icon type='MaterialIcons' name='delete' style={{ color: 'white' }} />
                   </Button>
-                  <Button block success
+                  <Button
+                    block success
                     style={{ flex: 1, marginLeft: 20, marginRight: 20 }}
-                    onPress={this.save}>
+                    onPress={this.save}
+                  >
                     <Text>Save</Text>
                   </Button>
                   <Button block dark onPress={this.stopEditing}>
@@ -388,15 +412,15 @@ export class SingleView extends Component {
                   </Button>
                 </View>
                 : <View style={{ flexDirection: 'row', marginTop: 20 }}>
-                  <Button bordered
+                  <Button
+                    bordered
                     style={{ flex: 1, borderColor: Colors.bgColor, justifyContent: 'center' }}
-                    onPress={this.startEditing}>
+                    onPress={this.startEditing}
+                  >
                     <Text style={{ color: Colors.bgColor }}>Edit</Text>
                   </Button>
-                </View>
-              }
-            </View>
-          }
+                </View>}
+            </View>}
           <GeneratePasswordModal onSelectPassword={(value) => { this.updateHandler('password', value) }} />
         </Content>
       </Container>

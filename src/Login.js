@@ -88,11 +88,11 @@ class Login extends Component {
   async validateServer () {
     this.props.setLoading(true)
 
-    let server = this.props.settings.server.replace(/https?:\/\//, '').replace(/\/$/, '')
+    const server = this.props.settings.server.replace(/https?:\/\//, '').replace(/\/$/, '')
     await this.props.setSettings({ ...this.props.settings, server: `https://${server}` })
 
     API.init(this.props.settings)
-    let { error, data } = await API.validateServer()
+    const { error, data } = await API.validateServer()
 
     console.log(`Server validated: error: ${error} data: ${JSON.stringify(data)}`)
     if (error) {
@@ -102,7 +102,7 @@ class Login extends Component {
         this.props.setLoading(false, 'Contacting Server...')
       }, 1000)
     } else {
-      this.props.setLoading(true, "validation successful")
+      this.props.setLoading(true, 'validation successful')
       this.props.setAuthFlow(true)
     }
   }
@@ -113,12 +113,12 @@ class Login extends Component {
       if (__DEV__) console.log('Got Nextcloud Access!')
       this.props.setAuthFlow(false)
 
-      let matches = url.match(/(server|user|password):([^&]+)/g)
+      const matches = url.match(/(server|user|password):([^&]+)/g)
       if (matches) {
-        let settings = {}
+        const settings = {}
         matches.forEach((match) => {
-          let key = match.split(':')[0]
-          let value = match.split(':').slice(1).join(':')
+          const key = match.split(':')[0]
+          const value = match.split(':').slice(1).join(':')
           settings[key] = decodeURIComponent(value)
         })
 
@@ -143,7 +143,8 @@ class Login extends Component {
       return (<Form style={styles.formContainer}>
         <Item stackedLabel style={{ marginTop: 20, marginLeft: 3 }}>
           <Label style={styles.formLabel}>Server address https://...</Label>
-          <Input style={{ color: 'white' }}
+          <Input
+            style={{ color: 'white' }}
             onChangeText={(text) => {
               this.props.setSettings({ ...this.props.settings, server: text })
             }}
@@ -168,7 +169,7 @@ class Login extends Component {
 
   render () {
     if (this.props.authFlow) {
-      let src = {
+      const src = {
         uri: `${this.props.settings.server}/index.php/login/flow`,
         headers: {
           'OCS-APIRequest': 'true',

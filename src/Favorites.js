@@ -53,7 +53,7 @@ export class Favorites extends Component {
 
   async getPasswords () {
     this.props.setLoading(true, 'Loading sites...')
-    let passwords = await Passwords.getAllFavorites(['id', 'label', 'url', 'username'])
+    const passwords = await Passwords.getAllFavorites(['id', 'label', 'url', 'username'])
     return passwords.map((item) => { return { ...item, type: 'site' } })
   }
 
@@ -77,7 +77,7 @@ export class Favorites extends Component {
 
   async getFolders () {
     this.props.setLoading(true, 'Loading folders...')
-    let folders = await Folders.getFavoriteChildren(this.props.currentFolder,
+    const folders = await Folders.getFavoriteChildren(this.props.currentFolder,
       ['id', 'label', 'parent'])
     return folders.map((item) => { return { ...item, type: 'folder' } })
   }
@@ -86,8 +86,8 @@ export class Favorites extends Component {
     await this.props.setLoading(true, 'Loading...')
     await this.getFolder()
 
-    let passwords = await this.getPasswords()
-    let folders = await this.getFolders()
+    const passwords = await this.getPasswords()
+    const folders = await this.getFolders()
 
     await this.setState({ passwordList: [...folders, ...passwords] })
     this.props.setLoading(false)

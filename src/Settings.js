@@ -71,7 +71,7 @@ export class Settings extends Component {
   }
 
   getLastLogin () {
-    let elapsed = new Date().getTime() - this.props.lastLogin
+    const elapsed = new Date().getTime() - this.props.lastLogin
     let timeExpression = '00:00:00'
 
     let seconds = (elapsed / 1000).toFixed()
@@ -133,9 +133,9 @@ export class Settings extends Component {
 
   async rateApp () {
     if (Platform.OS === 'android') {
-      let url = PLAY_URL
+      const url = PLAY_URL
 
-      let supported = await Linking.canOpenURL(url)
+      const supported = await Linking.canOpenURL(url)
       if (supported) {
         Linking.openURL(url)
       }
@@ -143,7 +143,7 @@ export class Settings extends Component {
   }
 
   async getSupport () {
-    let supported = await Linking.canOpenURL(GITHUB_URL)
+    const supported = await Linking.canOpenURL(GITHUB_URL)
     if (supported) {
       Linking.openURL(GITHUB_URL)
     }
@@ -157,7 +157,7 @@ export class Settings extends Component {
   }
 
   async donate () {
-    let supported = await Linking.canOpenURL(PAYPAL_URL)
+    const supported = await Linking.canOpenURL(PAYPAL_URL)
     if (supported) {
       Linking.openURL(PAYPAL_URL)
     }
@@ -219,8 +219,10 @@ export class Settings extends Component {
         </ListItem> */}
         <ListItem icon>
           <Left>
-            <Button style={{ backgroundColor: 'grey' }}
-              onPress={this.forceSyncDown}>
+            <Button
+              style={{ backgroundColor: 'grey' }}
+              onPress={this.forceSyncDown}
+            >
               <Icon active name='refresh' />
             </Button>
           </Left>
@@ -252,7 +254,8 @@ export class Settings extends Component {
             <Switch
               disabled={!this.canEnableSecurity()}
               value={this.props.enableSecurity}
-              onValueChange={this.toggleSecurity} />
+              onValueChange={this.toggleSecurity}
+            />
           </Right>
         </ListItem>
         <ListItem icon>
@@ -262,19 +265,22 @@ export class Settings extends Component {
             </Button>
           </Left>
           <Body>
-            <Input secureTextEntry
+            <Input
+              secureTextEntry
               placeholder='Current passcode (not set)'
               keyboardType='numeric'
               defaultValue={this.props.passcode}
               value={this.props.passcode}
-              onChangeText={this.setPasscode} />
+              onChangeText={this.setPasscode}
+            />
           </Body>
         </ListItem>
         <ListItem icon>
           <Left>
             <Button
               disabled={!this.canEnableSecurity()}
-              style={{ backgroundColor: 'grey' }}>
+              style={{ backgroundColor: 'grey' }}
+            >
               <Icon active type='MaterialIcons' name='timer' />
             </Button>
           </Left>
@@ -309,7 +315,8 @@ export class Settings extends Component {
                   height: 29,
                   borderRadius: 6,
                   marginTop: 2,
-                }} />
+                }}
+              />
             </Button>
           </Left>
           <Body>
@@ -320,8 +327,10 @@ export class Settings extends Component {
         </ListItem>
         <ListItem icon>
           <Left>
-            <Button warning
-              onPress={this.rateApp}>
+            <Button
+              warning
+              onPress={this.rateApp}
+            >
               <Icon active name='star' />
             </Button>
           </Left>
@@ -333,8 +342,10 @@ export class Settings extends Component {
         </ListItem>
         <ListItem icon>
           <Left>
-            <Button style={{ backgroundColor: 'grey' }}
-              onPress={this.shareApp}>
+            <Button
+              style={{ backgroundColor: 'grey' }}
+              onPress={this.shareApp}
+            >
               <Icon active name='share' />
             </Button>
           </Left>
@@ -346,8 +357,10 @@ export class Settings extends Component {
         </ListItem>
         <ListItem icon>
           <Left>
-            <Button style={{ backgroundColor: 'grey' }}
-              onPress={this.getSupport}>
+            <Button
+              style={{ backgroundColor: 'grey' }}
+              onPress={this.getSupport}
+            >
               <Icon active name='md-help' />
             </Button>
           </Left>
@@ -362,8 +375,10 @@ export class Settings extends Component {
         </ListItem>
         <ListItem icon>
           <Left>
-            <Button style={{ backgroundColor: '#d9534f' }}
-              onPress={this.logOut}>
+            <Button
+              style={{ backgroundColor: '#d9534f' }}
+              onPress={this.logOut}
+            >
               <Icon active name='md-power' />
             </Button>
           </Left>

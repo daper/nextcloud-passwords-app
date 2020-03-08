@@ -27,7 +27,7 @@ export class API {
 
   init (settings) {
     this.credentials = settings
-    let { user, password } = this.credentials
+    const { user, password } = this.credentials
 
     let auth = {}
     if (user && password) {
@@ -61,9 +61,9 @@ export class API {
     if (this.credentials.password === '') {
       return new Error('Cannot open DB. Invalid master password')
     } else if (!this.db) {
-      this.db = await new Promise((res, rej) => {
-        let db = SQLite.openDatabase(encodeName(DB_NAME, this.credentials.password), '1.0', '', 200, () => {
-          res(db)
+      this.db = await new Promise((resolve, reject) => {
+        const db = SQLite.openDatabase(encodeName(DB_NAME, this.credentials.password), '1.0', '', 200, () => {
+          resolve(db)
         })
       })
 
@@ -74,7 +74,7 @@ export class API {
   }
 
   async dropDB () {
-    let rootDir = Platform.select({
+    const rootDir = Platform.select({
       ios: fs.MainBundlePath,
       android: fs.DocumentDirectoryPath,
     })
@@ -91,7 +91,7 @@ export class API {
   async validateServer () {
     // curl -u username:password -X GET 'https://cloud.example.com/ocs/v1.php/...' -H "OCS-APIRequest: true"
     try {
-      let { data, status } = await axios.get('/ocs/v1.php/cloud/capabilities', {
+      const { data, status } = await axios.get('/ocs/v1.php/cloud/capabilities', {
         baseURL: `${this.credentials.server}`,
         timeout: 10 * 1000,
         headers: { 'OCS-APIRequest': 'true' },

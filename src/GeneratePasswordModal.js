@@ -45,7 +45,7 @@ export class GeneratePasswordModal extends Component {
   async requestNewPassword () {
     this.setState({ requestingNewPassword: true })
 
-    let data = await Passwords.generateDefaultPassword({
+    const data = await Passwords.generateDefaultPassword({
       numbers: this.state.enableNumbers,
       special: this.state.enableSpecial,
       strength: this.state.strength,
@@ -81,7 +81,8 @@ export class GeneratePasswordModal extends Component {
       animationType='none'
       transparent
       visible={this.props.passwordModalVisible}
-      onRequestClose={this.closeModal}>
+      onRequestClose={this.closeModal}
+           >
       <View style={styles.modalContainer}>
         <View style={styles.modalContent}>
           <Header style={{ backgroundColor: Colors.bgColor }}>
@@ -96,31 +97,38 @@ export class GeneratePasswordModal extends Component {
           </Header>
           <Content padder style={styles.modalContentContent}>
             <Item>
-              <Input placeholder='password'
+              <Input
+                placeholder='password'
                 value={this.props.passwordModalValue}
-                onChangeText={this.updatePassword} />
+                onChangeText={this.updatePassword}
+              />
               {!this.state.requestingNewPassword
                 ? <Button transparent onPress={this.requestNewPassword}>
                   <Icon type='MaterialIcons' active name='sync' style={{ fontSize: 40, color: 'grey' }} />
                 </Button>
-                : <Spinner style={{ height: 10 }} color={Colors.bgColor} />
-              }
+                : <Spinner style={{ height: 10 }} color={Colors.bgColor} />}
             </Item>
             <Item>
-              <CheckBox checked={this.state.enableNumbers}
+              <CheckBox
+                checked={this.state.enableNumbers}
                 onPress={() => this.setState({ enableNumbers: !this.state.enableNumbers })}
               />
-              <Button transparent full
-                onPress={() => this.setState({ enableNumbers: !this.state.enableNumbers })}>
+              <Button
+                transparent full
+                onPress={() => this.setState({ enableNumbers: !this.state.enableNumbers })}
+              >
                 <Text uppercase={false} style={{ marginLeft: 30, color: 'grey' }}>Enable numbers</Text>
               </Button>
             </Item>
             <Item>
-              <CheckBox checked={this.state.enableSpecial}
+              <CheckBox
+                checked={this.state.enableSpecial}
                 onPress={() => this.setState({ enableSpecial: !this.state.enableSpecial })}
               />
-              <Button transparent full
-                onPress={() => this.setState({ enableSpecial: !this.state.enableSpecial })}>
+              <Button
+                transparent full
+                onPress={() => this.setState({ enableSpecial: !this.state.enableSpecial })}
+              >
                 <Text uppercase={false} style={{ marginLeft: 30, color: 'grey' }}>Enable special</Text>
               </Button>
             </Item>

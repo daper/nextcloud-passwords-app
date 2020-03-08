@@ -76,10 +76,10 @@ export class Passwords {
         created integer,
         updated integer
       )`)
-    await this._executeSql(`create index if not exists passwords_folder on passwords(folder)`)
-    await this._executeSql(`create index if not exists passwords_favorite on passwords(favorite)`)
-    await this._executeSql(`create index if not exists passwords_hidden on passwords(hidden)`)
-    await this._executeSql(`create index if not exists passwords_trashed on passwords(trashed)`)
+    await this._executeSql('create index if not exists passwords_folder on passwords(folder)')
+    await this._executeSql('create index if not exists passwords_favorite on passwords(favorite)')
+    await this._executeSql('create index if not exists passwords_hidden on passwords(hidden)')
+    await this._executeSql('create index if not exists passwords_trashed on passwords(trashed)')
   }
 
   saveList (list) {
@@ -96,12 +96,12 @@ export class Passwords {
   }
 
   saveRow (txn, row) {
-    let questions = [...PASSWORD_FIELDS, '?'].map((field) => '?').join(',')
+    const questions = [...PASSWORD_FIELDS, '?'].map((field) => '?').join(',')
     return this._executeSql(`insert or replace into passwords values (${questions})`, row)
   }
 
   rowToObject (row) {
-    let labels = [
+    const labels = [
       'id',
       'label',
       'username',
@@ -125,7 +125,7 @@ export class Passwords {
       'created',
       'updated',
     ]
-    let ret = {}
+    const ret = {}
     labels.forEach((label, pos) => { ret[label] = row[pos] })
     return ret
   }
@@ -183,7 +183,7 @@ export class Passwords {
       }
 
       fields = fields.filter((field) => PASSWORD_FIELDS.indexOf(field) !== -1).join(',')
-      let { rows } = await this._executeSql(`select ${fields} from passwords where hidden=0 and trashed=0`)
+      const { rows } = await this._executeSql(`select ${fields} from passwords where hidden=0 and trashed=0`)
       return rows._array
     } catch (err) {
       if (__DEV__) console.log('error getting data', err)
@@ -192,12 +192,12 @@ export class Passwords {
   }
 
   async deleteAll () {
-    return this._executeSql(`delete from passwords`)
+    return this._executeSql('delete from passwords')
   }
 
   async fetchItem (id) {
     try {
-      let { status, data } = await this.http.post('/api/1.0/password/show', { id })
+      const { status, data } = await this.http.post('/api/1.0/password/show', { id })
       if (status === 200) {
         return data
       } else {
@@ -210,18 +210,18 @@ export class Passwords {
   }
 
   async getItem (id) {
-    let { rows } = await this._executeSql('select * from passwords where id=?', [id])
+    const { rows } = await this._executeSql('select * from passwords where id=?', [id])
     return rows._array[0]
   }
 
   async updateItem (item) {
     try {
-      let currentItem = await this.fetchItem(item.id)
+      const currentItem = await this.fetchItem(item.id)
       item = { ...currentItem, ...item }
       await this.http.patch('/api/1.0/password/update', '', { params: { ...item } })
 
       let cols = Object.keys(item).filter((col) => [...PASSWORD_FIELDS, 'password'].indexOf(col) !== -1)
-      let values = cols.map((key) => item[key])
+      const values = cols.map((key) => item[key])
       cols = cols.map((col) => `${col}=?`).join(',')
       values.push(item.id)
 
@@ -247,11 +247,11 @@ export class Passwords {
     fieldsToSearch = fieldsToSearch
       .filter((field) => PASSWORD_FIELDS.indexOf(field) !== -1)
       .map((field) => `${field} like ?`)
-    let values = fieldsToSearch.map(() => `%${value}%`)
+    const values = fieldsToSearch.map(() => `%${value}%`)
     fieldsToRetrieve = fieldsToRetrieve.filter((field) => PASSWORD_FIELDS.indexOf(field) !== -1).join(',')
 
     try {
-      let { rows } = await this._executeSql(`
+      const { rows } = await this._executeSql(`
             select ${fieldsToRetrieve}
             from passwords
             where ${fieldsToSearch.join(' or ')}
@@ -265,17 +265,17 @@ export class Passwords {
   }
 
   async getPassword (id) {
-    let { rows } = await this._executeSql(`select password from passwords where id=?`, [id])
+    const { rows } = await this._executeSql('select password from passwords where id=?', [id])
     return rows._array[0].password
   }
 
   async generateDefaultPassword (settings = null) {
     try {
       if (settings === null) {
-        let { data } = await this.http.get('/api/1.0/service/password')
+        const { data } = await this.http.get('/api/1.0/service/password')
         return data
       } else {
-        let { data } = await this.http.post('/api/1.0/service/password', { ...settings })
+        const { data } = await this.http.post('/api/1.0/service/password', { ...settings })
         return data
       }
     } catch (err) {
@@ -284,7 +284,7 @@ export class Passwords {
   }
 
   async setFavorite (id, enable = null) {
-    let passwordData = await this.fetchItem(id)
+    const passwordData = await this.fetchItem(id)
     if (enable === null) {
       passwordData.favorite = !passwordData.favorite
     } else {
@@ -292,7 +292,7 @@ export class Passwords {
     }
 
     try {
-      let { status } = await this.http.patch('/api/1.0/password/update', passwordData)
+      const { status } = await this.http.patch('/api/1.0/password/update', passwordData)
 
       if (status === 200) {
         await this.updateItem(passwordData)
@@ -312,13 +312,13 @@ export class Passwords {
     }
 
     try {
-      let { status, data } = await this.http.post('/api/1.0/password/create', item)
+      const { status, data } = await this.http.post('/api/1.0/password/create', item)
 
       if (status === 201) {
         item.id = data.id
         let cols = Object.keys(item).filter((col) => [...PASSWORD_FIELDS, 'password'].indexOf(col) !== -1)
-        let values = cols.map((key) => item[key])
-        let questions = values.map(() => '?').join(',')
+        const values = cols.map((key) => item[key])
+        const questions = values.map(() => '?').join(',')
         cols = cols.join(',')
 
         await this._executeSql(`insert into passwords(${cols}) values(${questions})`, values)
@@ -337,7 +337,7 @@ export class Passwords {
     }
 
     fields = fields.filter((field) => PASSWORD_FIELDS.indexOf(field) !== -1).join(',')
-    let { rows } = await this._executeSql(`select ${fields} from passwords where folder=? and hidden=0 and trashed=0`, [folderId])
+    const { rows } = await this._executeSql(`select ${fields} from passwords where folder=? and hidden=0 and trashed=0`, [folderId])
     return rows._array
   }
 
@@ -348,7 +348,7 @@ export class Passwords {
       }
 
       fields = fields.filter((field) => PASSWORD_FIELDS.indexOf(field) !== -1).join(',')
-      let { rows } = await this._executeSql(`select ${fields} from passwords where hidden=0 and trashed=0 and favorite=1`)
+      const { rows } = await this._executeSql(`select ${fields} from passwords where hidden=0 and trashed=0 and favorite=1`)
       return rows._array
     } catch (err) {
       if (__DEV__) console.log('error getting data', err)
@@ -358,7 +358,7 @@ export class Passwords {
 
   async getFavoritesFromFolder (folderId, fields = PASSWORD_FIELDS) {
     fields = fields.filter((field) => PASSWORD_FIELDS.indexOf(field) !== -1).join(',')
-    let { rows } = await this._executeSql(`select ${fields} from passwords where folder=?
+    const { rows } = await this._executeSql(`select ${fields} from passwords where folder=?
                                         and hidden=0 and trashed=0 and favorite=1`, [folderId])
     return rows._array
   }

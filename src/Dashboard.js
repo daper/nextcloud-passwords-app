@@ -52,7 +52,7 @@ class Dashboard extends Component {
       folder: {}
     }
 
-    let { user, password } = this.props.settings
+    const { user, password } = this.props.settings
     if (user === '' && password === '') {
       this.returnToLogin()
     }
@@ -79,7 +79,7 @@ class Dashboard extends Component {
 
   async fetchPasswords () {
     this.props.setLoading(true, 'Pulling sites...')
-    let { status } = await Passwords.fetchAll()
+    const { status } = await Passwords.fetchAll()
 
     if (status === 401) {
       await API.dropDB()
@@ -95,7 +95,7 @@ class Dashboard extends Component {
 
   async fetchFolders () {
     this.props.setLoading(true, 'Pulling folders...')
-    let { status } = await Folders.fetchAll()
+    const { status } = await Folders.fetchAll()
 
     if (status === 401) {
       await API.dropDB()
@@ -116,7 +116,7 @@ class Dashboard extends Component {
 
   async getPasswords () {
     this.props.setLoading(true, 'Loading sites...')
-    let passwords = await Passwords.getFromFolder(this.props.currentFolder,
+    const passwords = await Passwords.getFromFolder(this.props.currentFolder,
       ['id', 'label', 'url', 'username'])
     return passwords.map((item) => { return { ...item, type: 'site' } })
   }
@@ -153,7 +153,7 @@ class Dashboard extends Component {
 
   async getFolders () {
     this.props.setLoading(true, 'Loading folders...')
-    let folders = await Folders.getChildren(this.props.currentFolder,
+    const folders = await Folders.getChildren(this.props.currentFolder,
       ['id', 'label', 'parent'])
     return folders.map((item) => { return { ...item, type: 'folder' } })
   }
@@ -200,7 +200,7 @@ class Dashboard extends Component {
     this.searchTimeout = setTimeout(this.getData, 300)
   }
 
-  async clearSearchFilter() {
+  async clearSearchFilter () {
     await this.search('')
   }
 
@@ -222,15 +222,13 @@ class Dashboard extends Component {
           <Item>
             {this.state.filtering
               ? <Spinner color='black' size='small' style={{ padding: 10 }} />
-              : <Icon type='MaterialIcons' name='search' />
-            }
+              : <Icon type='MaterialIcons' name='search' />}
             <Input placeholder='Search' defaultValue={this.props.filter} onChangeText={this.search} />
             {this.props.filter.length !== 0
               ? <Button transparent onPress={this.clearSearchFilter} style={{ paddingTop: 3 }}>
-                  <Icon type='MaterialIcons' name="close" style={{ color: Colors.grey, marginRight: 8 }} />
+                <Icon type='MaterialIcons' name='close' style={{ color: Colors.grey, marginRight: 8 }} />
                 </Button>
-              : null
-            }
+              : null}
           </Item>
           <View style={{ alignSelf: 'center', marginLeft: 10 }}>
             <Button transparent onPress={this.refresh}>
@@ -245,9 +243,11 @@ class Dashboard extends Component {
             folder={this.state.folder}
           />
         </Content>
-        {!this.props.loading && <Button rounded primary large
+        {!this.props.loading && <Button
+          rounded primary large
           style={styles.actionButton}
-          onPress={() => this.props.history.push('/create')}>
+          onPress={() => this.props.history.push('/create')}
+                                >
           <Icon type='MaterialIcons' name='add' style={{ fontSize: 40, marginLeft: 8 }} />
         </Button>}
         <FooterMenu />

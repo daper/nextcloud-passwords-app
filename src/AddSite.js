@@ -63,11 +63,11 @@ export class AddSite extends Component {
   }
 
   async goBack () {
-    this.props.history.push(`/dashboard`)
+    this.props.history.push('/dashboard')
   }
 
   updateHandler (name, value) {
-    let item = this.state.item
+    const item = this.state.item
     item[name] = value
     this.setState({ item })
   }
@@ -94,7 +94,7 @@ export class AddSite extends Component {
   async submit () {
     if (this.validate()) {
       this.props.setLoading(true, 'Creating site...')
-      let data = await Passwords.create(this.state.item)
+      const data = await Passwords.create(this.state.item)
       this.props.setLoading(false)
 
       if (!(data instanceof Error)) {
@@ -127,21 +127,27 @@ export class AddSite extends Component {
                 <Label>Username</Label>
                 <Input
                   value={this.state.item.username}
-                  onChangeText={(filter) => this.updateHandler('username', filter)} />
+                  onChangeText={(filter) => this.updateHandler('username', filter)}
+                />
               </Item>
               <Item stackedLabel last error={this.state.passwordIsError}>
                 <Label>Password</Label>
                 <Input
                   value={this.state.item.password}
                   secureTextEntry={!this.state.showPassword}
-                  onChangeText={(filter) => this.updateHandler('password', filter)} />
+                  onChangeText={(filter) => this.updateHandler('password', filter)}
+                />
                 <Button transparent style={styles.copyPassButton}>
-                  <Icon active style={styles.showPassIcon}
+                  <Icon
+                    active style={styles.showPassIcon}
                     type='MaterialIcons' name={this.state.showPassword ? 'visibility' : 'visibility-off'}
-                    onPress={() => this.setState({ showPassword: !this.state.showPassword })} />
+                    onPress={() => this.setState({ showPassword: !this.state.showPassword })}
+                  />
                 </Button>
-                <Button transparent style={styles.showPassButton}
-                  onPress={() => this.props.togglePasswordModal(true)}>
+                <Button
+                  transparent style={styles.showPassButton}
+                  onPress={() => this.props.togglePasswordModal(true)}
+                >
                   <Icon active style={styles.showPassIcon} type='MaterialIcons' name='update' />
                 </Button>
               </Item>
@@ -149,13 +155,15 @@ export class AddSite extends Component {
                 <Label>Name</Label>
                 <Input
                   value={this.state.item.label}
-                  onChangeText={(filter) => this.updateHandler('label', filter)} />
+                  onChangeText={(filter) => this.updateHandler('label', filter)}
+                />
               </Item>
               <Item stackedLabel last>
                 <Label>Website</Label>
                 <Input
                   value={this.state.item.url}
-                  onChangeText={(filter) => this.updateHandler('url', filter)} />
+                  onChangeText={(filter) => this.updateHandler('url', filter)}
+                />
               </Item>
               <Item stackedLabel last>
                 <Label>Notes</Label>
@@ -164,20 +172,23 @@ export class AddSite extends Component {
                   style={{ width: '100%' }}
                   defaultValue={this.state.item.notes}
                   value={this.state.item.notes}
-                  onChangeText={(filter) => this.updateHandler('notes', filter)} />
+                  onChangeText={(filter) => this.updateHandler('notes', filter)}
+                />
               </Item>
               <Item last style={{ paddingTop: 10, paddingBottom: 10 }}>
-                <CheckBox checked={this.state.item.favorite}
+                <CheckBox
+                  checked={this.state.item.favorite}
                   onPress={() => this.updateHandler('favorite', !this.state.item.favorite)}
                 />
-                <Button transparent full
+                <Button
+                  transparent full
                   style={{ justifyContent: 'flex-start', width: '80%', marginLeft: 30 }}
-                  onPress={() => this.updateHandler('favorite', !this.state.item.favorite)}>
+                  onPress={() => this.updateHandler('favorite', !this.state.item.favorite)}
+                >
                   <Text uppercase={false} style={{ color: 'grey' }}>Favorite</Text>
                 </Button>
               </Item>
-            </Form>
-          }
+            </Form>}
           {!this.props.loading && <GeneratePasswordModal onSelectPassword={(value) => { this.updateHandler('password', value) }} />}
         </Content>
         {!this.props.loading && <Footer>
