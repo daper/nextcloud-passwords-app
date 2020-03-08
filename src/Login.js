@@ -119,7 +119,7 @@ class Login extends Component {
         matches.forEach((match) => {
           let key = match.split(':')[0]
           let value = match.split(':').slice(1).join(':')
-          settings[key] = value
+          settings[key] = decodeURIComponent(value)
         })
 
         this.props.setSettings(settings)
