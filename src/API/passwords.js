@@ -55,7 +55,7 @@ export class Passwords {
       create table if not exists passwords(
         id string primary key not null,
         label string,
-        username string,
+        username blob,
         password blob,
         url string,
         notes string,
