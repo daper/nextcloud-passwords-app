@@ -62,6 +62,8 @@ class Dashboard extends Component {
     this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
       if (this.props.currentFolder !== ROOT_FOLDER) {
         this.changeFolder(this.state.folder.parent)
+      } else if (this.props.history.location === this.props.history.entries[0]) {
+        BackHandler.exitApp()
       } else {
         this.props.history.goBack()
       }
