@@ -45,6 +45,8 @@ class Login extends Component {
     this.props.setLocked(false)
     this.props.setPasscode('')
     this.props.setLockTimeout(Infinity)
+    this.props.setLoading(false, 'Loadig...')
+    this.props.setAuthFlow(false)
   }
 
   updateContainerSize ({ screen }) {
@@ -86,20 +88,15 @@ class Login extends Component {
   async validateServer () {
     this.props.setLoading(true)
 
-    if (!/^https:\/\//.test(this.props.settings.server)) {
-      await this.props.setSettings({ ...this.props.settings, server: `https://${this.props.settings.server}` })
-    }
-
-    if (/^http:\/\//.test(this.props.settings.server)) {
-      let server = this.props.settings.server.replace('http://', '')
-      await this.props.setSettings({ ...this.props.settings, server: `https://${server}` })
-    }
+    let server = this.props.settings.server.replace(/https?:\/\//, '').replace(/\/$/, '')
+    await this.props.setSettings({ ...this.props.settings, server: `https://${server}` })
 
     API.init(this.props.settings)
     let { error, data } = await API.validateServer()
+
+    console.log(`Server validated: error: ${error} data: ${JSON.stringify(data)}`)
     if (error) {
       this.props.setLoading(true, error.message)
-      this.props.setSettings({ ...this.props.settings, server: '' })
 
       setTimeout(() => {
         this.props.setLoading(false, 'Contacting Server...')

@@ -171,7 +171,7 @@ export class Passwords {
       if (__DEV__) console.log(`error while getting passwords ${error}`)
       return {
         error,
-        status: error.response.status
+        status: (error.response || {}).status || undefined
       }
     }
   }

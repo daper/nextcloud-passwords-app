@@ -129,7 +129,7 @@ export class Folders {
       if (__DEV__) console.log(`error while getting folders ${error}`)
       return {
         error,
-        status: error.response.status
+        status: (error.response || {}).status || undefined
       }
     }
   }

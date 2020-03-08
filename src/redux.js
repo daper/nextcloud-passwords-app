@@ -230,7 +230,10 @@ export function appReducer (state = defaultState, action) {
   }
 }
 
-const storage = createSensitiveStorage({})
+const storage = createSensitiveStorage({
+  touchID: false,
+  showModal: true
+})
 
 export const reducers = persistCombineReducers({ key: 'root', storage }, { app: appReducer })
 

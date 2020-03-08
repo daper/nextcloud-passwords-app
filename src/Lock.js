@@ -51,9 +51,9 @@ class Lock extends Component {
       if (!isAvailable) {
         this.setState({ sensorAvail: isAvailable })
       } else {
-        await FingerprintScanner.authenticate({ onAttempt: this.setError })
+        await FingerprintScanner.authenticate({ description: 'Unlock', onAttempt: this.setError })
         await this.setState({ isError: false })
-        
+
         setTimeout(this.goBack, 400)
       }
     } catch (err) {
