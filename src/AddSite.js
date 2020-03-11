@@ -39,7 +39,8 @@ export class AddSite extends Component {
 
     this.state = {
       item: {
-        folder: this.props.currentFolder
+        folder: this.props.currentFolder,
+        customFields: "[]"
       },
       showPassword: false,
       passwordIsError: false,
