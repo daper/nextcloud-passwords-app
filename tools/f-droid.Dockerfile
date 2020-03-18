@@ -41,11 +41,13 @@ RUN mkdir -p $ANDROID_HOME \
     && yes | sdkmanager "platform-tools" "tools" "build-tools;28.0.3" "platforms;android-28"
 
 RUN wget "https://dl.google.com/android/repository/android-ndk-r19c-linux-x86_64.zip" -O /opt/ndk.zip \
-    && echo "fd94d0be6017c6acbd193eb95e09cf4b6f61b834 /opt/ndk.zip" | sha1sum -c - \
     && cd /opt && unzip ndk.zip && rm ndk.zip
+
 
 RUN git clone https://gitlab.com/fdroid/fdroidserver.git /fdroidserver \
     && git clone https://gitlab.com/fdroid/fdroiddata.git /repo
+
+RUN apt-get install python3-git -y
 
 WORKDIR /repo
 ENTRYPOINT ["fdroid"]
