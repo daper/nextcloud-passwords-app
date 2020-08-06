@@ -16,9 +16,9 @@
     "axios": "^0.19.2",
     "native-base": "^2.13.6",
     "prop-types": "^15.7.2",
-    "react": "^16.13.0",
-    "react-native": "^0.61.5",
-    "react-native-fingerprint-scanner": "^4.0.0",
+    "react": "16.13.1",
+    "react-native": "0.63.2",
+    "react-native-fingerprint-scanner": "^6.0.0",
     "react-native-fs": "^2.16.0",
     "react-native-sensitive-info": "^5.5.5",
     "react-native-sqlcipher-2": "^1.0.2",
@@ -42,9 +42,9 @@
     "eslint-plugin-react": "^7.19.0",
     "eslint-plugin-standard": "^4.0.1",
     "flow-bin": "^0.120.1",
-    "jest": "^25.1.0",
-    "metro-react-native-babel-preset": "^0.58.0",
-    "react-test-renderer": "^16.13.0"
+    "jest": "^25.5.4",
+    "metro-react-native-babel-preset": "^0.59.0",
+    "react-test-renderer": "^16.13.1"
   },
   "jest": {
     "preset": "react-native"
