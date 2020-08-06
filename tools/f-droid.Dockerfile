@@ -3,7 +3,7 @@ FROM debian:stretch
 ENV ANDROID_HOME=/opt/android-sdk \
     ANDROID_NDK=/opt/android-ndk-r19c \
     LC_ALL=en_US.UTF-8
-ENV PATH=/fdroidserver:$ANDROID_HOME/tools/bin:$ANDROID_HOME/tools:/opt/node-v10.15.0-linux-x64/bin:$PATH
+ENV PATH=/fdroidserver:$ANDROID_HOME/tools/bin:$ANDROID_HOME/tools:/opt/node-v${NODE_VERSION}-linux-x64/bin:$PATH
 
 RUN apt update \
 	&& apt install -y \
@@ -21,27 +21,31 @@ RUN apt update \
         python3-pyasn1-modules \
         python3-yaml \
         python3-requests \
+        python3-git \
         locales \
     && apt clean \
     && sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen \
     && echo 'LANG="en_US.UTF-8"'>/etc/default/locale \
     && dpkg-reconfigure --frontend=noninteractive locales
 
-RUN wget "https://nodejs.org/dist/v10.15.0/node-v10.15.0-linux-x64.tar.xz" -O node.tar.xz \
-    && echo "4ee8503c1133797777880ebf75dcf6ae3f9b894c66fd2d5da507e407064c13b5 node.tar.xz" | sha256sum -c - \
+ENV NODE_VERSION=12.18.1 \
+    NODE_SHA256=863f816967e297c9eb221ad3cf32521f7ac46fffc66750e60f159ed63809affa
+
+RUN wget "https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-x64.tar.xz" -O node.tar.xz \
+    && echo "${NODE_SHA256} node.tar.xz" | sha256sum -c - \
     && tar xJf node.tar.xz \
-    && mv node-v10.15.0-linux-x64 /opt/ \
+    && mv node-v${NODE_VERSION}-linux-x64 /opt/ \
     && rm node.tar.xz \
-    && chown -R root:root /opt/node-v10.15.0-linux-x64
+    && chown -R root:root /opt/node-v${NODE_VERSION}-linux-x64
 
 RUN mkdir -p $ANDROID_HOME \
-    && wget "https://dl.google.com/android/repository/sdk-tools-linux-4333796.zip" -O $ANDROID_HOME/sdk.zip \
-    && echo "92ffee5a1d98d856634e8b71132e8a95d96c83a63fde1099be3d86df3106def9 $ANDROID_HOME/sdk.zip" | sha256sum -c - \
+    && wget "https://dl.google.com/android/repository/commandlinetools-linux-6609375_latest.zip" -O $ANDROID_HOME/sdk.zip \
+    && echo "89f308315e041c93a37a79e0627c47f21d5c5edbe5e80ea8dc0aac8a649e0e92 $ANDROID_HOME/sdk.zip" | sha256sum -c - \
     && cd $ANDROID_HOME && unzip sdk.zip && rm sdk.zip \
-    && yes | sdkmanager "platform-tools" "tools" "build-tools;28.0.3" "platforms;android-28"
+    && yes | sdkmanager --sdk_root=${ANDROID_HOME} "platform-tools" "tools" "build-tools;28.0.3" "platforms;android-28"
 
-RUN wget "https://dl.google.com/android/repository/android-ndk-r19c-linux-x86_64.zip" -O /opt/ndk.zip \
-    && echo "fd94d0be6017c6acbd193eb95e09cf4b6f61b834 /opt/ndk.zip" | sha1sum -c - \
+RUN wget "https://dl.google.com/android/repository/android-ndk-r21d-linux-x86_64.zip" -O /opt/ndk.zip \
+    && echo "bcf4023eb8cb6976a4c7cff0a8a8f145f162bf4d /opt/ndk.zip" | sha1sum -c - \
     && cd /opt && unzip ndk.zip && rm ndk.zip
 
 RUN git clone https://gitlab.com/fdroid/fdroidserver.git /fdroidserver \
