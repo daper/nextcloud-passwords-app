@@ -12,7 +12,6 @@ import {
   Header,
   Body,
   Title,
-  Subtitle,
   Content,
   Text,
   Icon,
@@ -318,8 +317,7 @@ export class SingleView extends Component {
             </Button>
           </Left>
           <Body>
-            <Title>Site View</Title>
-            <Subtitle numberOfLines={1}>{this.state.item.label}</Subtitle>
+            <Title numberOfLines={1}>{this.state.item.label}</Title>
           </Body>
           {this.renderIcons()}
         </Header>
@@ -372,12 +370,19 @@ export class SingleView extends Component {
                 </Item>
                 <Item stackedLabel disabled={!this.state.editing} last>
                   <Label>Address</Label>
-                  <Input
-                    disabled={!this.state.editing}
-                    defaultValue={this.state.item.url}
-                    value={this.state.item.url}
-                    onChangeText={(filter) => this.updateHandler('url', filter)}
-                  />
+                  {!this.state.editing
+                    ? <Button
+                      transparent onPress={() => Linking.openURL(`${this.state.item.url}`)}
+                      title={this.state.item.url}
+                      >
+                        <Text uppercase={false} style={{ marginLeft: -12, fontSize: 16 }}>{this.state.item.url}</Text>
+                      </Button>
+                    : <Input
+                      disabled={!this.state.editing}
+                      defaultValue={this.state.item.url}
+                      value={this.state.item.url}
+                      onChangeText={(filter) => this.updateHandler('url', filter )}
+                      />}
                 </Item>
                 <Item stackedLabel disabled={!this.state.editing} last>
                   <Label>Notes</Label>
