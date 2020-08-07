@@ -3,11 +3,11 @@ import {
   StyleSheet,
   BackHandler,
 } from 'react-native'
+import fs from 'react-native-fs'
 import { withRouter } from 'react-router-native'
 import { connect } from 'react-redux'
 import {
   Header,
-  Content,
   Container,
   Icon,
   Item,
@@ -71,7 +71,23 @@ class Dashboard extends Component {
       return true
     })
 
-    await API.openDB()
+    const rootDir = Platform.select({
+      ios: fs.MainBundlePath,
+      android: fs.DocumentDirectoryPath,
+    })
+
+    let dbName = this.props.settings.dbName
+    try {
+      await fs.stat(`${rootDir}/${dbName}`)
+        .then((statResult) => {
+          if (__DEV__) console.log('DB File Stat', statResult)
+        })
+    } catch(err) {
+      if (__DEV__) console.log('DB File not exists')
+      await this.props.setSettings({ dbName: new Date().getTime().toString() })
+    }
+
+    await API.openDB(this.props.settings.dbName, "Dashboard.js")
     await this.changeFolder(this.props.currentFolder)
   }
 
@@ -84,7 +100,7 @@ class Dashboard extends Component {
     const { status } = await Passwords.fetchAll()
 
     if (status === 401) {
-      await API.dropDB()
+      await API.dropDB(this.props.settings.dbName)
       this.returnToLogin()
       return false
     } else if (status !== 200) {
@@ -100,7 +116,7 @@ class Dashboard extends Component {
     const { status } = await Folders.fetchAll()
 
     if (status === 401) {
-      await API.dropDB()
+      await API.dropDB(this.props.settings.dbName)
       this.returnToLogin()
     } else if (status !== 200) {
       return false
@@ -238,13 +254,13 @@ class Dashboard extends Component {
             </Button>
           </View>
         </Header>
-        <Content padder contentContainerStyle={{ flexGrow: 1 }}>
+        <View padder style={{ flex: 1 }}>
           <SiteList
             onChangeFolder={this.changeFolder}
             passwordList={this.state.passwordList}
             folder={this.state.folder}
           />
-        </Content>
+        </View>
         {!this.props.loading && <Button
           rounded primary large
           style={styles.actionButton}

@@ -57,15 +57,37 @@ export class API {
     this.models.forEach((model) => model.setHttp(this.instance))
   }
 
-  async openDB () {
+  async openDB (dbName, _debugSrc) {
+    if (__DEV__) console.log(`Called openDB(${dbName}) from ${_debugSrc}`, this.db)
+
     if (this.credentials.password === '') {
       return new Error('Cannot open DB. Invalid master password')
     } else if (!this.db) {
       this.db = await new Promise((resolve, reject) => {
-        const db = SQLite.openDatabase(encodeName(DB_NAME, this.credentials.password), '1.0', '', 200, () => {
+        const db = SQLite.openDatabase(encodeName(dbName, this.credentials.password), '1.0', '', 200, () => {
           resolve(db)
         })
       })
+
+      if (__DEV__) {
+        console.log(`Got DB(${dbName}):`, this.db)
+
+        const rootDir = Platform.select({
+          ios: fs.MainBundlePath,
+          android: fs.DocumentDirectoryPath,
+        })
+
+        let dbPath = `${rootDir}/${dbName}`
+
+        try {
+          await fs.stat(dbPath)
+            .then((statResult) => {
+              console.log('DB File Stat', statResult)
+            })
+        } catch(e) {
+          console.log(`Looks like the fs call failed to ${dbPath}`)
+        }
+      }
 
       this.models.forEach((model) => model.setDb(this.db))
 
@@ -73,13 +95,15 @@ export class API {
     }
   }
 
-  async dropDB () {
+  async dropDB (dbName) {
+    this.db = null
+
     const rootDir = Platform.select({
       ios: fs.MainBundlePath,
       android: fs.DocumentDirectoryPath,
     })
 
-    return fs.unlink(`${rootDir}/${DB_NAME}`)
+    return fs.unlink(`${rootDir}/${dbName}`)
       .then(() => {
         if (__DEV__) console.log('FILE DELETED')
       })

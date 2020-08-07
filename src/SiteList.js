@@ -12,6 +12,7 @@ import {
   Button,
   Icon,
   Spinner,
+  List,
   ListItem,
   Body,
   Right,
@@ -53,7 +54,7 @@ export class SiteList extends Component {
     this.toClipboard(pass, 'Password')
   }
 
-  renderRow ({ item }) {
+  renderRow (item) {
     if (item.type === 'site') {
       return (
         <ListItem noIndent icon last>
@@ -116,11 +117,11 @@ export class SiteList extends Component {
             <Spinner style={styles.spinnerContent} color={Colors.bgColor} />
             <Text style={{ color: Colors.bgColor, marginTop: 20, ...styles.spinnerContent }}>{this.props.statusText}</Text>
           </View>
-          : <FlatList
-            style={{ paddingBottom: 80 }}
-            data={this.props.passwordList}
+          : <List
+            dataArray={this.props.passwordList}
             keyExtractor={(item) => item.id}
-            renderItem={this.renderRow}
+            renderRow={this.renderRow}
+            ListFooterComponent={<View style={{height: 80}} />}
             />}
       </View>
     )

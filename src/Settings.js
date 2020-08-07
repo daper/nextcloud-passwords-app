@@ -107,12 +107,12 @@ export class Settings extends Component {
   }
 
   async returnToLogin () {
-    await API.dropDB()
+    await API.dropDB(this.props.settings.dbName)
     this.props.setLastLogin(0)
-    this.props.setSettings({
-      user: '',
-      password: ''
-    })
+    // this.props.setSettings({
+    //   user: '',
+    //   password: ''
+    // })
 
     this.props.history.push('/login')
   }
@@ -223,7 +223,7 @@ export class Settings extends Component {
               style={{ backgroundColor: 'grey' }}
               onPress={this.forceSyncDown}
             >
-              <Icon active name='refresh' />
+              <Icon type='MaterialIcons' active name='refresh' />
             </Button>
           </Left>
           <Body>
@@ -331,7 +331,7 @@ export class Settings extends Component {
               warning
               onPress={this.rateApp}
             >
-              <Icon active name='star' />
+              <Icon type='MaterialIcons' active name='star' />
             </Button>
           </Left>
           <Body>
@@ -346,7 +346,7 @@ export class Settings extends Component {
               style={{ backgroundColor: 'grey' }}
               onPress={this.shareApp}
             >
-              <Icon active name='share' />
+              <Icon type='MaterialIcons' active name='share' />
             </Button>
           </Left>
           <Body>
@@ -361,7 +361,7 @@ export class Settings extends Component {
               style={{ backgroundColor: 'grey' }}
               onPress={this.getSupport}
             >
-              <Icon active name='md-help' />
+              <Icon type='MaterialIcons' active name='help' />
             </Button>
           </Left>
           <Body>
@@ -379,7 +379,7 @@ export class Settings extends Component {
               style={{ backgroundColor: '#d9534f' }}
               onPress={this.logOut}
             >
-              <Icon active name='md-power' />
+              <Icon type='MaterialIcons' active name='power-settings-new' />
             </Button>
           </Left>
           <Body>
@@ -400,6 +400,7 @@ const mapStateToProps = (state, ownProps) => {
     lockTimeout: state.app.lockTimeout,
     passcode: state.app.passcode,
     enableSecurity: state.app.enableSecurity,
+    settings: state.app.settings,
   }
 }
 

@@ -4,9 +4,9 @@ import {
   StyleSheet,
 } from 'react-native'
 import {
+  View,
   Container,
   Header,
-  Content,
   Text,
   Body,
   Icon,
@@ -108,13 +108,13 @@ export class Favorites extends Component {
           <Text style={styles.headerBodyText}>Favorites</Text>
         </Body>
       </Header>
-      <Content padder contentContainerStyle={{ flexGrow: 1 }}>
+      <View padder style={{ flex: 1 }}>
         <SiteList
           onChangeFolder={this.changeFolder}
           passwordList={this.state.passwordList}
           folder={this.state.folder}
         />
-      </Content>
+      </View>
       <FooterMenu />
     </Container>
   }

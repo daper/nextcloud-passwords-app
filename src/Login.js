@@ -32,6 +32,7 @@ class Login extends Component {
     super(props)
     this.state = {
       containerSize: Dimensions.get('screen').height - 25,
+      server: ''
     }
 
     this.updateContainerSize = this.updateContainerSize.bind(this)
@@ -39,7 +40,30 @@ class Login extends Component {
     this.keyboardDidHide = this.keyboardDidHide.bind(this)
     this.validateServer = this.validateServer.bind(this)
     this._handleOpenURL = this._handleOpenURL.bind(this)
+  }
 
+  updateContainerSize ({ screen }) {
+    this.setState({
+      ...this.state,
+      containerSize: screen.height - 25
+    })
+  }
+
+  keyboardDidShow (e) {
+    this.setState({
+      ...this.state,
+      containerSize: Dimensions.get('window').height - e.endCoordinates.height - 25
+    })
+  }
+
+  keyboardDidHide (e) {
+    this.setState({
+      ...this.state,
+      containerSize: Dimensions.get('window').height
+    })
+  }
+
+  componentDidMount () {
     // Reset security settings
     // I don't like this place to do this... :/
     this.props.setLocked(false)
@@ -47,35 +71,20 @@ class Login extends Component {
     this.props.setLockTimeout(Infinity)
     this.props.setLoading(false, 'Loadig...')
     this.props.setAuthFlow(false)
-  }
 
-  updateContainerSize ({ screen }) {
-    this.setState({
-      containerSize: screen.height - 25
-    })
-  }
-
-  keyboardDidShow (e) {
-    this.setState({
-      containerSize: Dimensions.get('window').height - e.endCoordinates.height - 25
-    })
-  }
-
-  keyboardDidHide (e) {
-    this.setState({
-      containerSize: Dimensions.get('window').height
-    })
-  }
-
-  componentDidMount () {
     Dimensions.addEventListener('change', this.updateContainerSize)
     Keyboard.addListener('keyboardDidShow', this.keyboardDidShow)
     Keyboard.addListener('keyboardDidHide', this.keyboardDidHide)
     Linking.addEventListener('url', this._handleOpenURL)
 
-    if (this.props.settings.user !== '' && this.props.settings.password !== '') {
-      this.props.history.push('/dashboard')
-    }
+    this.setState({
+      ...this.state,
+      server: this.props.settings.server
+    })
+
+    // if (this.props.settings.user !== '' && this.props.settings.password !== '') {
+    //   this.props.history.push('/dashboard')
+    // }
   }
 
   componentWillUnmount () {
@@ -88,22 +97,32 @@ class Login extends Component {
   async validateServer () {
     this.props.setLoading(true)
 
-    const server = this.props.settings.server.replace(/https?:\/\//, '').replace(/\/$/, '')
-    await this.props.setSettings({ ...this.props.settings, server: `https://${server}` })
+    const server = this.state.server.replace(/https?:\/\//, '').replace(/\/$/, '')
+    const oldServer = this.props.settings.server.replace(/https?:\/\//, '').replace(/\/$/, '')
 
-    API.init(this.props.settings)
-    const { error, data } = await API.validateServer()
+    console.log(`Server match "${server}" == "${oldServer}"`)
+    if (server == oldServer && this.props.settings.password != "") {
+      await this.props.setSettings({ ...this.props.settings, server: `https://${server}` })
 
-    console.log(`Server validated: error: ${error} data: ${JSON.stringify(data)}`)
-    if (error) {
-      this.props.setLoading(true, error.message)
+      API.init(this.props.settings)
 
-      setTimeout(() => {
-        this.props.setLoading(false, 'Contacting Server...')
-      }, 1000)
+      this.props.history.push('/dashboard')
     } else {
-      this.props.setLoading(true, 'validation successful')
-      this.props.setAuthFlow(true)
+      API.init({server: `https://${server}`})
+      const { error, data } = await API.validateServer()
+
+      console.log(`Server validated: error: ${error} data: ${JSON.stringify(data)}`)
+      if (error) {
+        this.props.setLoading(true, error.message)
+
+        setTimeout(() => {
+          this.props.setLoading(false, 'Contacting Server...')
+        }, 1000)
+      } else {
+        await this.props.setSettings({ ...this.props.settings, server: `https://${server}` })
+        this.props.setLoading(true, 'validation successful')
+        this.props.setAuthFlow(true)
+      }
     }
   }
 
@@ -115,7 +134,9 @@ class Login extends Component {
 
       const matches = url.match(/(server|user|password):([^&]+)/g)
       if (matches) {
-        const settings = {}
+        const settings = {
+          dbName: new Date().getTime().toString()
+        }
         matches.forEach((match) => {
           const key = match.split(':')[0]
           const value = match.split(':').slice(1).join(':')
@@ -126,7 +147,8 @@ class Login extends Component {
         this.props.setLoading(true, 'Success! Opening...')
 
         API.init(settings)
-        API.openDB()
+
+        API.openDB(settings.dbName, "_handleOpenURL")
           .then(() => this.props.history.push('/dashboard'))
       }
 
@@ -146,11 +168,11 @@ class Login extends Component {
           <Input
             style={{ color: 'white' }}
             onChangeText={(text) => {
-              this.props.setSettings({ ...this.props.settings, server: text })
+              this.setState({ ...this.state, server: text })
             }}
             onSubmitEditing={this.validateServer}
           >
-            {this.props.settings.server}
+            {this.state.server}
           </Input>
         </Item>
         <View style={{ marginTop: 20 }}>

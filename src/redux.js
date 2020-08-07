@@ -149,6 +149,7 @@ const defaultState = {
     server: '',
     user: '',
     password: '',
+    dbName: 'nextcloud.db',
   },
   filter: '',
   passwordModalVisible: false,
