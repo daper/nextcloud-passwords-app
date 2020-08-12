@@ -2,8 +2,8 @@ import React, { Component } from 'react'
 import {
   StyleSheet,
   Modal,
-  Slider,
 } from 'react-native'
+import Slider from '@react-native-community/slider'
 import {
   View,
   Header,
@@ -29,10 +29,10 @@ export class GeneratePasswordModal extends Component {
   constructor (props) {
     super(props)
 
-    this.requestNewPassword = this.requestNewPassword.bind(this)
-    this.closeModal = this.closeModal.bind(this)
-    this.usePassword = this.usePassword.bind(this)
-    this.updatePassword = this.updatePassword.bind(this)
+    this.handleRequestNewPassword = this.handleRequestNewPassword.bind(this)
+    this.handleCloseModal = this.handleCloseModal.bind(this)
+    this.handleUsePassword = this.handleUsePassword.bind(this)
+    this.handleUpdatePassword = this.handleUpdatePassword.bind(this)
 
     this.state = {
       requestingNewPassword: false,
@@ -42,7 +42,7 @@ export class GeneratePasswordModal extends Component {
     }
   }
 
-  async requestNewPassword () {
+  async handleRequestNewPassword () {
     this.setState({ requestingNewPassword: true })
 
     const data = await Passwords.generateDefaultPassword({
@@ -61,18 +61,18 @@ export class GeneratePasswordModal extends Component {
     this.props.setPasswordModalValue(data.password)
   }
 
-  closeModal () {
+  handleCloseModal () {
     this.props.togglePasswordModal(false)
   }
 
-  usePassword () {
-    this.closeModal()
+  handleUsePassword () {
+    this.handleCloseModal()
     if (this.props.passwordModalValue !== '') {
       this.props.onSelectPassword(this.props.passwordModalValue)
     }
   }
 
-  updatePassword (value) {
+  handleUpdatePassword (value) {
     this.props.setPasswordModalValue(value)
   }
 
@@ -81,7 +81,7 @@ export class GeneratePasswordModal extends Component {
       animationType='none'
       transparent
       visible={this.props.passwordModalVisible}
-      onRequestClose={this.closeModal}
+      onRequestClose={this.handleCloseModal}
            >
       <View style={styles.modalContainer}>
         <View style={styles.modalContent}>
@@ -90,7 +90,7 @@ export class GeneratePasswordModal extends Component {
               <Title style={{ fontSize: 16 }}>Generate Password</Title>
             </Body>
             <Right>
-              <Button block transparent onPress={this.closeModal}>
+              <Button block transparent onPress={this.handleCloseModal}>
                 <Icon type='MaterialIcons' name='close' />
               </Button>
             </Right>
@@ -100,10 +100,10 @@ export class GeneratePasswordModal extends Component {
               <Input
                 placeholder='password'
                 value={this.props.passwordModalValue}
-                onChangeText={this.updatePassword}
+                onChangeText={this.handleUpdatePassword}
               />
               {!this.state.requestingNewPassword
-                ? <Button transparent onPress={this.requestNewPassword}>
+                ? <Button transparent onPress={this.handleRequestNewPassword}>
                   <Icon type='MaterialIcons' active name='sync' style={{ fontSize: 40, color: 'grey' }} />
                 </Button>
                 : <Spinner style={{ height: 10 }} color={Colors.bgColor} />}
@@ -148,7 +148,7 @@ export class GeneratePasswordModal extends Component {
           </Content>
           <Footer>
             <FooterTab>
-              <Button full success style={styles.modalFooterStyle} onPress={this.usePassword}>
+              <Button full success style={styles.modalFooterStyle} onPress={this.handleUsePassword}>
                 <Text style={{ color: 'white', fontSize: 14 }}>Use</Text>
               </Button>
             </FooterTab>

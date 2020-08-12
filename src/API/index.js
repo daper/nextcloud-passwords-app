@@ -15,8 +15,6 @@ export const Colors = {
   grey: '#414142'
 }
 
-const DB_NAME = 'nextcloud.db'
-
 export class API {
   models = [Passwords, Folders]
 
@@ -69,7 +67,7 @@ export class API {
         })
       })
 
-      if (__DEV__) {
+      if (__DEV__) { /*
         console.log(`Got DB(${dbName}):`, this.db)
 
         const rootDir = Platform.select({
@@ -77,21 +75,24 @@ export class API {
           android: fs.DocumentDirectoryPath,
         })
 
-        let dbPath = `${rootDir}/${dbName}`
+        const dbPath = `${rootDir}/${dbName}`
 
         try {
           await fs.stat(dbPath)
             .then((statResult) => {
               console.log('DB File Stat', statResult)
             })
-        } catch(e) {
+        } catch (e) {
           console.log(`Looks like the fs call failed to ${dbPath}`)
+          console.log(e)
         }
-      }
+      */ }
 
       this.models.forEach((model) => model.setDb(this.db))
 
       await Promise.all(this.models.map((model) => model.createTable()))
+    } else {
+      if (__DEV__) console.log('DB is opened: no-op')
     }
   }
 

@@ -3,9 +3,9 @@ import {
   StyleSheet,
   BackHandler,
   Dimensions,
-  Clipboard,
   Linking,
 } from 'react-native'
+import Clipboard from '@react-native-community/clipboard'
 import { withRouter } from 'react-router-native'
 import {
   Container,
@@ -38,12 +38,12 @@ export class SingleView extends Component {
     super(props)
 
     this.updateHandler = this.updateHandler.bind(this)
-    this.stopEditing = this.stopEditing.bind(this)
-    this.startEditing = this.startEditing.bind(this)
-    this.setFavorite = this.setFavorite.bind(this)
-    this.goBack = this.goBack.bind(this)
-    this.delete = this.delete.bind(this)
-    this.save = this.save.bind(this)
+    this.handleStopEditing = this.handleStopEditing.bind(this)
+    this.handleStartEditing = this.handleStartEditing.bind(this)
+    this.handleSetFavorite = this.handleSetFavorite.bind(this)
+    this.handleGoBack = this.handleGoBack.bind(this)
+    this.handleDelete = this.handleDelete.bind(this)
+    this.handleSave = this.handleSave.bind(this)
 
     this.state = {
       untouchedItem: {},
@@ -61,7 +61,7 @@ export class SingleView extends Component {
 
   async componentDidMount () {
     this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
-      this.goBack()
+      this.handleGoBack()
       return true
     })
 
@@ -92,7 +92,7 @@ export class SingleView extends Component {
     this.backHandler.remove()
   }
 
-  async save () {
+  async handleSave () {
     try {
       this.props.setLoading(true, 'Saving...')
       const { id, label, username, password, url, notes, customFields } = this.state.item
@@ -100,12 +100,12 @@ export class SingleView extends Component {
       const item = this.state.item
       await this.setState({ item, untouchedItem: { ...item } })
     } catch (err) {
-      if (__DEV__) console.log('save', err)
+      if (__DEV__) console.log('handleSave', err)
     }
     this.props.setLoading(false)
   }
 
-  delete () {
+  handleDelete () {
     ActionSheet.show({
       options: ['Delete', 'Cancel'],
       cancelButtonIndex: 1,
@@ -115,7 +115,7 @@ export class SingleView extends Component {
     (buttonIndex) => {
       if (buttonIndex === 0) {
         Passwords.deleteItem(this.state.item.id)
-          .then(() => this.goBack())
+          .then(() => this.handleGoBack())
           .catch((err) => {
             if (__DEV__) console.log('err', err)
           })
@@ -136,7 +136,7 @@ export class SingleView extends Component {
     this.setState({ item })
   }
 
-  async goBack () {
+  async handleGoBack () {
     this.props.history.goBack()
   }
 
@@ -173,7 +173,7 @@ export class SingleView extends Component {
           ? <Button transparent>
             <Spinner color='white' />
           </Button>
-          : <Button transparent onPress={this.setFavorite}>
+          : <Button transparent onPress={this.handleSetFavorite}>
             <Icon
               type='MaterialIcons'
               name={item.favorite ? 'star' : 'star-border'}
@@ -185,24 +185,35 @@ export class SingleView extends Component {
     }
   }
 
-  stopEditing () {
+  handleStopEditing () {
     this.setState({
       editing: false,
       item: { ...this.state.untouchedItem },
     })
   }
 
-  startEditing () {
+  handleStartEditing () {
     this.setState({ editing: true })
   }
 
-  async setFavorite () {
+  async handleSetFavorite () {
     this.setState({ favoriteUpdating: true })
     const item = await Passwords.setFavorite(this.state.item.id)
     if (!(item instanceof Error)) {
       this.setState({ item })
     }
     this.setState({ favoriteUpdating: false })
+  }
+
+  handleOpenURL (url) {
+    Linking.openURL(url).catch(() => {
+      Toast.show({
+        text: 'Not a link!',
+        buttonText: 'Okay',
+        duration: 1000,
+        type: 'warning'
+      })
+    })
   }
 
   renderCustomField (field) {
@@ -219,8 +230,7 @@ export class SingleView extends Component {
             />
           </Item>
         )
-        break
-      case 'secret':
+      case 'secret': {
         const showPasswordKey = `showPassword_${field.label}`
         return (
           <Item key={field.id} stackedLabel disabled={!this.state.editing} last>
@@ -248,19 +258,19 @@ export class SingleView extends Component {
             </Button>}
           </Item>
         )
-        break
+      }
       case 'email':
         return (
           <Item key={field.id} stackedLabel disabled={!this.state.editing} last>
             <Label>{field.label}</Label>
             {!this.state.editing
               ? <Button
-                transparent onPress={() => Linking.openURL(`mailto:${field.value}`)}
+                transparent onPress={() => this.handleOpenURL(`mailto:${field.value}`)}
                 title={field.value}
                 >
                 <Icon type='MaterialIcons' name='mail-outline' style={{ marginLeft: 8, marginRight: 0 }} />
                 <Text uppercase={false} style={{ marginLeft: 0, paddingLeft: 8 }}>{field.value}</Text>
-                </Button>
+              </Button>
               : <Input
                 disabled={!this.state.editing}
                 defaultValue={field.value}
@@ -269,19 +279,18 @@ export class SingleView extends Component {
                 />}
           </Item>
         )
-        break
       case 'url':
         return (
           <Item key={field.id} stackedLabel disabled={!this.state.editing} last>
             <Label>{field.label}</Label>
             {!this.state.editing
               ? <Button
-                transparent onPress={() => Linking.openURL(`${field.value}`)}
+                transparent onPress={() => this.handleOpenURL(`${field.value}`)}
                 title={field.value}
                 >
                 <Icon type='MaterialIcons' name='link' style={{ marginLeft: 8, marginRight: 0 }} />
                 <Text uppercase={false} style={{ marginLeft: 0, paddingLeft: 8 }}>{field.value}</Text>
-                </Button>
+              </Button>
               : <Input
                 disabled={!this.state.editing}
                 defaultValue={field.value}
@@ -290,7 +299,6 @@ export class SingleView extends Component {
                 />}
           </Item>
         )
-        break
       case 'file':
         break
       default:
@@ -312,7 +320,7 @@ export class SingleView extends Component {
       <Container>
         <Header style={{ backgroundColor: Colors.bgColor }}>
           <Left>
-            <Button transparent onPress={this.goBack}>
+            <Button transparent onPress={this.handleGoBack}>
               <Icon type='MaterialIcons' name='arrow-back' />
             </Button>
           </Left>
@@ -337,6 +345,12 @@ export class SingleView extends Component {
                     value={this.state.item.username}
                     onChangeText={(filter) => this.updateHandler('username', filter)}
                   />
+                  {!this.state.editing && <Button
+                    transparent style={styles.showPassButton}
+                    onPress={() => { this.toClipboard(this.state.item.username, 'Username') }}
+                                          >
+                    <Icon type='MaterialIcons' name='content-copy' style={styles.showPassIcon} />
+                  </Button>}
                 </Item>
                 <Item stackedLabel disabled={!this.state.editing} last>
                   <Label>Password</Label>
@@ -372,16 +386,16 @@ export class SingleView extends Component {
                   <Label>Address</Label>
                   {!this.state.editing
                     ? <Button
-                      transparent onPress={() => Linking.openURL(`${this.state.item.url}`)}
+                      transparent onPress={() => this.handleOpenURL(`${this.state.item.url}`)}
                       title={this.state.item.url}
                       >
-                        <Text uppercase={false} style={{ marginLeft: -12, fontSize: 16 }}>{this.state.item.url}</Text>
-                      </Button>
+                      <Text uppercase={false} style={{ marginLeft: -12, fontSize: 16 }}>{this.state.item.url}</Text>
+                    </Button>
                     : <Input
                       disabled={!this.state.editing}
                       defaultValue={this.state.item.url}
                       value={this.state.item.url}
-                      onChangeText={(filter) => this.updateHandler('url', filter )}
+                      onChangeText={(filter) => this.updateHandler('url', filter)}
                       />}
                 </Item>
                 <Item stackedLabel disabled={!this.state.editing} last>
@@ -401,18 +415,18 @@ export class SingleView extends Component {
                 ? <View style={{ flexDirection: 'row', marginTop: 20 }}>
                   <Button
                     block danger
-                    onPress={this.delete}
+                    onPress={this.handleDelete}
                   >
                     <Icon type='MaterialIcons' name='delete' style={{ color: 'white' }} />
                   </Button>
                   <Button
                     block success
                     style={{ flex: 1, marginLeft: 20, marginRight: 20 }}
-                    onPress={this.save}
+                    onPress={this.handleSave}
                   >
                     <Text>Save</Text>
                   </Button>
-                  <Button block dark onPress={this.stopEditing}>
+                  <Button block dark onPress={this.handleStopEditing}>
                     <Icon type='MaterialIcons' name='close' />
                   </Button>
                 </View>
@@ -420,7 +434,7 @@ export class SingleView extends Component {
                   <Button
                     bordered
                     style={{ flex: 1, borderColor: Colors.bgColor, justifyContent: 'center' }}
-                    onPress={this.startEditing}
+                    onPress={this.handleStartEditing}
                   >
                     <Text style={{ color: Colors.bgColor }}>Edit</Text>
                   </Button>

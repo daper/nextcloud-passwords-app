@@ -315,6 +315,12 @@ export class Passwords {
       const { status, data } = await this.http.post('/api/1.0/password/create', item)
 
       if (status === 201) {
+        // Default fields //
+        if (! ("hidden" in item)) item.hidden = 0
+        if (! ("trashed" in item)) item.trashed = 0
+        if (! ("favorite" in item)) item.favorite = 0
+        if (! ("editable" in item)) item.editable = 1
+
         item.id = data.id
         let cols = Object.keys(item).filter((col) => [...PASSWORD_FIELDS, 'password'].indexOf(col) !== -1)
         const values = cols.map((key) => item[key])

@@ -30,7 +30,7 @@ export class App extends Component {
     this.checkLock = this.checkLock.bind(this)
 
     API.init(this.props.settings)
-    //API.openDB("App.js")
+    // API.openDB("App.js")
 
     if (this.props.enableSecurity === true) {
       this.props.setLocked(true)

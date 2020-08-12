@@ -30,7 +30,7 @@ export class Favorites extends Component {
   constructor (props) {
     super(props)
 
-    this.changeFolder = this.changeFolder.bind(this)
+    this.handleChangeFolder = this.handleChangeFolder.bind(this)
 
     this.state = {
       passwordList: [],
@@ -44,7 +44,7 @@ export class Favorites extends Component {
       return true
     })
 
-    await this.changeFolder(this.props.currentFolder)
+    await this.handleChangeFolder(this.props.currentFolder)
   }
 
   componentWillUnmount () {
@@ -93,9 +93,9 @@ export class Favorites extends Component {
     this.props.setLoading(false)
   }
 
-  async changeFolder (id) {
+  async handleChangeFolder (id) {
     await this.props.setCurrentFolder(id)
-    if (__DEV__) console.log('changeFolder', id)
+    if (__DEV__) console.log('handleChangeFolder', id)
 
     this.getData()
   }
@@ -110,7 +110,7 @@ export class Favorites extends Component {
       </Header>
       <View padder style={{ flex: 1 }}>
         <SiteList
-          onChangeFolder={this.changeFolder}
+          onChangeFolder={this.handleChangeFolder}
           passwordList={this.state.passwordList}
           folder={this.state.folder}
         />

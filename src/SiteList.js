@@ -1,10 +1,9 @@
 import React, { Component } from 'react'
 import {
-  Clipboard,
   StyleSheet,
-  FlatList,
   TouchableOpacity,
 } from 'react-native'
+import Clipboard from '@react-native-community/clipboard'
 import {
   View,
   Text,
@@ -121,7 +120,7 @@ export class SiteList extends Component {
             dataArray={this.props.passwordList}
             keyExtractor={(item) => item.id}
             renderRow={this.renderRow}
-            ListFooterComponent={<View style={{height: 80}} />}
+            ListFooterComponent={<View style={{ height: 80 }} />}
             />}
       </View>
     )

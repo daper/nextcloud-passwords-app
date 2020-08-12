@@ -40,21 +40,21 @@ export class AddSite extends Component {
     this.state = {
       item: {
         folder: this.props.currentFolder,
-        customFields: "[]"
+        customFields: '[]'
       },
       showPassword: false,
       passwordIsError: false,
       labelIsError: false,
     }
 
-    this.goBack = this.goBack.bind(this)
+    this.handleGoBack = this.handleGoBack.bind(this)
     this.updateHandler = this.updateHandler.bind(this)
-    this.submit = this.submit.bind(this)
+    this.handleSubmit = this.handleSubmit.bind(this)
   }
 
   componentDidMount () {
     this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
-      this.goBack()
+      this.handleGoBack()
       return true
     })
   }
@@ -63,7 +63,7 @@ export class AddSite extends Component {
     this.backHandler.remove()
   }
 
-  async goBack () {
+  async handleGoBack () {
     this.props.history.push('/dashboard')
   }
 
@@ -92,14 +92,14 @@ export class AddSite extends Component {
     return result
   }
 
-  async submit () {
+  async handleSubmit () {
     if (this.validate()) {
       this.props.setLoading(true, 'Creating site...')
       const data = await Passwords.create(this.state.item)
       this.props.setLoading(false)
 
       if (!(data instanceof Error)) {
-        this.props.history.push('/dashboard')
+        this.props.history.push('/dashboard?refresh=true')
       }
     }
   }
@@ -107,16 +107,17 @@ export class AddSite extends Component {
   render () {
     return (
       <Container>
-        {!this.props.loading && <Header style={{ backgroundColor: Colors.bgColor }}>
-          <Left>
-            <Button transparent onPress={this.goBack}>
-              <Icon type='MaterialIcons' name='arrow-back' />
-            </Button>
-          </Left>
-          <Body>
-            <Title>Create Site</Title>
-          </Body>
-        </Header>}
+        {!this.props.loading &&
+          <Header style={{ backgroundColor: Colors.bgColor }}>
+            <Left>
+              <Button transparent onPress={this.handleGoBack}>
+                <Icon type='MaterialIcons' name='arrow-back' />
+              </Button>
+            </Left>
+            <Body>
+              <Title>Create Site</Title>
+            </Body>
+          </Header>}
         <Content padder>
           {this.props.loading
             ? <View style={styles.spinnerView}>
@@ -194,7 +195,7 @@ export class AddSite extends Component {
         </Content>
         {!this.props.loading && <Footer>
           <FooterTab>
-            <Button full success onPress={this.submit}>
+            <Button full success onPress={this.handleSubmit}>
               <Text style={{ color: 'white', fontSize: 16 }}>Create</Text>
             </Button>
           </FooterTab>

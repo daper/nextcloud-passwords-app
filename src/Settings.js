@@ -20,10 +20,10 @@ import {
   Button,
   Right,
   ActionSheet,
-  Picker,
   Input,
   Switch,
 } from 'native-base'
+import { Picker } from '@react-native-community/picker'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-native'
 import API, {
@@ -47,15 +47,15 @@ export class Settings extends Component {
   constructor (props) {
     super(props)
 
-    this.forceSyncDown = this.forceSyncDown.bind(this)
+    this.handleForceSyncDown = this.handleForceSyncDown.bind(this)
     this.getLastLogin = this.getLastLogin.bind(this)
-    this.logOut = this.logOut.bind(this)
-    this.rateApp = this.rateApp.bind(this)
-    this.shareApp = this.shareApp.bind(this)
-    this.getSupport = this.getSupport.bind(this)
-    this.setPasscode = this.setPasscode.bind(this)
-    this.donate = this.donate.bind(this)
-    this.toggleSecurity = this.toggleSecurity.bind(this)
+    this.handleLogOut = this.handleLogOut.bind(this)
+    this.handleRateApp = this.handleRateApp.bind(this)
+    this.handleShareApp = this.handleShareApp.bind(this)
+    this.handleGetSupport = this.handleGetSupport.bind(this)
+    this.handleSetPasscode = this.handleSetPasscode.bind(this)
+    this.handleDonate = this.handleDonate.bind(this)
+    this.handleToggleSecurity = this.handleToggleSecurity.bind(this)
     this.canEnableSecurity = this.canEnableSecurity.bind(this)
   }
 
@@ -101,7 +101,7 @@ export class Settings extends Component {
     return timeExpression
   }
 
-  async forceSyncDown () {
+  async handleForceSyncDown () {
     await this.props.setLastLogin(0)
     this.props.history.push('/dashboard')
   }
@@ -117,7 +117,7 @@ export class Settings extends Component {
     this.props.history.push('/login')
   }
 
-  logOut () {
+  handleLogOut () {
     ActionSheet.show({
       options: ['Confirm', 'Cancel'],
       cancelButtonIndex: 1,
@@ -131,7 +131,7 @@ export class Settings extends Component {
     })
   }
 
-  async rateApp () {
+  async handleRateApp () {
     if (Platform.OS === 'android') {
       const url = PLAY_URL
 
@@ -142,28 +142,28 @@ export class Settings extends Component {
     }
   }
 
-  async getSupport () {
+  async handleGetSupport () {
     const supported = await Linking.canOpenURL(GITHUB_URL)
     if (supported) {
       Linking.openURL(GITHUB_URL)
     }
   }
 
-  async shareApp () {
+  async handleShareApp () {
     await Share.share({
       title: 'Nextcloud Passwords App',
-      message: `Checkout this great app to manage you Nextcloud passwords on your mobile device. ${PLAY_URL}`
+      message: `Check out this great app to manage your Nextcloud passwords on your mobile device. ${PLAY_URL}`
     }, {})
   }
 
-  async donate () {
+  async handleDonate () {
     const supported = await Linking.canOpenURL(PAYPAL_URL)
     if (supported) {
       Linking.openURL(PAYPAL_URL)
     }
   }
 
-  async setPasscode (code) {
+  async handleSetPasscode (code) {
     if (!code.length || /^[0-9]{1,4}$/.test(code)) {
       await this.props.setPasscode(code)
     } else {
@@ -175,7 +175,7 @@ export class Settings extends Component {
     }
   }
 
-  async toggleSecurity (value = null) {
+  async handleToggleSecurity (value = null) {
     if (typeof value !== 'boolean') {
       value = !this.props.enableSecurity
     }
@@ -221,13 +221,13 @@ export class Settings extends Component {
           <Left>
             <Button
               style={{ backgroundColor: 'grey' }}
-              onPress={this.forceSyncDown}
+              onPress={this.handleForceSyncDown}
             >
               <Icon type='MaterialIcons' active name='refresh' />
             </Button>
           </Left>
           <Body>
-            <TouchableOpacity onPess={this.forceSyncDown}>
+            <TouchableOpacity onPess={this.handleForceSyncDown}>
               <Text>Force sync down</Text>
             </TouchableOpacity>
           </Body>
@@ -241,12 +241,12 @@ export class Settings extends Component {
         </ListItem>
         <ListItem icon>
           <Left>
-            <Button disabled style={{ backgroundColor: 'grey' }} onPress={this.toggleSecurity}>
+            <Button disabled style={{ backgroundColor: 'grey' }} onPress={this.handleToggleSecurity}>
               <Icon active type='MaterialIcons' name={this.props.enableSecurity ? 'lock' : 'lock-open'} />
             </Button>
           </Left>
           <Body>
-            <TouchableOpacity onPress={this.toggleSecurity}>
+            <TouchableOpacity onPress={this.handleToggleSecurity}>
               <Text>Toggle security</Text>
             </TouchableOpacity>
           </Body>
@@ -254,7 +254,7 @@ export class Settings extends Component {
             <Switch
               disabled={!this.canEnableSecurity()}
               value={this.props.enableSecurity}
-              onValueChange={this.toggleSecurity}
+              onValueChange={this.handleToggleSecurity}
             />
           </Right>
         </ListItem>
@@ -271,7 +271,7 @@ export class Settings extends Component {
               keyboardType='numeric'
               defaultValue={this.props.passcode}
               value={this.props.passcode}
-              onChangeText={this.setPasscode}
+              onChangeText={this.handleSetPasscode}
             />
           </Body>
         </ListItem>
@@ -291,7 +291,7 @@ export class Settings extends Component {
               iosIcon={<Icon name='ios-arrow-down-outline' />}
               placeholder='Lock Timeout'
               selectedValue={this.props.lockTimeout}
-              onValueChange={this.props.setLockTimeout}
+              onValueChange={this.props.handleSetLockTimeout}
               style={{ marginRight: -10 }}
             >
               <Picker.Item label='Disabled' value={null} />
@@ -307,7 +307,7 @@ export class Settings extends Component {
         </ListItem>
         <ListItem icon>
           <Left>
-            <Button onPress={this.donate}>
+            <Button onPress={this.handleDonate}>
               <Image
                 source={require('../assets/pint-of-beer.png')}
                 style={{
@@ -320,7 +320,7 @@ export class Settings extends Component {
             </Button>
           </Left>
           <Body>
-            <TouchableOpacity onPress={this.donate}>
+            <TouchableOpacity onPress={this.handleDonate}>
               <Text>Buy me a pint</Text>
             </TouchableOpacity>
           </Body>
@@ -329,13 +329,13 @@ export class Settings extends Component {
           <Left>
             <Button
               warning
-              onPress={this.rateApp}
+              onPress={this.handleRateApp}
             >
               <Icon type='MaterialIcons' active name='star' />
             </Button>
           </Left>
           <Body>
-            <TouchableOpacity onPress={this.rateApp}>
+            <TouchableOpacity onPress={this.handleRateApp}>
               <Text>Rate this app</Text>
             </TouchableOpacity>
           </Body>
@@ -344,13 +344,13 @@ export class Settings extends Component {
           <Left>
             <Button
               style={{ backgroundColor: 'grey' }}
-              onPress={this.shareApp}
+              onPress={this.handleShareApp}
             >
               <Icon type='MaterialIcons' active name='share' />
             </Button>
           </Left>
           <Body>
-            <TouchableOpacity onPress={this.shareApp}>
+            <TouchableOpacity onPress={this.handleShareApp}>
               <Text>Share this app</Text>
             </TouchableOpacity>
           </Body>
@@ -359,13 +359,13 @@ export class Settings extends Component {
           <Left>
             <Button
               style={{ backgroundColor: 'grey' }}
-              onPress={this.getSupport}
+              onPress={this.handleGetSupport}
             >
               <Icon type='MaterialIcons' active name='help' />
             </Button>
           </Left>
           <Body>
-            <TouchableOpacity onPress={this.getSupport}>
+            <TouchableOpacity onPress={this.handleGetSupport}>
               <Text>Report a problem</Text>
             </TouchableOpacity>
           </Body>
@@ -377,13 +377,13 @@ export class Settings extends Component {
           <Left>
             <Button
               style={{ backgroundColor: '#d9534f' }}
-              onPress={this.logOut}
+              onPress={this.handleLogOut}
             >
               <Icon type='MaterialIcons' active name='power-settings-new' />
             </Button>
           </Left>
           <Body>
-            <TouchableOpacity onPress={this.logOut}>
+            <TouchableOpacity onPress={this.handleLogOut}>
               <Text>Log out</Text>
             </TouchableOpacity>
           </Body>
@@ -409,7 +409,7 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     setLoading: (...args) => { dispatch(setLoading.apply(ownProps, args)) },
     setLastLogin: (...args) => { dispatch(setLastLogin.apply(ownProps, args)) },
     setSettings: (...args) => { dispatch(setSettings.apply(ownProps, args)) },
-    setLockTimeout: (...args) => { dispatch(setLockTimeout.apply(ownProps, args)) },
+    handleSetLockTimeout: (...args) => { dispatch(setLockTimeout.apply(ownProps, args)) },
     setPasscode: (...args) => { dispatch(setPasscode.apply(ownProps, args)) },
     toggleSecurity: (...args) => { dispatch(toggleSecurity.apply(ownProps, args)) },
   }

@@ -28,8 +28,8 @@ class Lock extends Component {
     this.componentDidMount = this.componentDidMount.bind(this)
     this.setError = this.setError.bind(this)
     this.numberPressed = this.numberPressed.bind(this)
-    this.backspacePressed = this.backspacePressed.bind(this)
-    this.backspacePressedLong = this.backspacePressedLong.bind(this)
+    this.handleBackspacePressed = this.handleBackspacePressed.bind(this)
+    this.handleBackspacePressedLong = this.handleBackspacePressedLong.bind(this)
     this.goBack = this.goBack.bind(this)
 
     this.state = {
@@ -100,11 +100,11 @@ class Lock extends Component {
     }
   }
 
-  backspacePressed () {
+  handleBackspacePressed () {
     this.setState({ passcode: this.state.passcode.substr(0, this.state.passcode.length - 1) })
   }
 
-  backspacePressedLong () {
+  handleBackspacePressedLong () {
     this.setState({ passcode: '' })
   }
 
@@ -158,8 +158,8 @@ class Lock extends Component {
             </Item>
             <Button
               transparent style={styles.backspaceIcon}
-              onPress={this.backspacePressed}
-              onLongPress={this.backspacePressedLong}
+              onPress={this.handleBackspacePressed}
+              onLongPress={this.handleBackspacePressedLong}
             >
               <Icon type='MaterialIcons' name='backspace' style={{ color: 'white' }} />
             </Button>

@@ -10,9 +10,13 @@
     "flow": "flow",
     "run-android": "npx react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res && npx react-native run-android",
     "log-android": "npx react-native log-android",
-    "cache-clean": "cd android && ./gradlew clean cleanBuildCache && cd .. && rm -rf node_modules/ && npm cache clean --force && npm install && npm start -- --reset-cache"
+    "cache-clean": "cd android && ./gradlew clean cleanBuildCache && cd .. && rm -rf node_modules/ && npm cache clean --force && npm install && npm start -- --reset-cache",
+    "postinstall": "./tools/fix-packages.sh"
   },
   "dependencies": {
+    "@react-native-community/clipboard": "^1.2.3",
+    "@react-native-community/picker": "^1.6.6",
+    "@react-native-community/slider": "^3.0.3",
     "axios": "~0.19.2",
     "native-base": "^2.13.13",
     "prop-types": "^15.7.2",
@@ -41,7 +45,7 @@
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-react": "^7.20.5",
     "eslint-plugin-standard": "^4.0.1",
-    "flow-bin": "^0.120.1",
+    "flow-bin": "^0.122.0",
     "jest": "^25.5.4",
     "metro-react-native-babel-preset": "^0.59.0",
     "react-test-renderer": "^16.13.1"

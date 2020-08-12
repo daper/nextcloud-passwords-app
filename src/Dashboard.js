@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import {
+  Platform,
   StyleSheet,
   BackHandler,
 } from 'react-native'
@@ -38,12 +39,12 @@ class Dashboard extends Component {
   constructor (props) {
     super(props)
 
-    this.search = this.search.bind(this)
-    this.refresh = this.refresh.bind(this)
-    this.changeFolder = this.changeFolder.bind(this)
+    this.handleSearch = this.handleSearch.bind(this)
+    this.handleRefresh = this.handleRefresh.bind(this)
+    this.handleChangeFolder = this.handleChangeFolder.bind(this)
     this.getData = this.getData.bind(this)
     this.getFolder = this.getFolder.bind(this)
-    this.clearSearchFilter = this.clearSearchFilter.bind(this)
+    this.handleClearSearchFilter = this.handleClearSearchFilter.bind(this)
 
     this.searchTimeout = null
     this.state = {
@@ -61,7 +62,7 @@ class Dashboard extends Component {
   async componentDidMount () {
     this.backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
       if (this.props.currentFolder !== ROOT_FOLDER) {
-        this.changeFolder(this.state.folder.parent)
+        this.handleChangeFolder(this.state.folder.parent)
       } else if (this.props.history.location === this.props.history.entries[0]) {
         BackHandler.exitApp()
       } else {
@@ -76,19 +77,19 @@ class Dashboard extends Component {
       android: fs.DocumentDirectoryPath,
     })
 
-    let dbName = this.props.settings.dbName
+    const dbName = this.props.settings.dbName
     try {
       await fs.stat(`${rootDir}/${dbName}`)
         .then((statResult) => {
           if (__DEV__) console.log('DB File Stat', statResult)
         })
-    } catch(err) {
+    } catch (err) {
       if (__DEV__) console.log('DB File not exists')
       await this.props.setSettings({ dbName: new Date().getTime().toString() })
     }
 
-    await API.openDB(this.props.settings.dbName, "Dashboard.js")
-    await this.changeFolder(this.props.currentFolder)
+    await API.openDB(dbName, 'Dashboard.js')
+    await this.handleChangeFolder(this.props.currentFolder)
   }
 
   componentWillUnmount () {
@@ -193,7 +194,7 @@ class Dashboard extends Component {
     this.props.setLoading(false)
   }
 
-  async refresh () {
+  async handleRefresh () {
     await this.fetchData()
     await this.getData()
   }
@@ -207,7 +208,7 @@ class Dashboard extends Component {
     this.props.history.push('/login')
   }
 
-  async search (filter) {
+  async handleSearch (filter) {
     await this.props.setPasswordFilter(filter)
 
     if (this.searchTimeout) {
@@ -218,13 +219,13 @@ class Dashboard extends Component {
     this.searchTimeout = setTimeout(this.getData, 300)
   }
 
-  async clearSearchFilter () {
-    await this.search('')
+  async handleClearSearchFilter () {
+    await this.handleSearch('')
   }
 
-  async changeFolder (id) {
+  async handleChangeFolder (id) {
     await this.props.setCurrentFolder(id)
-    if (__DEV__) console.log('changeFolder', id)
+    if (__DEV__) console.log('handleChangeFolder', id)
 
     if (this.props.lastLogin === 0) {
       await this.fetchData()
@@ -241,22 +242,22 @@ class Dashboard extends Component {
             {this.state.filtering
               ? <Spinner color='black' size='small' style={{ padding: 10 }} />
               : <Icon type='MaterialIcons' name='search' />}
-            <Input placeholder='Search' defaultValue={this.props.filter} onChangeText={this.search} />
+            <Input placeholder='Search' defaultValue={this.props.filter} onChangeText={this.handleSearch} />
             {this.props.filter.length !== 0
-              ? <Button transparent onPress={this.clearSearchFilter} style={{ paddingTop: 3 }}>
+              ? <Button transparent onPress={this.handleClearSearchFilter} style={{ paddingTop: 3 }}>
                 <Icon type='MaterialIcons' name='close' style={{ color: Colors.grey, marginRight: 8 }} />
-                </Button>
+              </Button>
               : null}
           </Item>
           <View style={{ alignSelf: 'center', marginLeft: 10 }}>
-            <Button transparent onPress={this.refresh}>
+            <Button transparent onPress={this.handleRefresh}>
               <Icon type='MaterialIcons' name='sync' style={{ color: 'white', fontSize: 32 }} />
             </Button>
           </View>
         </Header>
         <View padder style={{ flex: 1 }}>
           <SiteList
-            onChangeFolder={this.changeFolder}
+            onChangeFolder={this.handleChangeFolder}
             passwordList={this.state.passwordList}
             folder={this.state.folder}
           />

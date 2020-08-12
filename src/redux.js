@@ -166,19 +166,19 @@ const defaultState = {
 // Reducers
 export function appReducer (state = defaultState, action) {
   switch (action.type) {
-    case ActionTypes.LOADING:
+    case ActionTypes.LOADING: {
       let status = action.status
       if (action.status === null) {
         status = !state.loading
       }
 
       return { ...state, loading: status, statusText: action.text }
-
-    case ActionTypes.SETTINGS:
+    }
+    case ActionTypes.SETTINGS: {
       const settings = { ...state.settings, ...action.settings }
       API.init(settings)
       return { ...state, settings }
-
+    }
     case ActionTypes.LOGIN_CONTAINER_SIZE:
       return { ...state, loginContainerSize: action.size }
 
@@ -194,14 +194,14 @@ export function appReducer (state = defaultState, action) {
     case ActionTypes.SET_PASSWORD_FILTER:
       return { ...state, filter: action.filter }
 
-    case ActionTypes.TOGGLE_PASSWORD_MODAL:
+    case ActionTypes.TOGGLE_PASSWORD_MODAL: {
       let value = String(state.passwordModalValue)
       if (action.state === true) {
         value = ''
       }
 
       return { ...state, passwordModalVisible: action.state, passwordModalValue: value }
-
+    }
     case ActionTypes.SET_PASSWORD_MODAL_VALUE:
       return { ...state, passwordModalValue: action.value }
 

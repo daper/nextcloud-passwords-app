@@ -38,8 +38,8 @@ class Login extends Component {
     this.updateContainerSize = this.updateContainerSize.bind(this)
     this.keyboardDidShow = this.keyboardDidShow.bind(this)
     this.keyboardDidHide = this.keyboardDidHide.bind(this)
-    this.validateServer = this.validateServer.bind(this)
-    this._handleOpenURL = this._handleOpenURL.bind(this)
+    this.handleValidateServer = this.handleValidateServer.bind(this)
+    this.handleOpenURL = this.handleOpenURL.bind(this)
   }
 
   updateContainerSize ({ screen }) {
@@ -75,7 +75,7 @@ class Login extends Component {
     Dimensions.addEventListener('change', this.updateContainerSize)
     Keyboard.addListener('keyboardDidShow', this.keyboardDidShow)
     Keyboard.addListener('keyboardDidHide', this.keyboardDidHide)
-    Linking.addEventListener('url', this._handleOpenURL)
+    Linking.addEventListener('url', this.handleOpenURL)
 
     this.setState({
       ...this.state,
@@ -91,27 +91,25 @@ class Login extends Component {
     Dimensions.removeEventListener('change', this.updateContainerSize)
     Keyboard.removeListener('keyboardDidShow', this.keyboardDidShow)
     Keyboard.removeListener('keyboardDidHide', this.keyboardDidHide)
-    Linking.removeEventListener('url', this._handleOpenURL)
+    Linking.removeEventListener('url', this.handleOpenURL)
   }
 
-  async validateServer () {
+  async handleValidateServer () {
     this.props.setLoading(true)
 
     const server = this.state.server.replace(/https?:\/\//, '').replace(/\/$/, '')
     const oldServer = this.props.settings.server.replace(/https?:\/\//, '').replace(/\/$/, '')
 
-    console.log(`Server match "${server}" == "${oldServer}"`)
-    if (server == oldServer && this.props.settings.password != "") {
+    if (server == oldServer && this.props.settings.password != '') { // eslint-disable-line eqeqeq
       await this.props.setSettings({ ...this.props.settings, server: `https://${server}` })
 
       API.init(this.props.settings)
 
       this.props.history.push('/dashboard')
     } else {
-      API.init({server: `https://${server}`})
+      API.init({ server: `https://${server}` })
       const { error, data } = await API.validateServer()
 
-      console.log(`Server validated: error: ${error} data: ${JSON.stringify(data)}`)
       if (error) {
         this.props.setLoading(true, error.message)
 
@@ -126,7 +124,7 @@ class Login extends Component {
     }
   }
 
-  _handleOpenURL ({ url }) {
+  handleOpenURL ({ url }) {
     if (/^nc:\/\/login/.test(url)) {
       this.WebView.stopLoading()
       if (__DEV__) console.log('Got Nextcloud Access!')
@@ -148,7 +146,7 @@ class Login extends Component {
 
         API.init(settings)
 
-        API.openDB(settings.dbName, "_handleOpenURL")
+        API.openDB(settings.dbName, 'handleOpenURL')
           .then(() => this.props.history.push('/dashboard'))
       }
 
@@ -170,13 +168,13 @@ class Login extends Component {
             onChangeText={(text) => {
               this.setState({ ...this.state, server: text })
             }}
-            onSubmitEditing={this.validateServer}
+            onSubmitEditing={this.handleValidateServer}
           >
             {this.state.server}
           </Input>
         </Item>
         <View style={{ marginTop: 20 }}>
-          <Button full bordered style={{ borderColor: 'white' }} onPress={this.validateServer}>
+          <Button full bordered style={{ borderColor: 'white' }} onPress={this.handleValidateServer}>
             <Text style={{ color: 'white' }}>Continue</Text>
           </Button>
         </View>
@@ -209,8 +207,8 @@ class Login extends Component {
           automaticallyAdjustContentInsets
           onError={(err) => { if (__DEV__) console.log('onError', err) }}
           renderError={(err) => { if (__DEV__) console.log('renderError', err) }}
-          onShouldStartLoadWithRequest={this._handleOpenURL}
-          onNavigationStateChange={this._handleOpenURL}
+          onShouldStartLoadWithRequest={this.handleOpenURL}
+          onNavigationStateChange={this.handleOpenURL}
           cacheEnabled={false}
         />
       )
