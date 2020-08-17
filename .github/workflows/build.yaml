@@ -1,0 +1,44 @@
+name: Build commit
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install npm dependencies
+        run: npm ci
+      - name: Set up JDK 1.8
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+      - name: Cache Gradle packages
+        uses: actions/cache@v2
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
+          restore-keys: ${{ runner.os }}-gradle
+      - name: Prepare Signing Files
+        env:
+          SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
+          ALIAS: ${{ secrets.ALIAS }}
+          KEY_STORE_PASSWORD: ${{ secrets.KEY_STORE_PASSWORD }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: |
+          ./tools/prepare-sign-for-ci.sh
+      - name: Build Release
+        id: buildRelease
+        run: |
+          cd android \
+          && echo "ndk.dir=${ANDROID_HOME}/ndk-bundle" >> local.properties \
+          && ./gradlew assembleRelease bundleRelease
+      - name: Upload Artifacts
+        id: uploadArtifact
+        uses: actions/upload-artifact@v2
+        with:
+            name: release
+            path: |
+              android/app/build/outputs/bundle/release/app-release.aab
+              android/app/build/outputs/apk/release/app-release.apk
