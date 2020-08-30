@@ -1,10 +1,5 @@
 FROM debian:stretch
 
-ENV ANDROID_HOME=/opt/android-sdk \
-    ANDROID_NDK=/opt/android-ndk-r19c \
-    LC_ALL=en_US.UTF-8
-ENV PATH=/fdroidserver:$ANDROID_HOME/tools/bin:$ANDROID_HOME/tools:/opt/node-v${NODE_VERSION}-linux-x64/bin:$PATH
-
 RUN apt update \
 	&& apt install -y \
         gcc \
@@ -28,8 +23,13 @@ RUN apt update \
     && echo 'LANG="en_US.UTF-8"'>/etc/default/locale \
     && dpkg-reconfigure --frontend=noninteractive locales
 
-ENV NODE_VERSION=12.18.1 \
+ENV ANDROID_HOME=/opt/android-sdk \
+    ANDROID_NDK=/opt/android-ndk-r19c \
+    LC_ALL=en_US.UTF-8 \
+    NODE_VERSION=12.18.1 \
     NODE_SHA256=863f816967e297c9eb221ad3cf32521f7ac46fffc66750e60f159ed63809affa
+
+ENV PATH=/fdroidserver:$ANDROID_HOME/tools/bin:/opt/node-v${NODE_VERSION}-linux-x64/bin:$PATH
 
 RUN wget "https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-x64.tar.xz" -O node.tar.xz \
     && echo "${NODE_SHA256} node.tar.xz" | sha256sum -c - \
