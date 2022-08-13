@@ -1,3 +1,5 @@
+## This project is no longer maintained
+
 ### Nextcloud Passwords Mobile App
 
 Nextcloud Passwords React-based app for Android and IOS.
